@@ -13,8 +13,12 @@ public class PlayerMovement : MonoBehaviour
     private float crouchSpeed;
     private float defenceSpeed;
 
-    private bool isCrouching;
+    [Header("방어")]
+    [SerializeField] float d_driveDecease = 10f; //방어 시 감소하는 드라이브 게이지
+    [SerializeField] float d_startDelay = 1f; //방어 시작 딜레이
     private bool isDefending;
+
+    private bool isCrouching;
 
     public int FacingDirection => facingDirection; // 대쉬나 공격시에 이거 가져다가 쓰면 됨
 
