@@ -1,11 +1,13 @@
 using System.Collections;
 using UnityEditor.Build;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class T_Controller : MonoBehaviour
 {
     private PlayerMovement movement;
+    public const float BASE_FPS = 30f;
 
     [Header("드라이브 게이지")]
     [SerializeField]float driveGauge = 0f;
@@ -26,11 +28,20 @@ public class T_Controller : MonoBehaviour
 
     [Header("약공")]
     [SerializeField] float w_attackrange = 3f;//약공 사거리
-    [SerializeField] float w_attacktime = 2f;//약공 발사 간격
-    private float w_timer = 0;
-    //약공 타겟팅 탐색 각도
-    //약공 타겟 유지 시간
-    [SerializeField] float w_stayCount = 0.5f;//약공 경직 시간
+    [SerializeField] float w_attacktime = 0.5f;//후딜레이가 끝나고 난 후 초 수 이내에 공격해야 다음 데미지로 넘어감
+    float viewAngle = 90f;//약공 타겟팅 탐색 각도
+                          //약공 타겟 유지 시간
+                          //[SerializeField] float w_stayCount = 0.5f;//약공 경직 시간
+    [SerializeField] GameObject obj;
+    [SerializeField] Transform createPos; //공격이 생성되는 position
+    public float[] comboAttack = { 100, 20, 20, 20, 200 };
+    private int currentCombo = 0;
+
+    public float[] frontDelay = { 15, 4, 4, 4, 15 };
+    public bool isWeakHit = false; //약공이 딜레이 후 시간 이내에 성공했나? 
+    private float viewRange = 5f;
+    private Collider2D nearTarget;
+    private float shortest = float.MaxValue;
 
 
     [Header("강공")]
@@ -61,22 +72,17 @@ public class T_Controller : MonoBehaviour
         {
             isBunOut = true;
             ForceStopDefense();//번아웃 시 강제로 방어 헤제
-        }
-
-       
-        WeakAttack();
-        StrongAttack();
-        SpecialAttack();
+        } 
         
     }
  
-    public void OnDefense(InputValue value) //방어키 입력
+    public void OnDefence(InputValue value) //방어키 입력
     {
         if (value.isPressed)
         {
             if(!isBunOut&& defenseCoroutine == null)
             {
-                defenseCoroutine = StartCoroutine(Defense());//defense 코루틴 시작
+                defenseCoroutine = StartCoroutine(Defence());//defense 코루틴 시작
             }
         }
         else //방어키를 입력을 안하고 있을 때
@@ -86,7 +92,7 @@ public class T_Controller : MonoBehaviour
                 StopCoroutine(defenseCoroutine);
                 defenseCoroutine = null;
             }
-            StartCoroutine(EndDefense()); //종료 코루틴 시작
+            StartCoroutine(EndDefence()); //종료 코루틴 시작
         }
     }
     private void ForceStopDefense() //강제 방어 종료
@@ -95,12 +101,12 @@ public class T_Controller : MonoBehaviour
         {
             StopCoroutine(defenseCoroutine); //현재 진행중이 방어를 종료
             defenseCoroutine = null; //코루틴 변수 비워줌
-            StartCoroutine(EndDefense()); //방어 종료 코루틴 시작
+            StartCoroutine(EndDefence()); //방어 종료 코루틴 시작
         }
     }
-    IEnumerator Defense() //방어
+    IEnumerator Defence() //방어
     {      
-        yield return new WaitForSeconds(d_startDelay);//방어 시작 딜레이
+        yield return new WaitForSeconds(FrameToSeconds(d_startDelay));//방어 시작 딜레이
         if (movement != null) movement.SetDefending(true); //방어 true알람
         //만약 방어 중에 상대의 공격을 방어했다면 
         if (isdefense)
@@ -108,31 +114,59 @@ public class T_Controller : MonoBehaviour
           DecreaseDriveGauge(d_driveDecease);          
         }
     }
-    IEnumerator EndDefense() //방어 종료
+    IEnumerator EndDefence() //방어 종료
     {      
         yield return new WaitForSeconds(d_endDelay);//방어 해제 딜레이
         if (movement != null) movement.SetDefending(false); //방어 false알림  
     }
 
-    void WeakAttack()//약공
+   public void OnWeakAttack(InputValue value)//약공
     {
-        w_timer += Time.deltaTime;
-        if (Input.GetKeyDown(KeyCode.Z) && w_timer>=w_attackrange)
+        Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, viewRange);
+        foreach(Collider2D target in targets)
         {
-
+            if (target.CompareTag("Enemy"))
+            {
+                Vector2 targetPos = target.transform.position;
+                Vector2 playerPos = transform.position;
+                Vector2 dir = (targetPos -  playerPos).normalized;
+                dir.y = 0;
+                Vector2 myForward = transform.forward;
+                float angle = Vector3.Angle(myForward, dir);
+                //시야 이내에 있음
+                if(angle < viewAngle * 0.5)
+                {
+                    //플레이어와 적의 거리를 비교
+                    float distance = Vector2.Distance(myForward, dir);
+                    //가장 짧은걸 비교
+                    if (distance < shortest) 
+                    {
+                        shortest = distance;
+                        nearTarget = target;
+                    }
+                }
+            }
         }
-    }
-    void StrongAttack() //강공
-    {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-
-        }
+       
     }
 
-    void SpecialAttack() //특공
+   IEnumerator StartWeakAttack()
     {
-        if (Input.GetKeyDown(KeyCode.V) && isBunOut == false)
+        isWeakHit = true;
+        //상대가 있다면 
+        Instantiate(obj, createPos);
+        yield return new WaitForSeconds(FrameToSeconds(frontDelay[currentCombo]));
+        
+
+    }
+   public void OnHeavyAttack(InputValue value) //강공
+    {
+      
+    }
+
+    public void OnAbility(InputValue value) //특공
+    {
+      if(value.isPressed && !isBunOut && driveGauge > sp_drvieDecrease)
         {
             driveGauge -= sp_drvieDecrease;
         }
@@ -180,5 +214,11 @@ public class T_Controller : MonoBehaviour
     void GetDecreaseDriveGuauge(float amount)
     {
         d_driveDecease = amount;
+    }
+
+
+    private float FrameToSeconds(float frame)
+    {
+        return frame / BASE_FPS;
     }
 }

@@ -12,10 +12,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     private float crouchSpeed;
     private float defenceSpeed;
-
-    [Header("방어")]
-    [SerializeField] float d_driveDecease = 10f; //방어 시 감소하는 드라이브 게이지
-    [SerializeField] float d_startDelay = 1f; //방어 시작 딜레이
     private bool isDefending;
 
     private bool isCrouching;
