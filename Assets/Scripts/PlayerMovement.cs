@@ -81,4 +81,6 @@ public class PlayerMovement : MonoBehaviour
         float yRotation = facingDirection == 1 ? 0f : 180f;
         transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
     }
+
+
 }
