@@ -10,19 +10,26 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
+
     private float crouchSpeed;
     private float defenceSpeed;
 
     private bool isCrouching;
     private bool isDefending;
 
-    public int FacingDirection => facingDirection; // 대쉬나 공격시에 이거 가져다가 쓰면 됨
+    [Header("Jump")]
+    [SerializeField] private float jumpPower = 10f;
+
+    private bool isGrounded;
+
+    public int FacingDirection => facingDirection;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        crouchSpeed = moveSpeed / 2;
-        defenceSpeed = moveSpeed / 2;
+
+        crouchSpeed = moveSpeed / 2f;
+        defenceSpeed = moveSpeed / 2f;
     }
 
     private void FixedUpdate()
@@ -35,6 +42,22 @@ public class PlayerMovement : MonoBehaviour
         moveInput = value.Get<Vector2>();
     }
 
+    public void OnJump(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        if (!isGrounded)
+            return;
+
+        isGrounded = false;
+
+        rb.AddForce(
+            Vector2.up * jumpPower,
+            ForceMode2D.Impulse
+        );
+    }
+
     public void OnCrouch(InputValue value)
     {
         isCrouching = value.isPressed;
@@ -43,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
     public void SetDefending(bool defending)
     {
         isDefending = defending;
-    } // 방어 구현시에 이거 참조해서 가져다 쓰면 됨
+    }
 
     private void Move()
     {
@@ -59,7 +82,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         rb.linearVelocityX = moveInput.x * currentSpeed;
-        UpdateFacingDirection(); // 입력 방향 따라 바꾸기
+
+        UpdateFacingDirection();
     }
 
     private void UpdateFacingDirection()
@@ -79,8 +103,27 @@ public class PlayerMovement : MonoBehaviour
     private void Flip()
     {
         float yRotation = facingDirection == 1 ? 0f : 180f;
-        transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+
+        transform.localRotation = Quaternion.Euler(
+            0f,
+            yRotation,
+            0f
+        );
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
 
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
+    }
 }

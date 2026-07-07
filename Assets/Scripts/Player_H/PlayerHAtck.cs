@@ -39,7 +39,7 @@ public class PlayerHAtck : MonoBehaviour
     public void OnLightAttack(InputValue value)
     {
         if (isAttacking) return;
-        if (playerHDef.IsDefending)
+        if (IsDefending)
         {
             StartCoroutine(StartHeavyAttack());
             return;
