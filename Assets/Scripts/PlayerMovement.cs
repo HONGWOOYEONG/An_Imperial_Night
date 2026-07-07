@@ -13,9 +13,9 @@ public class PlayerMovement : MonoBehaviour
 
     private float crouchSpeed;
     private float defenceSpeed;
+    private bool isDefending;
 
     private bool isCrouching;
-    private bool isDefending;
 
     [Header("Jump")]
     [SerializeField] private float jumpPower = 10f;
