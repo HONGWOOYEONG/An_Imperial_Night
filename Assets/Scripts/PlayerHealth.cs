@@ -13,6 +13,7 @@ public class PlayerHealth : MonoBehaviour
     private float currentHP;
 
     private bool isDead = false;
+    public bool IsDead => isDead;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

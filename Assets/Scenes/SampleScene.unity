@@ -132,8 +132,6 @@ GameObject:
   - component: {fileID: 249380835}
   - component: {fileID: 249380834}
   - component: {fileID: 249380833}
-  - component: {fileID: 249380832}
-  - component: {fileID: 249380839}
   - component: {fileID: 249380838}
   m_Layer: 0
   m_Name: Player_H
@@ -142,20 +140,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &249380832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 249380831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 513f6578454af6246acd547c5aa0ff2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 5
-  jumpPower: 10
 --- !u!114 &249380833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,43 +318,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 249380831}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6778ee0b0c69ce74cb6ab4ebbbdc9261, type: 3}
+  m_Script: {fileID: 11500000, guid: 513f6578454af6246acd547c5aa0ff2c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHAtck
-  lightAtkDamage: 100
-  heavyAtkDamage: 150
-  lightCombo:
-  - startUpTime: 5
-    activeTime: 2
-    recoveryTime: 5
-    comboWaitTime: 3
-  - startUpTime: 7
-    activeTime: 2
-    recoveryTime: 5
-    comboWaitTime: 3
-  - startUpTime: 10
-    activeTime: 2
-    recoveryTime: 5
-    comboWaitTime: 3
-  heavyCombo:
-    startUpTime: 15
-    activeTime: 3
-    recoveryTime: 15
-    comboWaitTime: 3
-  attackHitbox: {fileID: 460535723}
---- !u!114 &249380839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 249380831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d0548c389e6e2146992a029d0550c6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHP: 1000
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  moveSpeed: 5
+  dashPower: 30
+  dashCooldown: 0
+  dashDuration: 0.1
+  jumpPower: 7
 --- !u!1 &425567001
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,6 +528,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
+  dashPower: 3
+  dashCooldown: 0
+  dashDuration: 2
   jumpPower: 10
 --- !u!1 &460535723
 GameObject:
