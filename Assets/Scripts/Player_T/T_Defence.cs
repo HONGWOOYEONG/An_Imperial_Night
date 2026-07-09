@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class T_Defence : MonoBehaviour
+public class T_Defence : MonoBehaviour, IDamageReceiver
 {
-    private PlayerMovement movement;
-    public const float BASE_FPS = 30f;
+    private PlayerMovement playerMovement;
+    private PlayerHealth playerHealth;
+    public const float BASE_FPS = 60f;
 
     [Header("드라이브 게이지")]
     [SerializeField] float driveGauge = 0f;
@@ -19,16 +20,17 @@ public class T_Defence : MonoBehaviour
     [SerializeField] float d_startDelay = 2f; //방어 시작 딜레이
     [SerializeField] float d_endDelay = 2f; //방어 해제 딜레이
     private Coroutine defenceCoroutine;
-
+    
     //적이 공격을 하고 플레이어가 방어 중이라면 isdefense를 true로 변경
-    public bool isdefence = false; //방어를 성공 했나?
+    public bool isHoldingDefence = false; //방어를 성공 했나?
+
 
     [Header("번아웃")]
     bool isBunOut = false; //번아웃인가?
 
     private void Awake()
     {
-        movement = GetComponent<PlayerMovement>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
     void Start()
     {
@@ -46,12 +48,33 @@ public class T_Defence : MonoBehaviour
         }
     }
 
+    public void ReceiveAttack(DamageInfo damageInfo)
+    {
+     
+        if (isHoldingDefence)
+        {
+            Debug.Log("방어 성공");
+            driveGauge += damageInfo.driveDamage;
+         
+            return;
+        }
+
+        playerHealth.DamagedFromAtk(
+            damageInfo.damage,
+            damageInfo.damageDir,
+            damageInfo.knockbackPower,
+            damageInfo.stunTime,
+            damageInfo.damageType.ToString()
+        );
+    }
+
     public void OnDefence(InputValue value) //방어키 입력
     {
         if (value.isPressed)
         {
             if (!isBunOut && defenceCoroutine == null)
             {
+                Debug.Log("방어 시작");
                 defenceCoroutine = StartCoroutine(Defence());//defense 코루틴 시작
             }
         }
@@ -69,7 +92,7 @@ public class T_Defence : MonoBehaviour
     {
         if (defenceCoroutine != null)
         {
-            StopCoroutine(defenceCoroutine); //현재 진행중이 방어를 종료
+            StopCoroutine(defenceCoroutine); //현재 진행중인 방어를 종료
             defenceCoroutine = null; //코루틴 변수 비워줌
             StartCoroutine(EndDefence()); //방어 종료 코루틴 시작
         }
@@ -77,20 +100,19 @@ public class T_Defence : MonoBehaviour
     IEnumerator Defence() //방어
     {
         yield return new WaitForSeconds(FrameToSeconds(d_startDelay));//방어 시작 딜레이
-        if (movement != null) movement.SetDefending(true); //방어 true알람
-
-
-        //만약 방어 중에 상대의 공격을 방어했다면 
-        if (isdefence)
-        {
-            DecreaseDriveGauge(d_driveDecease);
-        }
+        isHoldingDefence = true;
+        Debug.Log("방어 중");
+        if (playerMovement != null) playerMovement.SetDefending(true); //방어 true알람
     }
     IEnumerator EndDefence() //방어 종료
     {
         yield return new WaitForSeconds(d_endDelay);//방어 해제 딜레이
-        if (movement != null) movement.SetDefending(false); //방어 false알림  
+        if (playerMovement != null) playerMovement.SetDefending(false); //방어 false알림  
+        isHoldingDefence = false;
     }
+
+    //적이 공격을 하고 있고 플레이어가 방어를 하고 있다면 드라이브 게이지가 깎임 
+     
 
     //일정 시간마다 드라이브 게이지 회복 
     IEnumerator RegenDriveGauge()
@@ -122,7 +144,7 @@ public class T_Defence : MonoBehaviour
     // 약공이나 강공을 적중 시키면 드라이브게이지 회복 
     public void HealthSomeOfDriveGauge(float amount)
     {
-
+        
         driveGauge = (driveGauge + amount) >= dg_max ? dg_max : (driveGauge + amount);
         if (driveGauge >= dg_max)
         {
@@ -130,12 +152,6 @@ public class T_Defence : MonoBehaviour
         }
     }
 
-
-    //적으로부터 드라이브 게이지의 수치를 입력 받는 함수
-    void GetDecreaseDriveGuauge(float amount)
-    {
-        d_driveDecease = amount;
-    }
 
 
     private float FrameToSeconds(float frame)
@@ -147,8 +163,6 @@ public class T_Defence : MonoBehaviour
     //키를 사용하고 드라이브가 회복되는 지연 시간은 3프레임
     //드라이브 게이지 초당 회복량은 50
     //일반 방어를 할때에는 드라이브 게이지가 감소 되지 않는데 방어가 성공이 된다면 드라이브 게이지가 감소
-
-    //적의 공격에 정확한 타이밍에 방어를 한다면 패링이 되고 드라이브 게이지가 회복이 된다.
 
     //방어를 시작 할 때 딜레이가 있고 방어 해제 할 때 딜레이가 있다. 
     //방어 중 이동 속도 배율이 있는데 이동 속도는 PlayerMovement 스크립트에서 지정

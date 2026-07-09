@@ -21,6 +21,8 @@ public class Combo
 public class T_Attack : MonoBehaviour
 {
     float BASE_FPS = 30f;
+    public bool isRight = true;
+    PlayerMovement movement;
 
     [Header("약공")]
     [SerializeField] float w_attackrange = 3f;//약공 사거리
@@ -33,8 +35,8 @@ public class T_Attack : MonoBehaviour
     private float shortest = float.MaxValue; //가장 짧은 거리의 적을 찾기위해 거리 계산한 값을 넣는 변수
     private bool isInsideEnemy = false; //적이 공격 사거리 내에 있나?
     private float nextAttackTime = 0f; 
-    private float nextAttackRange = 0.5f; //콤보 공격 간격(쿨타임)
-
+    private float nextAttackRange = 0.2f; //콤보 공격 간격(쿨타임)
+    private float comboExpireTime = 0.5f;
 
     [Header("특공")]
     [SerializeField] float sp_drvieDecrease = 100f; //특공 드라이브 감소
@@ -43,6 +45,7 @@ public class T_Attack : MonoBehaviour
     void Start()
     {
         combo = new Combo();
+        movement = GetComponent<PlayerMovement>();
     }
 
     void Update()
@@ -51,38 +54,54 @@ public class T_Attack : MonoBehaviour
     }
     public void OnLightAttack(InputValue value) //약공
     {
-        if (value.isPressed && Time.time <= nextAttackTime) //키 입력을 받았을 때 한번 실행이 됨
+        if (value.isPressed && Time.time >= nextAttackTime) //키 입력을 받았을 때 한번 실행이 됨
         {
-            FindToNearTasrget();
-            int attackIndex = combo.currentCount;
+            nearTarget = null;
+            isInsideEnemy = false;
+            if (Time.time > comboExpireTime) //콤보 시간 내에 키를 누르지 않으면
+            {
+                combo.currentCount = 0; //초기화
+            }
+
+            FindToNearTarget(); //적 감지
+            int attackIndex = combo.currentCount; //현재 인덱스
             if (isInsideEnemy && nearTarget != null) //적이 공격 사거리, 시야 이내에 있다면
             {
                 StartCoroutine(StartLightAttack(attackIndex, nearTarget.gameObject.transform.position));
             }
             else //적이 공격 사거리, 시야 내에 없다면
             {
-                StartCoroutine(StartLightAttack(attackIndex, this.transform.right));
+                //플레이어가 보는 방향이 vector2.right인지 vector2.left인지 계산하고 
+                //그 위치의 *10한 position을 구해서 인자값으로 넘겨줌
+
+                isRight = movement.FacingDirection == 1 ? true : false;
+                Vector2 lookDir = isRight ? Vector2.right : Vector2.left; //방향
+                Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //위치
+                   
+                StartCoroutine(StartLightAttack(attackIndex, forwardPos));
             }
 
             combo.currentCount = (combo.currentCount + 1) % 5;
-            nextAttackTime = Time.time + nextAttackRange;
-        }
-        else if(value.isPressed){
-            combo.currentCount = 0;
+            nextAttackTime = Time.time + nextAttackRange; //다음 공격 쿨타임
+            comboExpireTime = Time.time + nextAttackRange + w_attacktime; //지금 공격 시점부터 w_attacktime
         }
     }
 
     //투사체 생성과 투사체에게 정보 넘겨주기
-    private IEnumerator StartLightAttack(int index ,Vector2 targetPos)
+    private IEnumerator StartLightAttack(int index ,Vector2 targetPos) // targetPos = 위치 값을 넘겨줘야함
     {
         yield return new WaitForSeconds(combo.frontDeley[index] /BASE_FPS); //선 딜레이
 
-        Vector2 newPos = createPos.position;
+        Vector2 newPos = createPos.position; //약공격이 생성되는 위치
         GameObject obj_lightatk = Instantiate(obj, newPos, Quaternion.identity); //투사체 생성
+        Debug.Log("약공 공격 생성");
+        Debug.Log("현재 combo index =" + index);
         OBJ_LightAttack atkInit = obj_lightatk.GetComponent<OBJ_LightAttack>(); //투사체의 스크립트 가져오기
         if (atkInit != null)
         {
-            atkInit.Initialize(combo.damage[index], targetPos); //투사체 공격, 가야할 방향(위치) 저장
+            //적의 위치를 가져와서 날아가야할 방향을 설정해줌
+            Vector2 Pos = (targetPos - newPos).normalized; //방향
+            atkInit.Initialize(combo.damage[index], Pos); //투사체 공격, 가야할 방향(위치) 저장
         }
 
         yield return new WaitForSeconds(combo.backDeley/BASE_FPS); //후 딜레이
@@ -90,28 +109,26 @@ public class T_Attack : MonoBehaviour
 
 
     //overlap의 사거리 내에 있는 적 중에 가장 가까운 적을 찾음
-    private void FindToNearTasrget()
+    private void FindToNearTarget()
     {
         shortest = float.MaxValue; //탐색 할때마다 초기화
-        nearTarget = null;
-        int count = 0;
-      
 
-        Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, viewRange);
+        Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, w_attackrange);
         foreach (Collider2D target in targets)
         {
             if (target.CompareTag("Enemy"))
             {
-                Vector2 targetPos = target.transform.position;
-                Vector2 playerPos = transform.position;
+                Vector2 targetPos = target.transform.position; //위치
+                Vector2 playerPos = transform.position; //위치
+
+
                 Vector2 dir = (targetPos - playerPos).normalized; //방향
-                dir.y = 0;
-                Vector2 myForward = transform.right;
-                float angle = Vector2.Angle(myForward, dir);
+                Vector2 myForward = transform.right; //방향
+                float angle = Vector2.Angle(myForward, dir); //각도
                 //시야 이내에 있음
-                if (angle < viewAngle * 0.5)
+                if (angle <= viewAngle )
                 {
-                    count++;
+                    Debug.Log("적 추가" + playerPos);
                     //플레이어와 적의 거리를 비교
                     float distance = Vector2.Distance(playerPos, targetPos);
                     //가장 짧은걸 비교
@@ -123,7 +140,21 @@ public class T_Attack : MonoBehaviour
                 }
             }
         }
-        isInsideEnemy = count > 0 ? true : false; // 사거리 내에 시야 내에 적이 있는지 없는지 판별
+        if (nearTarget != null )//타겟이 null이 아니고 적의 거리가 공격 사거리보다 작다면
+        {
+            isInsideEnemy = true;
+        }
+
+        if (nearTarget != null)
+        {
+            Debug.Log($"최종 타겟 발견: {nearTarget.name}, 거리: {shortest}, 사거리내 유무: {isInsideEnemy}");
+        }
+        else //적을 찾지 못하면 변수들 초기화
+        {
+            Debug.Log($"최종 타겟 발견: 없음, 거리: {shortest}, 사거리내 유무: {isInsideEnemy}");
+            nearTarget = null;
+            isInsideEnemy = false;
+        }
     }
 
 
@@ -138,6 +169,10 @@ public class T_Attack : MonoBehaviour
 
     }
 
-    
-  
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
+        Gizmos.DrawWireSphere(transform.position, w_attackrange);
+    }
+
 }

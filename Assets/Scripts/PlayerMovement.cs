@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Vector2 moveInput;
+    T_Attack w_Attakc;
 
     private int facingDirection = 1;
 
@@ -33,11 +34,18 @@ public class PlayerMovement : MonoBehaviour
     [Header("Jump")]
     [SerializeField] private float jumpPower = 6f;
 
+    [Header("ChargeJump")]
+    private float currentCharge = 0f;
+    private float maxCharge = 250f;
+    private float minJumpCharge = 1f;
+    private float maxjumpCharge = 15f;
+
     private bool isGrounded;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        w_Attakc = GetComponent<T_Attack>();
 
         defaultGravityScale = rb.gravityScale;
 
@@ -85,11 +93,16 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnJump(InputValue value)
     {
+        currentCharge = 0;
         if (!value.isPressed)
             return;
 
         if (!isGrounded)
             return;
+        //if (value.isPressed) //키를 누르고 있을때, true 일 때
+        //{
+        //    JumpParameter();
+        //}
 
         isGrounded = false;
 
@@ -98,6 +111,14 @@ public class PlayerMovement : MonoBehaviour
             ForceMode2D.Impulse
         );
     }
+
+    //private float JumpParameter()
+    //{
+    //    currentCharge += Time.deltaTime;
+    //    chargeJump = chargeJump > 250 ? 250 : chargeJump;
+
+    //    return chargeJump; 
+    //}
 
     public void OnCrouch(InputValue value)
     {
@@ -181,11 +202,11 @@ public class PlayerMovement : MonoBehaviour
     {
         float yRotation = facingDirection == 1 ? 0f : 180f;
 
-        transform.localRotation = Quaternion.Euler(
-            0f,
-            yRotation,
-            0f
-        );
+            transform.localRotation = Quaternion.Euler(
+                0f,
+                yRotation,
+                0f
+            );
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
