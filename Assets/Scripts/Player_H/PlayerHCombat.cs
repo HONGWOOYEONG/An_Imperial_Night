@@ -16,12 +16,21 @@ public class PlayerHCombat : MonoBehaviour, IDamageReceiver
     private PlayerInput playerInput;
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
-    public const float BASE_FPS = 30;
+    public const float BASE_FPS = 60;
 
     [Header("MeleeORIGINAL")]
     [SerializeField] private float maxPosture = 1000f;
     [SerializeField] private float currentPosture = 0;
     [SerializeField] private int postureGroggy;
+
+    [Header("PositionSwap")]
+    [SerializeField] private float avillityCooldown = 2f;
+    [SerializeField] private int avillityStartupTime = 8;
+    [SerializeField] private int avillityInvincibility = 2;
+    private float nextAvillityTime;
+    [SerializeField] private Rigidbody2D target;
+
+    private Rigidbody2D rb;
 
     [Header("Attack")]
     [SerializeField] private float lightAtkDamage = 100.0f;
@@ -46,10 +55,16 @@ public class PlayerHCombat : MonoBehaviour, IDamageReceiver
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerHealth = GetComponent<PlayerHealth>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     public void ReceiveAttack(DamageInfo damageInfo)
     {
+        if (playerMovement.IsDashing)
+        {
+            Debug.Log("대시무적 회피");
+            return;
+        }
         if (isParrying)
         {
             Debug.Log("패링 성공");
@@ -168,5 +183,28 @@ public class PlayerHCombat : MonoBehaviour, IDamageReceiver
 
         yield return new WaitForSeconds(FrameToSeconds(attack.recoveryTime));
         isAttacking = false;
+    }
+
+    public void OnAbility(InputValue value)
+    {
+        if (!value.isPressed) return;
+        if (Time.time < nextAvillityTime) return;
+
+        StartCoroutine(StartAvillity());
+    }
+
+    IEnumerator StartAvillity()
+    {
+        nextAvillityTime = Time.time + avillityCooldown;
+        yield return new WaitForSeconds(FrameToSeconds(avillityStartupTime));
+
+        Vector2 myPosition = rb.position;
+        Vector2 targetPosition = target.position;
+
+        rb.position = targetPosition;
+        target.position = myPosition;
+
+        rb.linearVelocity = Vector2.zero;
+        target.linearVelocity = Vector2.zero;
     }
 }

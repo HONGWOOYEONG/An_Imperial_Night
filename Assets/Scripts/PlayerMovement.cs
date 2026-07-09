@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine dashCoroutine;
 
     public bool IsCrouching => isCrouching;
+    public bool IsDashing => isDashing;
     public int FacingDirection => facingDirection;
 
     [Header("Jump")]
