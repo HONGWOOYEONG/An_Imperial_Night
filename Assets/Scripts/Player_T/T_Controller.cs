@@ -31,7 +31,6 @@ public class T_Controller : MonoBehaviour
     [SerializeField] float w_attacktime = 0.5f;//후딜레이가 끝나고 난 후 초 수 이내에 공격해야 다음 데미지로 넘어감
     float viewAngle = 90f;//약공 타겟팅 탐색 각도
                           //약공 타겟 유지 시간
-                          //[SerializeField] float w_stayCount = 0.5f;//약공 경직 시간
     [SerializeField] GameObject obj;
     [SerializeField] Transform createPos; //공격이 생성되는 position
     public float[] comboAttack = { 100, 20, 20, 20, 200 };
@@ -62,6 +61,7 @@ public class T_Controller : MonoBehaviour
     }
     void Start()
     {
+        
         driveGauge = dg_max;   
     }
 
