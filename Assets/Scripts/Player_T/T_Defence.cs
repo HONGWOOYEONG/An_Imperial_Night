@@ -21,8 +21,9 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
     [SerializeField] float d_endDelay = 2f; //방어 해제 딜레이
     private Coroutine defenceCoroutine;
     
-    //적이 공격을 하고 플레이어가 방어 중이라면 isdefense를 true로 변경
-    public bool isHoldingDefence = false; //방어를 성공 했나?
+    public bool isDefencing = false; //지금 방어 키를 눌렀나?
+    //isHoldingDefence가 true일 때 적이 공격을 하면 방어 성공
+    private bool isHoldingDefence = false; //방어를 성공 했나?
 
 
     [Header("번아웃")]
@@ -31,12 +32,9 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
-    }
-    void Start()
-    {
         driveGauge = dg_max;
     }
-
+  
     // Update is called once per frame
     void Update()
     {
@@ -72,6 +70,7 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
     {
         if (value.isPressed)
         {
+            isDefencing = true;
             if (!isBunOut && defenceCoroutine == null)
             {
                 Debug.Log("방어 시작");
@@ -80,6 +79,7 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
         }
         else //방어키를 입력을 안하고 있을 때
         {
+            isDefencing = false;
             if (defenceCoroutine != null)
             {
                 StopCoroutine(defenceCoroutine);
@@ -111,7 +111,6 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
         isHoldingDefence = false;
     }
 
-    //적이 공격을 하고 있고 플레이어가 방어를 하고 있다면 드라이브 게이지가 깎임 
      
 
     //일정 시간마다 드라이브 게이지 회복 
@@ -152,7 +151,16 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
         }
     }
 
+    //특공
+    public bool GetIsbunout()
+    {
+        return isBunOut;
+    }
 
+    public float GetCurrentDriveGauge()
+    {
+        return driveGauge;
+    }
 
     private float FrameToSeconds(float frame)
     {
