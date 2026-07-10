@@ -708,17 +708,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Attack
   isRight: 1
+  createPos: {fileID: 1023323938}
   w_attackrange: 20
   w_attacktime: 0.5
-  viewAngle: 90
-  light_obj: {fileID: 4820941970653982987, guid: 1095f524798c29446a7c6708290e280d, type: 3}
-  createPos: {fileID: 1023323938}
+  w_viewAngle: 85
+  w_obj: {fileID: 4820941970653982987, guid: 1095f524798c29446a7c6708290e280d, type: 3}
+  s_frontDelay: 5
+  s_backDelay: 3
+  s_obj: {fileID: 1170419706703306647, guid: 3e1dfc1d571f7cc4e8ae69f0e2702c35, type: 3}
   sp_drvieDecrease: 100
   sp_stayCount: 1
-  frontDelay: 45
-  backDelay: 14
+  sp_frontDelay: 45
+  sp_backDelay: 2
   sp_atkRange: 15
-  rayTime: 3
+  sp_rayTime: 3
 --- !u!114 &425567011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -734,6 +737,7 @@ MonoBehaviour:
   maxTime: 1.25
   currentCharge: 0
   maxCharge: 250
+  fallGravity: 7
   jumpPower: 6
 --- !u!114 &425567012
 MonoBehaviour:

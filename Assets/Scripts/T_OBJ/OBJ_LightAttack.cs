@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class OBJ_LightAttack : MonoBehaviour
 {
-    public float speed = 5f;
+    [SerializeField]float speed = 5f;
+    [SerializeField] float healthDG = 10f;
+
     private float damage;
     private Vector2 moveDirection;
     private GameObject t_player;
@@ -31,22 +33,22 @@ public class OBJ_LightAttack : MonoBehaviour
     {
         this.damage = damage;
         moveDirection = targetDir.normalized;
-        t_player = player;
+        defence = player.GetComponent<T_Defence>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.CompareTag("Enemy"))
+        if (collision.collider.CompareTag("Enemy"))
         {
-            //적 공격 코드 작성해야함
-            if (t_player != null)
-            {
-                defence = GetComponent<T_Defence>();
-            }
-            defence.HealthSomeOfDriveGauge(10); //약공시 얻는 드라이브 게이지
+            //적 공격 코드
 
+            if (defence != null)
+            {
+                defence.HealthSomeOfDriveGauge(healthDG); //약공시 얻는 드라이브 게이지
+            }
             Debug.Log("적 맞음");
             Destroy(gameObject);
         }
     }
+   
 }

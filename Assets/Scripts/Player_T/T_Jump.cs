@@ -3,9 +3,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 public class T_Jump : MonoBehaviour
 {
-
+    private T_Attack attack;
     private PlayerMovement movement;
     private Rigidbody2D rb;
+    public bool isJumping = false;
     [Header("ChargeJump")]
 
     private float currentTime = 0f;
@@ -27,18 +28,22 @@ public class T_Jump : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        attack = GetComponent<T_Attack>();
         movement = GetComponent<PlayerMovement>();
-    //    normalGravity = rb.gravityScale;
+        //normalGravity = rb.gravityScale;
     }
 
     private void Update()
     {
-       // ApplyGravity();
+        if (!attack.sp_isAttaking)
+        {
+            //ApplyGravity();
+        }
     }
 
     //private void ApplyGravity()
     //{
-    //    if(rb.linearVelocityY > 0)
+    //    if (rb.linearVelocityY > 0)
     //    {
     //        rb.gravityScale = normalGravity;
     //    }
@@ -99,19 +104,21 @@ public class T_Jump : MonoBehaviour
     }
 
   
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision) //바닥에 착지 할때
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            isJumping = false;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnCollisionExit2D(Collision2D collision) //뛰어 오르기 시작할 때
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            isJumping = true;
         }
     }
 }
