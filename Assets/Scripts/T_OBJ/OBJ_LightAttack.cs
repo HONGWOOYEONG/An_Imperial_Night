@@ -3,17 +3,16 @@ using UnityEngine;
 
 public class OBJ_LightAttack : MonoBehaviour
 {
-    private float speed = 5f;
+    public float speed = 5f;
     private float damage;
     private Vector2 moveDirection;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private GameObject t_player;
+    private T_Defence defence;
     void Start()
     {
-        Destroy(gameObject, 2f);   
+        Destroy(gameObject, 2f);
     }
 
-    // Update is called once per frame
     void Update()
     {
         OBJ_Move();
@@ -21,22 +20,18 @@ public class OBJ_LightAttack : MonoBehaviour
 
     void OBJ_Move()
     {
-        if(moveDirection != Vector2.zero)
-        {
-            Vector2 myPos = transform.position;
-            moveDirection = (myPos - moveDirection).normalized;
-            transform.Translate(moveDirection * speed * Time.deltaTime,Space.World);
-        }
+        if (moveDirection == Vector2.zero)
+            return;
+
+        transform.position += (Vector3)(moveDirection * speed * Time.deltaTime);
 
     }
 
- 
-
-    public void Initialize(float damge, Vector2 targetDir) //초기화
+    public void Initialize(float damage, Vector2 targetDir, GameObject player) //초기화
     {
-        this.damage = damge;
-        this.moveDirection = targetDir; //생성되는 위치에서 적의 위치까지의 방향
-
+        this.damage = damage;
+        moveDirection = targetDir.normalized;
+        t_player = player;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -44,6 +39,11 @@ public class OBJ_LightAttack : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             //적 공격 코드 작성해야함
+            if (t_player != null)
+            {
+                defence = GetComponent<T_Defence>();
+            }
+            defence.HealthSomeOfDriveGauge(10); //약공시 얻는 드라이브 게이지
 
             Debug.Log("적 맞음");
             Destroy(gameObject);

@@ -31,12 +31,9 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
-    }
-    void Start()
-    {
         driveGauge = dg_max;
     }
-
+  
     // Update is called once per frame
     void Update()
     {
@@ -152,7 +149,16 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
         }
     }
 
+    //Æ¯°ø
+    public bool GetIsbunout()
+    {
+        return isBunOut;
+    }
 
+    public float GetCurrentDriveGauge()
+    {
+        return driveGauge;
+    }
 
     private float FrameToSeconds(float frame)
     {

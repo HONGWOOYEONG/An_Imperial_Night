@@ -412,7 +412,7 @@ Transform:
   m_GameObject: {fileID: 249487179}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.76, y: 2.07, z: 0}
+  m_LocalPosition: {x: 2.08, y: 2.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -481,7 +481,6 @@ GameObject:
   - component: {fileID: 425567010}
   - component: {fileID: 425567009}
   - component: {fileID: 425567011}
-  - component: {fileID: 425567012}
   m_Layer: 0
   m_Name: Player_T
   m_TagString: Untagged
@@ -708,17 +707,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Attack
   isRight: 1
-  w_attackrange: 20
+  w_attackrange: 3
   w_attacktime: 0.5
-  viewAngle: 90
-  light_obj: {fileID: 4820941970653982987, guid: 1095f524798c29446a7c6708290e280d, type: 3}
+  obj: {fileID: 4820941970653982987, guid: 1095f524798c29446a7c6708290e280d, type: 3}
   createPos: {fileID: 1023323938}
   sp_drvieDecrease: 100
   sp_stayCount: 1
-  frontDelay: 45
-  backDelay: 14
-  sp_atkRange: 15
-  rayTime: 3
 --- !u!114 &425567011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -731,23 +725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b50026b2bcde26468e78b252f670bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Jump
-  maxTime: 1.25
-  currentCharge: 0
-  maxCharge: 250
   jumpPower: 6
---- !u!114 &425567012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 425567001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d0548c389e6e2146992a029d0550c6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHP: 1000
 --- !u!1 &460535723
 GameObject:
   m_ObjectHideFlags: 0
