@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 
 //적이 사거리 내에 있으면 타겟팅
 //적을 감지해서 플레이어와 가장 가까운 적을 감지
@@ -28,6 +29,11 @@ public class T_Attack : MonoBehaviour
     T_Jump jump;
     [SerializeField] Transform createPos; //공격이 생성되는 position , 플레이어가 부모로 둔 transform을 넣어줘야함
 
+    [Header("약공 or 강공")]
+    [SerializeField] float triggerTime = 65f; //약공인지 강공인지 확인하는 시간
+    [SerializeField] float triggerTimer = 0f;
+    private bool isInputKey = false;
+   
 
     [Header("약공")]
     [SerializeField] float w_attackrange = 20f;//약공 사거리
@@ -37,9 +43,8 @@ public class T_Attack : MonoBehaviour
     private Collider2D w_nearTarget; //가장 가까운 적을 담기위한 변수
     private float w_shortest = float.MaxValue; //가장 짧은 거리의 적을 찾기위해 거리 계산한 값을 넣는 변수
     private bool w_isInsideEnemy = false; //적이 공격 사거리 내에 있나?
-    private float w_nextAttackTime = 0f; 
-    private float w_nextAttackRange = 0.2f; //콤보 공격 간격(쿨타임)
-    private float w_comboExpireTime = 0.5f;
+    private float w_nextComboRange = 0.5f; //콤보 공격 간격
+    private float w_comboExpireTime = 0f;
 
     [Header("강공")]
     [SerializeField] float s_frontDelay = 5f; //선딜
@@ -64,48 +69,69 @@ public class T_Attack : MonoBehaviour
         defence = GetComponent<T_Defence>();
         jump = GetComponent<T_Jump>();
         rb = GetComponent<Rigidbody2D>();
+
+        triggerTime /= BASE_FPS;
     }
 
-   
+
+    void Update()
+    {
+        if (isInputKey)
+        {
+            triggerTimer += Time.deltaTime; ;
+        }
+    }
+  
     public void OnLightAttack(InputValue value) //약공
     {
-        if (value.isPressed && Time.time >= w_nextAttackTime) //키 입력을 받았을 때 한번 실행이 됨
+        if (value.isPressed) //키 입력을 받았을 때 한번 실행이 됨
         {
-            if (defence.isDefencing)
+            triggerTimer = 0f;
+            isInputKey = true;
+        }
+        else
+        {
+            Debug.Log("현재 triggerTimer = " + triggerTimer);
+            isInputKey = false;
+            if(triggerTimer <= triggerTime)
             {
-                HeavyAttack();
+                LightAttack();
             }
             else
             {
-                w_nearTarget = null;
-                w_isInsideEnemy = false;
-                if (Time.time > w_comboExpireTime) //콤보 시간 내에 키를 누르지 않으면
-                {
-                    combo.currentCount = 0; //초기화
-                }
-
-                FindToNearTarget(); //적 감지
-                int attackIndex = combo.currentCount; //현재 인덱스
-                if (w_isInsideEnemy && w_nearTarget != null) //적이 공격 사거리, 시야 이내에 있다면
-                {
-                    StartCoroutine(StartLightAttack(attackIndex, w_nearTarget.gameObject.transform.position));
-                }
-                else //적이 공격 사거리, 시야 내에 없다면
-                {
-                    //플레이어가 보는 방향이 vector2.right인지 vector2.left인지 계산하고 
-                    //그 위치의 *10한 position을 구해서 인자값으로 넘겨줌
-
-                    Vector2 lookDir = Vector2.right * movement.FacingDirection;
-                    Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //위치
-
-                    StartCoroutine(StartLightAttack(attackIndex, forwardPos));
-                }
-
-                combo.currentCount = (combo.currentCount + 1) % 5; 
-                w_comboExpireTime = Time.time + w_nextAttackRange + w_attacktime; //지금 공격 시점부터 w_attacktime
+                HeavyAttack();
             }
-            w_nextAttackTime = Time.time + w_nextAttackRange; //다음 공격 쿨타임
+           
         }
+    }
+    private void LightAttack()
+    {
+        w_nearTarget = null;
+        w_isInsideEnemy = false;
+        if (Time.time > w_comboExpireTime) //콤보 시간 내에 키를 누르지 않으면
+        {
+            combo.currentCount = 0; //초기화
+        }
+
+        FindToNearTarget(); //적 감지
+        int attackIndex = combo.currentCount; //현재 인덱스
+        if (w_isInsideEnemy && w_nearTarget != null) //적이 공격 사거리, 시야 이내에 있다면
+        {
+            StartCoroutine(StartLightAttack(attackIndex, w_nearTarget.gameObject.transform.position));
+        }
+        else //적이 공격 사거리, 시야 내에 없다면
+        {
+            //플레이어가 보는 방향이 vector2.right인지 vector2.left인지 계산하고 
+            //그 위치의 *10한 position을 구해서 인자값으로 넘겨줌
+
+            Vector2 lookDir = Vector2.right * movement.FacingDirection;
+            Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //위치
+
+            StartCoroutine(StartLightAttack(attackIndex, forwardPos));
+        }
+        Debug.Log("현재 콤보 인덱스 = "+attackIndex);
+        combo.currentCount = (combo.currentCount + 1) % 5;
+        w_comboExpireTime = Time.time + w_nextComboRange; //지금 공격 시점부터 w_attacktime
     }
 
     //투사체 생성과 투사체에게 정보 넘겨주기

@@ -53,12 +53,12 @@
                 },
                 {
                     "name": "LightAttack",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "844ebbc8-e328-4d5b-b3c4-405ba3a58e45",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Ability",
