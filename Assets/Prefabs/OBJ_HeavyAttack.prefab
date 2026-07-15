@@ -105,6 +105,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcc2a885b327d8347be0ed3c7a3798fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OBJ_HeavyAttack
+  speed: 40
+  healthDG: 30
+  destroyTime: 2
 --- !u!61 &7085968772008971686
 BoxCollider2D:
   m_ObjectHideFlags: 0
