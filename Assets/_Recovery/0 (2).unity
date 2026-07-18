@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 249380838}
   m_Layer: 0
   m_Name: Player_H
-  m_TagString: CloseRangeDealer
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -484,7 +484,7 @@ GameObject:
   - component: {fileID: 425567012}
   m_Layer: 0
   m_Name: Player_T
-  m_TagString: RangedDealer
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
