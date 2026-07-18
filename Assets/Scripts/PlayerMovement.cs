@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool IsJumpCharging => isJumpCharging;
     public int FacingDirection => facingDirection;
+    public bool IsDashing => IsDashing;
 
     [Header("Jump")]
     [SerializeField] private float jumpPower = 6f;
