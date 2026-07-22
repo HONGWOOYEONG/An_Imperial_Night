@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 moveInput;
 
+
     private int facingDirection = 1;
 
     [Header("Movement")]
@@ -18,21 +19,24 @@ public class PlayerMovement : MonoBehaviour
     private float nextDashTime;
     private float defaultGravityScale;
 
-    private float crouchSpeed;
+    private float jumpSpeed;
     private float defenceSpeed;
 
     private bool isDefending;
-    private bool isCrouching;
+    private bool isJumpCharging;
     private bool isDashing;
 
     private Coroutine dashCoroutine;
 
-    public bool IsCrouching => isCrouching;
+
+    public bool IsJumpCharging => isJumpCharging;
     public int FacingDirection => facingDirection;
+    public bool IsDashing => IsDashing;
 
     [Header("Jump")]
     [SerializeField] private float jumpPower = 6f;
 
+    
     private bool isGrounded;
 
     private void Awake()
@@ -41,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
         defaultGravityScale = rb.gravityScale;
 
-        crouchSpeed = moveSpeed / 2f;
+        jumpSpeed = moveSpeed / 2f;
         defenceSpeed = moveSpeed / 2f;
     }
 
@@ -67,47 +71,49 @@ public class PlayerMovement : MonoBehaviour
 
         moveInput = Vector2.zero;
 
-        isCrouching = false;
+        isJumpCharging = false;
         isDefending = false;
         isDashing = false;
 
         rb.gravityScale = defaultGravityScale;
 
-        // °øÁß¿¡¼­ ÃÊ±âÈ­µÇ´õ¶óµµ YÃà ³«ÇÏ´Â Áß·Â¿¡ ¸Ã±è
+        // ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ç´ï¿½ï¿½ï¿½ Yï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ß·Â¿ï¿½ ï¿½Ã±ï¿½
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
-        // ´ë½Ã µµÁß Ãë¼ÒµÇ¾îµµ ÄðÅ¸ÀÓ Àû¿ë
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ÒµÇ¾îµµ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (wasDashing)
         {
             nextDashTime = Time.time + dashCooldown;
         }
     }
 
-    public void OnJump(InputValue value)
-    {
-        if (!value.isPressed)
-            return;
+    //public void OnJump(InputValue value)
+    //{
+    //    if (!value.isPressed)
+    //        return;
 
-        if (!isGrounded)
-            return;
+    //    if (!isGrounded)
+    //        return;
+      
 
-        isGrounded = false;
+    //    isGrounded = false;
 
-        rb.AddForce(
-            Vector2.up * jumpPower,
-            ForceMode2D.Impulse
-        );
-    }
+    //    rb.AddForce(
+    //        Vector2.up * jumpPower,
+    //        ForceMode2D.Impulse
+    //    );
+    //}
 
-    public void OnCrouch(InputValue value)
-    {
-        isCrouching = value.isPressed;
-        Debug.Log($"Crouch: {isCrouching}");
-    }
+
 
     public void SetDefending(bool defending)
     {
         isDefending = defending;
+    }
+
+    public void SetJumping(bool jumping)
+    {
+        isJumpCharging = jumping;
     }
 
     public void OnDash(InputValue value)
@@ -142,16 +148,16 @@ public class PlayerMovement : MonoBehaviour
         dashCoroutine = null;
     }
 
-    private void Move()
+    public void Move()
     {
         if (isDashing)
             return;
 
         float currentSpeed = moveSpeed;
 
-        if (isCrouching)
+        if (isJumpCharging)
         {
-            currentSpeed = crouchSpeed;
+            currentSpeed = jumpSpeed;
         }
         else if (isDefending)
         {
@@ -181,11 +187,11 @@ public class PlayerMovement : MonoBehaviour
     {
         float yRotation = facingDirection == 1 ? 0f : 180f;
 
-        transform.localRotation = Quaternion.Euler(
-            0f,
-            yRotation,
-            0f
-        );
+            transform.localRotation = Quaternion.Euler(
+                0f,
+                yRotation,
+                0f
+            );
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

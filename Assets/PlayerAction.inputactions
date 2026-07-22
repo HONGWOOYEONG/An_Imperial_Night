@@ -17,12 +17,12 @@
                 },
                 {
                     "name": "Jump",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "d87024ba-47d1-446d-97f1-9a75f4d9f29e",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Dash",
@@ -53,12 +53,12 @@
                 },
                 {
                     "name": "LightAttack",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "844ebbc8-e328-4d5b-b3c4-405ba3a58e45",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Ability",

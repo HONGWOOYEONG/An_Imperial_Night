@@ -31,7 +31,6 @@ public class T_Controller : MonoBehaviour
     [SerializeField] float w_attacktime = 0.5f;//후딜레이가 끝나고 난 후 초 수 이내에 공격해야 다음 데미지로 넘어감
     float viewAngle = 90f;//약공 타겟팅 탐색 각도
                           //약공 타겟 유지 시간
-                          //[SerializeField] float w_stayCount = 0.5f;//약공 경직 시간
     [SerializeField] GameObject obj;
     [SerializeField] Transform createPos; //공격이 생성되는 position
     public float[] comboAttack = { 100, 20, 20, 20, 200 };
@@ -62,6 +61,7 @@ public class T_Controller : MonoBehaviour
     }
     void Start()
     {
+        
         driveGauge = dg_max;   
     }
 
@@ -131,13 +131,14 @@ public class T_Controller : MonoBehaviour
                 Vector2 playerPos = transform.position;
                 Vector2 dir = (targetPos -  playerPos).normalized;
                 dir.y = 0;
-                Vector2 myForward = transform.forward;
+                Vector2 myForward = Vector2.right * movement.FacingDirection; //transform.forward; vector2에서는 forward 안씀
                 float angle = Vector3.Angle(myForward, dir);
                 //시야 이내에 있음
                 if(angle < viewAngle * 0.5)
                 {
                     //플레이어와 적의 거리를 비교
-                    float distance = Vector2.Distance(myForward, dir);
+                    float distance = Vector2.Distance(transform.position, target.transform.position);
+                    //float distance = Vector2.Distance(myForward, dir); 지금은 이동방향이랑 방향을 거리로 잡고 있음, 서로의 위치를 잡아야지
                     //가장 짧은걸 비교
                     if (distance < shortest) 
                     {
