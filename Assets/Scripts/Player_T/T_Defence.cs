@@ -9,8 +9,8 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
     public const float BASE_FPS = 60f;
 
     [Header("드라이브 게이지")]
-    [SerializeField] float driveGauge = 0f;
-    [SerializeField] float dg_max = 1000f; //드라이브 게이지 최대치
+    [SerializeField] public float driveGauge = 0f;
+    [SerializeField] public float dg_max = 1000f; //드라이브 게이지 최대치
     [SerializeField] float dg_health = 50f; //드라이브 초당 회복량
     [SerializeField] float dg_delay = 3f; //드라이브 회복 시작 지연시간
     private Coroutine regenCoroutine;
@@ -21,6 +21,7 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
     [SerializeField] float d_endDelay = 2f; //방어 해제 딜레이
     private Coroutine defenceCoroutine;
     
+
     public bool isDefencing = false; //지금 방어 키를 눌렀나?
     //isHoldingDefence가 true일 때 적이 공격을 하면 방어 성공
     private bool isHoldingDefence = false; //방어를 성공 했나?
@@ -57,13 +58,7 @@ public class T_Defence : MonoBehaviour, IDamageReceiver
             return;
         }
 
-        playerHealth.DamagedFromAtk(
-            damageInfo.damage,
-            damageInfo.damageDir,
-            damageInfo.knockbackPower,
-            damageInfo.stunTime,
-            damageInfo.damageType.ToString()
-        );
+        playerHealth.DamagedFromAtk(damageInfo);
     }
 
     public void OnDefence(InputValue value) //방어키 입력

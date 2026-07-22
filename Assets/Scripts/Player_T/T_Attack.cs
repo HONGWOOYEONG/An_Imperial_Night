@@ -9,7 +9,7 @@ using System.Data.SqlTypes;
 //적이 캐릭터의 시야 이내에 있다면 공격 why? 캐릭터가 위에 있을 수 도 있기 때문에
 //사거리 내에 적이 없다면 캐릭터의 바라보는 앞 부분으로 공격
 
-public class Combo
+public class RangeCombo
 {
     public float lastClickedTime; //마지막으로 클릭을 누른 시간
     public int currentCount = 0; //현재 배열 인덱스
@@ -61,10 +61,10 @@ public class T_Attack : MonoBehaviour
     [SerializeField]private float sp_rayTime = 3f; //특수 레이저 지속 시간
     public bool sp_isAttaking = false; //특공 공격 중일 때 플레이어가 움직이지 못하게 체크
     private bool sp_hasAttacked = false; //레이저 시간 내에 적이 한번만 맞게 하기위함
-    Combo combo;
+    RangeCombo combo;
     void Start()
     {
-        combo = new Combo();
+        combo = new RangeCombo();
         movement = GetComponent<PlayerMovement>();
         defence = GetComponent<T_Defence>();
         jump = GetComponent<T_Jump>();

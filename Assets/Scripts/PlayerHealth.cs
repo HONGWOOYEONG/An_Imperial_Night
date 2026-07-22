@@ -14,6 +14,8 @@ public class PlayerHealth : MonoBehaviour
 
     private bool isDead = false;
     public bool IsDead => isDead;
+    public float CurrentHP => currentHP;
+    public float MaxHP => maxHP;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -29,11 +31,11 @@ public class PlayerHealth : MonoBehaviour
         playerInput.DeactivateInput(); //입력 무시
     }
 
-    public void DamagedFromAtk(float damage, Vector2 damageDir, float damagedKnockbackPower, float damagedStun, string damageType)
+    public void DamagedFromAtk(DamageInfo damageInfo)
     {
         if (isDead) return;
 
-        currentHP -= damage;
+        currentHP -= damageInfo.damage;
         if (currentHP <= 0)
         {
             isDead = true;
@@ -41,10 +43,10 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        rb.AddForce(damageDir*damagedKnockbackPower, ForceMode2D.Impulse);
+        rb.AddForce(damageInfo.damageDir*damageInfo.knockbackPower, ForceMode2D.Impulse);
         
         if (stunCoroutine != null) StopCoroutine(stunCoroutine);
-        stunCoroutine = StartCoroutine(DamageStun(damagedStun));
+        stunCoroutine = StartCoroutine(DamageStun(damageInfo.stunTime));
     } // 적 FSM을 작성할 때, 호출하는 함수
 
     IEnumerator DamageStun(float damagedStun)
