@@ -4,18 +4,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 
-//ÀûÀÌ »ç°Å¸® ³»¿¡ ÀÖÀ¸¸é Å¸°ÙÆÃ
-//ÀûÀ» °¨ÁöÇØ¼­ ÇÃ·¹ÀÌ¾î¿Í °¡Àå °¡±î¿î ÀûÀ» °¨Áö
-//ÀûÀÌ Ä³¸¯ÅÍÀÇ ½Ã¾ß ÀÌ³»¿¡ ÀÖ´Ù¸é °ø°Ý why? Ä³¸¯ÅÍ°¡ À§¿¡ ÀÖÀ» ¼ö µµ ÀÖ±â ¶§¹®¿¡
-//»ç°Å¸® ³»¿¡ ÀûÀÌ ¾ø´Ù¸é Ä³¸¯ÅÍÀÇ ¹Ù¶óº¸´Â ¾Õ ºÎºÐÀ¸·Î °ø°Ý
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+//ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¾ï¿½ ï¿½Ì³ï¿½ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ why? Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¶óº¸´ï¿½ ï¿½ï¿½ ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 public class RangeCombo
 {
-    public float lastClickedTime; //¸¶Áö¸·À¸·Î Å¬¸¯À» ´©¸¥ ½Ã°£
-    public int currentCount = 0; //ÇöÀç ¹è¿­ ÀÎµ¦½º
-    public float[] damage = { 100, 20, 20, 20, 200 }; //µ¥¹ÌÁö ¹è¿­
-    public float[] frontDelay = { 15, 4, 4, 4, 15 }; //¼±µô·¹ÀÌ
-    public float backDelay = 5f; //ÈÄµô·¹ÀÌ
+    public float lastClickedTime; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    public int currentCount = 0; //ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ ï¿½Îµï¿½ï¿½ï¿½
+    public float[] damage = { 100, 20, 20, 20, 200 }; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­
+    public float[] frontDelay = { 15, 4, 4, 4, 15 }; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public float backDelay = 5f; //ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 
@@ -27,40 +27,40 @@ public class T_Attack : MonoBehaviour
     PlayerMovement movement;
     T_Defence defence;
     T_Jump jump;
-    [SerializeField] Transform createPos; //°ø°ÝÀÌ »ý¼ºµÇ´Â position , ÇÃ·¹ÀÌ¾î°¡ ºÎ¸ð·Î µÐ transformÀ» ³Ö¾îÁà¾ßÇÔ
+    [SerializeField] Transform createPos; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ position , ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Î¸ï¿½ï¿½ ï¿½ï¿½ transformï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    [Header("¾à°ø or °­°ø")]
-    [SerializeField] float triggerTime = 65f; //¾à°øÀÎÁö °­°øÀÎÁö È®ÀÎÇÏ´Â ½Ã°£
+    [Header("ï¿½ï¿½ï¿½ or ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] float triggerTime = 65f; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã°ï¿½
     [SerializeField] float triggerTimer = 0f;
     private bool isInputKey = false;
    
 
-    [Header("¾à°ø")]
-    [SerializeField] float w_attackrange = 20f;//¾à°ø »ç°Å¸®
-    [SerializeField] float w_attacktime = 0.5f;//ÈÄµô·¹ÀÌ°¡ ³¡³ª°í ³­ ÈÄ ÃÊ ¼ö ÀÌ³»¿¡ °ø°ÝÇØ¾ß ´ÙÀ½ µ¥¹ÌÁö·Î ³Ñ¾î°¨
-    [SerializeField] float w_viewAngle = 85f;//¾à°ø Å¸°ÙÆÃ Å½»ö °¢µµ
-    [SerializeField] GameObject w_obj; //¾à°ø ¿ÀºêÁ¦ 
-    private Collider2D w_nearTarget; //°¡Àå °¡±î¿î ÀûÀ» ´ã±âÀ§ÇÑ º¯¼ö
-    private float w_shortest = float.MaxValue; //°¡Àå ÂªÀº °Å¸®ÀÇ ÀûÀ» Ã£±âÀ§ÇØ °Å¸® °è»êÇÑ °ªÀ» ³Ö´Â º¯¼ö
-    private bool w_isInsideEnemy = false; //ÀûÀÌ °ø°Ý »ç°Å¸® ³»¿¡ ÀÖ³ª?
-    private float w_nextComboRange = 0.5f; //ÄÞº¸ °ø°Ý °£°Ý
+    [Header("ï¿½ï¿½ï¿½")]
+    [SerializeField] float w_attackrange = 20f;//ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½
+    [SerializeField] float w_attacktime = 0.5f;//ï¿½Äµï¿½ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¨
+    [SerializeField] float w_viewAngle = 85f;//ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ Å½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] GameObject w_obj; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    private Collider2D w_nearTarget; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private float w_shortest = float.MaxValue; //ï¿½ï¿½ï¿½ï¿½ Âªï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private bool w_isInsideEnemy = false; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö³ï¿½?
+    private float w_nextComboRange = 0.5f; //ï¿½Þºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private float w_comboExpireTime = 0f;
 
-    [Header("°­°ø")]
-    [SerializeField] float s_frontDelay = 5f; //¼±µô
-    [SerializeField] float s_backDelay = 3f; //ÈÄµô 
-    [SerializeField] GameObject s_obj; //°­°ø ¿ÀºêÁ¦
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
+    [SerializeField] float s_frontDelay = 5f; //ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] float s_backDelay = 3f; //ï¿½Äµï¿½ 
+    [SerializeField] GameObject s_obj; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    [Header("Æ¯°ø")]
-    [SerializeField] float sp_drvieDecrease = 100f; //Æ¯°ø µå¶óÀÌºê °¨¼Ò
-    [SerializeField] float sp_stayCount = 1f; //Æ¯°ø °æÁ÷ ½Ã°£
-    [SerializeField] float sp_frontDelay = 45f; //¼±µô
-    [SerializeField] float sp_backDelay = 2f; //ÈÄµô
-    [SerializeField] float sp_atkRange = 5f; //Æ¯°ø »ç°Å¸®
+    [Header("Æ¯ï¿½ï¿½")]
+    [SerializeField] float sp_drvieDecrease = 100f; //Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] float sp_stayCount = 1f; //Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    [SerializeField] float sp_frontDelay = 45f; //ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] float sp_backDelay = 2f; //ï¿½Äµï¿½
+    [SerializeField] float sp_atkRange = 5f; //Æ¯ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½
     private float sp_timer = 0f;
-    [SerializeField]private float sp_rayTime = 3f; //Æ¯¼ö ·¹ÀÌÀú Áö¼Ó ½Ã°£
-    public bool sp_isAttaking = false; //Æ¯°ø °ø°Ý ÁßÀÏ ¶§ ÇÃ·¹ÀÌ¾î°¡ ¿òÁ÷ÀÌÁö ¸øÇÏ°Ô Ã¼Å©
-    private bool sp_hasAttacked = false; //·¹ÀÌÀú ½Ã°£ ³»¿¡ ÀûÀÌ ÇÑ¹ø¸¸ ¸Â°Ô ÇÏ±âÀ§ÇÔ
+    [SerializeField]private float sp_rayTime = 3f; //Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    public bool sp_isAttaking = false; //Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ Ã¼Å©
+    private bool sp_hasAttacked = false; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½Â°ï¿½ ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½
     RangeCombo combo;
     void Start()
     {
@@ -82,47 +82,16 @@ public class T_Attack : MonoBehaviour
         }
     }
   
-    public void OnLightAttack(InputValue value) //¾à°ø
+    public void OnLightAttack(InputValue value) //ï¿½ï¿½ï¿½
     {
-        if (value.isPressed) //Å° ÀÔ·ÂÀ» ¹Þ¾ÒÀ» ¶§ ÇÑ¹ø ½ÇÇàÀÌ µÊ
+        if (value.isPressed) //Å° ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ñ¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         {
-<<<<<<< Updated upstream
             triggerTimer = 0f;
             isInputKey = true;
-=======
-            nearTarget = null;
-            isInsideEnemy = false;
-            if (Time.time > comboExpireTime) //ÄÞº¸ ½Ã°£ ³»¿¡ Å°¸¦ ´©¸£Áö ¾ÊÀ¸¸é
-            {
-                combo.currentCount = 0; //ÃÊ±âÈ­
-            }
-
-            FindToNearTarget(); //Àû °¨Áö
-            int attackIndex = combo.currentCount; //ÇöÀç ÀÎµ¦½º
-            if (isInsideEnemy && nearTarget != null) //ÀûÀÌ °ø°Ý »ç°Å¸®, ½Ã¾ß ÀÌ³»¿¡ ÀÖ´Ù¸é
-            {
-                StartCoroutine(StartLightAttack(attackIndex, nearTarget.gameObject.transform.position));
-            }
-            else //ÀûÀÌ °ø°Ý »ç°Å¸®, ½Ã¾ß ³»¿¡ ¾ø´Ù¸é
-            {
-                //ÇÃ·¹ÀÌ¾î°¡ º¸´Â ¹æÇâÀÌ vector2.rightÀÎÁö vector2.leftÀÎÁö °è»êÇÏ°í 
-                //±× À§Ä¡ÀÇ *10ÇÑ positionÀ» ±¸ÇØ¼­ ÀÎÀÚ°ªÀ¸·Î ³Ñ°ÜÁÜ
-
-
-                Vector2 lookDir = Vector2.right * movement.FacingDirection;
-                Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //À§Ä¡
-                   
-                StartCoroutine(StartLightAttack(attackIndex, forwardPos));
-            }
-
-            combo.currentCount = (combo.currentCount + 1) % 5;
-            nextAttackTime = Time.time + nextAttackRange; //´ÙÀ½ °ø°Ý ÄðÅ¸ÀÓ
-            comboExpireTime = Time.time + nextAttackRange + w_attacktime; //Áö±Ý °ø°Ý ½ÃÁ¡ºÎÅÍ w_attacktime
->>>>>>> Stashed changes
         }
         else
         {
-            Debug.Log("ÇöÀç triggerTimer = " + triggerTimer);
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ triggerTimer = " + triggerTimer);
             isInputKey = false;
             if(triggerTimer <= triggerTime)
             {
@@ -139,75 +108,75 @@ public class T_Attack : MonoBehaviour
     {
         w_nearTarget = null;
         w_isInsideEnemy = false;
-        if (Time.time > w_comboExpireTime) //ÄÞº¸ ½Ã°£ ³»¿¡ Å°¸¦ ´©¸£Áö ¾ÊÀ¸¸é
+        if (Time.time > w_comboExpireTime) //ï¿½Þºï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
-            combo.currentCount = 0; //ÃÊ±âÈ­
+            combo.currentCount = 0; //ï¿½Ê±ï¿½È­
         }
 
-        FindToNearTarget(); //Àû °¨Áö
-        int attackIndex = combo.currentCount; //ÇöÀç ÀÎµ¦½º
-        if (w_isInsideEnemy && w_nearTarget != null) //ÀûÀÌ °ø°Ý »ç°Å¸®, ½Ã¾ß ÀÌ³»¿¡ ÀÖ´Ù¸é
+        FindToNearTarget(); //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        int attackIndex = combo.currentCount; //ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½
+        if (w_isInsideEnemy && w_nearTarget != null) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½, ï¿½Ã¾ï¿½ ï¿½Ì³ï¿½ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½
         {
             StartCoroutine(StartLightAttack(attackIndex, w_nearTarget.gameObject.transform.position));
         }
-        else //ÀûÀÌ °ø°Ý »ç°Å¸®, ½Ã¾ß ³»¿¡ ¾ø´Ù¸é
+        else //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½, ï¿½Ã¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½
         {
-            //ÇÃ·¹ÀÌ¾î°¡ º¸´Â ¹æÇâÀÌ vector2.rightÀÎÁö vector2.leftÀÎÁö °è»êÇÏ°í 
-            //±× À§Ä¡ÀÇ *10ÇÑ positionÀ» ±¸ÇØ¼­ ÀÎÀÚ°ªÀ¸·Î ³Ñ°ÜÁÜ
+            //ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ vector2.rightï¿½ï¿½ï¿½ï¿½ vector2.leftï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ 
+            //ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ *10ï¿½ï¿½ positionï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½
 
             Vector2 lookDir = Vector2.right * movement.FacingDirection;
-            Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //À§Ä¡
+            Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //ï¿½ï¿½Ä¡
 
             StartCoroutine(StartLightAttack(attackIndex, forwardPos));
         }
-        Debug.Log("ÇöÀç ÄÞº¸ ÀÎµ¦½º = "+attackIndex);
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½Þºï¿½ ï¿½Îµï¿½ï¿½ï¿½ = "+attackIndex);
         combo.currentCount = (combo.currentCount + 1) % 5;
-        w_comboExpireTime = Time.time + w_nextComboRange; //Áö±Ý °ø°Ý ½ÃÁ¡ºÎÅÍ w_attacktime
+        w_comboExpireTime = Time.time + w_nextComboRange; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ w_attacktime
     }
 
-    //Åõ»çÃ¼ »ý¼º°ú Åõ»çÃ¼¿¡°Ô Á¤º¸ ³Ñ°ÜÁÖ±â
-    private IEnumerator StartLightAttack(int index ,Vector2 targetPos) // targetPos = À§Ä¡ °ªÀ» ³Ñ°ÜÁà¾ßÇÔ
+    //ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½Ö±ï¿½
+    private IEnumerator StartLightAttack(int index ,Vector2 targetPos) // targetPos = ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
-        yield return new WaitForSeconds(combo.frontDelay[index] /BASE_FPS); //¼± µô·¹ÀÌ
+        yield return new WaitForSeconds(combo.frontDelay[index] /BASE_FPS); //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-        Vector2 newPos = createPos.position; //¾à°ø°ÝÀÌ »ý¼ºµÇ´Â À§Ä¡
-        GameObject obj_lightatk = Instantiate(w_obj, newPos, Quaternion.identity); //Åõ»çÃ¼ »ý¼º
-        OBJ_LightAttack atkInit = obj_lightatk.GetComponent<OBJ_LightAttack>(); //Åõ»çÃ¼ÀÇ ½ºÅ©¸³Æ® °¡Á®¿À±â
+        Vector2 newPos = createPos.position; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½Ä¡
+        GameObject obj_lightatk = Instantiate(w_obj, newPos, Quaternion.identity); //ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
+        OBJ_LightAttack atkInit = obj_lightatk.GetComponent<OBJ_LightAttack>(); //ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (atkInit != null)
         {
-            //ÀûÀÇ À§Ä¡¸¦ °¡Á®¿Í¼­ ³¯¾Æ°¡¾ßÇÒ ¹æÇâÀ» ¼³Á¤ÇØÁÜ
-            Vector2 Pos = (targetPos - newPos).normalized; //¹æÇâ
-            atkInit.Initialize(combo.damage[index], Pos, this.gameObject); //Åõ»çÃ¼ °ø°Ý, °¡¾ßÇÒ ¹æÇâ(À§Ä¡) ÀúÀå
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            Vector2 Pos = (targetPos - newPos).normalized; //ï¿½ï¿½ï¿½ï¿½
+            atkInit.Initialize(combo.damage[index], Pos, this.gameObject); //ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Ä¡) ï¿½ï¿½ï¿½ï¿½
         }
 
-        yield return new WaitForSeconds(combo.backDelay/BASE_FPS); //ÈÄ µô·¹ÀÌ
+        yield return new WaitForSeconds(combo.backDelay/BASE_FPS); //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
 
-    //overlapÀÇ »ç°Å¸® ³»¿¡ ÀÖ´Â Àû Áß¿¡ °¡Àå °¡±î¿î ÀûÀ» Ã£À½
+    //overlapï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
     private void FindToNearTarget()
     {
-        w_shortest = float.MaxValue; //Å½»ö ÇÒ¶§¸¶´Ù ÃÊ±âÈ­
+        w_shortest = float.MaxValue; //Å½ï¿½ï¿½ ï¿½Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 
         Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, w_attackrange);
         foreach (Collider2D target in targets)
         {
             if (target.CompareTag("Enemy"))
             {
-                Vector2 targetPos = target.transform.position; //À§Ä¡
-                Vector2 playerPos = transform.position; //À§Ä¡
+                Vector2 targetPos = target.transform.position; //ï¿½ï¿½Ä¡
+                Vector2 playerPos = transform.position; //ï¿½ï¿½Ä¡
 
 
-                Vector2 dir = (targetPos - playerPos).normalized; //¹æÇâ
-                Vector2 myForward = transform.right; //¹æÇâ
-                float angle = Vector2.Angle(myForward, dir); //°¢µµ
-                //½Ã¾ß ÀÌ³»¿¡ ÀÖÀ½
+                Vector2 dir = (targetPos - playerPos).normalized; //ï¿½ï¿½ï¿½ï¿½
+                Vector2 myForward = transform.right; //ï¿½ï¿½ï¿½ï¿½
+                float angle = Vector2.Angle(myForward, dir); //ï¿½ï¿½ï¿½ï¿½
+                //ï¿½Ã¾ï¿½ ï¿½Ì³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 if (angle <= w_viewAngle )
                 {
-                    Debug.Log("Àû Ãß°¡" + playerPos);
-                    //ÇÃ·¹ÀÌ¾î¿Í ÀûÀÇ °Å¸®¸¦ ºñ±³
+                    Debug.Log("ï¿½ï¿½ ï¿½ß°ï¿½" + playerPos);
+                    //ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½
                     float distance = Vector2.Distance(playerPos, targetPos);
-                    //°¡Àå ÂªÀº°É ºñ±³
+                    //ï¿½ï¿½ï¿½ï¿½ Âªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
                     if (distance < w_shortest)
                     {
                         w_shortest = distance;
@@ -216,18 +185,18 @@ public class T_Attack : MonoBehaviour
                 }
             }
         }
-        if (w_nearTarget != null )//Å¸°ÙÀÌ nullÀÌ ¾Æ´Ï°í ÀûÀÇ °Å¸®°¡ °ø°Ý »ç°Å¸®º¸´Ù ÀÛ´Ù¸é
+        if (w_nearTarget != null )//Å¸ï¿½ï¿½ï¿½ï¿½ nullï¿½ï¿½ ï¿½Æ´Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Û´Ù¸ï¿½
         {
             w_isInsideEnemy = true;
         }
 
         if (w_nearTarget != null)
         {
-            Debug.Log($"ÃÖÁ¾ Å¸°Ù ¹ß°ß: {w_nearTarget.name}, °Å¸®: {w_shortest}, »ç°Å¸®³» À¯¹«: {w_isInsideEnemy}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ß°ï¿½: {w_nearTarget.name}, ï¿½Å¸ï¿½: {w_shortest}, ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {w_isInsideEnemy}");
         }
-        else //ÀûÀ» Ã£Áö ¸øÇÏ¸é º¯¼öµé ÃÊ±âÈ­
+        else //ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         {
-            Debug.Log($"ÃÖÁ¾ Å¸°Ù ¹ß°ß: ¾øÀ½, °Å¸®: {w_shortest}, »ç°Å¸®³» À¯¹«: {w_isInsideEnemy}");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ß°ï¿½: ï¿½ï¿½ï¿½ï¿½, ï¿½Å¸ï¿½: {w_shortest}, ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {w_isInsideEnemy}");
             w_nearTarget = null;
             w_isInsideEnemy = false;
         }
@@ -235,7 +204,7 @@ public class T_Attack : MonoBehaviour
 
 
 
-    public void HeavyAttack()//°­°ø
+    public void HeavyAttack()//ï¿½ï¿½ï¿½ï¿½
     {
               // knockback(3f);
             StartCoroutine(StrongAttack());        
@@ -251,14 +220,14 @@ public class T_Attack : MonoBehaviour
         yield return new WaitForSeconds(s_backDelay/BASE_FPS);
     }
 
-    public void OnAbility(InputValue value) //Æ¯°ø
+    public void OnAbility(InputValue value) //Æ¯ï¿½ï¿½
     {
         bool isbunout = defence.GetIsbunout();
         float currentDriveGauge = defence.GetCurrentDriveGauge();
         if (value.isPressed && !isbunout && currentDriveGauge > sp_drvieDecrease && !sp_isAttaking)
         {
-            Debug.Log("Æ¯°ø ½ÃÀÛ");
-            defence.DecreaseDriveGauge(sp_drvieDecrease); //µå¶óÀÌºê °ÔÀÌÁö °¨¼Ò
+            Debug.Log("Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
+            defence.DecreaseDriveGauge(sp_drvieDecrease); //ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             StartCoroutine(SpecialAttack());
         }
     }
@@ -267,40 +236,40 @@ public class T_Attack : MonoBehaviour
     {
         sp_isAttaking = true;
         float normalrgavity = rb.gravityScale;
-        if (movement != null) //½ºÅ©¸³Æ®¸¦ Àá±ñ ²¨ÁÜ
+        if (movement != null) //ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             movement.enabled = false;
         }
-        rb.linearVelocity = Vector2.zero; //ÀÌµ¿ ¸øÇÏ°Ô ÇÔ
-        if (jump.isJumping) //Á¡ÇÁ ÁßÀÌ¶ó¸é
+        rb.linearVelocity = Vector2.zero; //ï¿½Ìµï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½
+        if (jump.isJumping) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½
         {
             rb.gravityScale = 0f;
         }
 
         Vector2 crtPos = (createPos.position);
-        yield return new WaitForSeconds(sp_frontDelay / BASE_FPS); //¼± µô·¹ÀÌ µ¿¾È¿¡´Â ¾Ö´Ï¸ÞÀÌ¼Ç ¾Æ¹«°Íµµ ¾È³ÖÀ½
+        yield return new WaitForSeconds(sp_frontDelay / BASE_FPS); //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½È³ï¿½ï¿½ï¿½
 
         sp_timer = 0f;
-        float keepRayTime = sp_rayTime / BASE_FPS; //±¤¼± À¯Áö ½Ã°£
+        float keepRayTime = sp_rayTime / BASE_FPS; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
          while(sp_timer < keepRayTime) 
         {
-            //·¹ÀÌÀú°¡ ¹ß»çµÇ´Â ½Ã°£ ¾È¿¡ ÀûÀ» ÇÑ¹ø¸¸ °ø°ÝÇÏ±â À§ÇØ¼­
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½Ç´ï¿½ ï¿½Ã°ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½
                sp_timer += Time.deltaTime;
-                RaycastHit2D hit = Physics2D.Raycast(crtPos, Vector2.right, sp_atkRange); //crtPos¿¡¼­ Vector2.right¹æÇâ, sp_atkRange»ç°Å¸®
-                Debug.DrawRay(crtPos, Vector2.right * sp_atkRange,Color.yellow,keepRayTime ); //·¹ÀÌ
+                RaycastHit2D hit = Physics2D.Raycast(crtPos, Vector2.right, sp_atkRange); //crtPosï¿½ï¿½ï¿½ï¿½ Vector2.rightï¿½ï¿½ï¿½ï¿½, sp_atkRangeï¿½ï¿½Å¸ï¿½
+                Debug.DrawRay(crtPos, Vector2.right * sp_atkRange,Color.yellow,keepRayTime ); //ï¿½ï¿½ï¿½ï¿½
                 if (hit.collider != null)
                 {
-                    if (hit.collider.CompareTag("Enemy") && !sp_hasAttacked) //¸ÂÀº ¿ÀºêÁ§Æ®°¡ ÀûÀÌ°í °ø°ÝÀ» ¾ÈÇß´Ù¸é
+                    if (hit.collider.CompareTag("Enemy") && !sp_hasAttacked) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ß´Ù¸ï¿½
                     {
                         Debug.Log(hit.collider.name);
-                        //°ø°Ý
+                        //ï¿½ï¿½ï¿½ï¿½
                        sp_hasAttacked = true;
                     }
                 }
                 yield return null;
             }
         sp_hasAttacked = false;
-        yield return new WaitForSeconds(sp_backDelay/BASE_FPS); //ÈÄ µô
+        yield return new WaitForSeconds(sp_backDelay/BASE_FPS); //ï¿½ï¿½ ï¿½ï¿½
         if (movement != null) 
         {
             movement.enabled = true;
@@ -310,15 +279,15 @@ public class T_Attack : MonoBehaviour
         
     }
     
-    private void knockback(float amount) //³Ë¹é
+    private void knockback(float amount) //ï¿½Ë¹ï¿½
     {
-        //¿À¸¥ÂÊÀ» º¸°í ÀÖÀ¸¸é
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (movement.FacingDirection==1)
         {
 
             rb.AddForce(Vector2.left * amount, ForceMode2D.Impulse);
         }
-        else  //¿ÞÂÊÀ» º¸°í ÀÖÀ¸¸é 
+        else  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
         {
             rb.AddForce(Vector2.right * amount, ForceMode2D.Impulse);
         }
