@@ -29,11 +29,18 @@ public class OBJ_LightAttack : MonoBehaviour
 
     }
 
+<<<<<<< Updated upstream
     public void Initialize(float damage, Vector2 targetDir, GameObject player) //초기화
     {
         this.damage = damage;
         moveDirection = targetDir.normalized;
         defence = player.GetComponent<T_Defence>();
+=======
+    public void Initialize(float damage, Vector2 targetDir) //초기화
+    {
+        this.damage = damage;
+        moveDirection = targetDir.normalized;
+>>>>>>> Stashed changes
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -86,8 +86,39 @@ public class T_Attack : MonoBehaviour
     {
         if (value.isPressed) //키 입력을 받았을 때 한번 실행이 됨
         {
+<<<<<<< Updated upstream
             triggerTimer = 0f;
             isInputKey = true;
+=======
+            nearTarget = null;
+            isInsideEnemy = false;
+            if (Time.time > comboExpireTime) //콤보 시간 내에 키를 누르지 않으면
+            {
+                combo.currentCount = 0; //초기화
+            }
+
+            FindToNearTarget(); //적 감지
+            int attackIndex = combo.currentCount; //현재 인덱스
+            if (isInsideEnemy && nearTarget != null) //적이 공격 사거리, 시야 이내에 있다면
+            {
+                StartCoroutine(StartLightAttack(attackIndex, nearTarget.gameObject.transform.position));
+            }
+            else //적이 공격 사거리, 시야 내에 없다면
+            {
+                //플레이어가 보는 방향이 vector2.right인지 vector2.left인지 계산하고 
+                //그 위치의 *10한 position을 구해서 인자값으로 넘겨줌
+
+
+                Vector2 lookDir = Vector2.right * movement.FacingDirection;
+                Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //위치
+                   
+                StartCoroutine(StartLightAttack(attackIndex, forwardPos));
+            }
+
+            combo.currentCount = (combo.currentCount + 1) % 5;
+            nextAttackTime = Time.time + nextAttackRange; //다음 공격 쿨타임
+            comboExpireTime = Time.time + nextAttackRange + w_attacktime; //지금 공격 시점부터 w_attacktime
+>>>>>>> Stashed changes
         }
         else
         {
