@@ -9,7 +9,7 @@ public class GroggyState : IEnemyState
     Rigidbody2D rb;
     float nextStateTime = 0;
     float normalGravity;
-    public void Enter(PuppeteerController controller)
+    public void Enter(E_PuppeteerController controller)
     {
         Debug.Log("그로기 상태 진입");
         rb = controller.AddComponent<Rigidbody2D>();
@@ -20,18 +20,18 @@ public class GroggyState : IEnemyState
         rb.gravityScale = normalGravity * gravity; //그로기 상태일 때 중력값이 크게 작용
     }
 
-    public void Exit(PuppeteerController controller)
+    public void Exit(E_PuppeteerController controller)
     {       
         Debug.Log("그로기 상태 해제");
     }
 
-    public void Update(PuppeteerController controller)
+    public void Update(E_PuppeteerController controller)
     {
-        if (Time.time > nextStateTime)
+        if (Time.time >= nextStateTime)
         {
             nextStateTime = 0f;
             rb.gravityScale = normalGravity; //원래 중력 값으로 복귀
-            controller.ChangeState(new IdleState());
+            controller.ChangeState(controller.idle);
         }
     }
 }
