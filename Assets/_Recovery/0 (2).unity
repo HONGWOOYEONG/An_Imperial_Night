@@ -756,6 +756,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHP: 1000
+  playerType: 0
 --- !u!1 &460535723
 GameObject:
   m_ObjectHideFlags: 0
