@@ -29,11 +29,18 @@ public class PatternE_State : IEnemyState
 
     public void Exit(E_PuppeteerController controller)
     {
+        controller.isAttaking_E = false;
+        controller.HitBox_E.SetActive(false);
         Debug.Log("PatternD 상태 종료");
     }
 
     public void Update(E_PuppeteerController controller)
     {
+        if (controller.targetPlayer != null) //flip
+        {
+            controller.LookAtLocation(controller.targetPlayer.transform.position.x);
+        }
+
         if (!target) { return; }
         Vector2 targetPos = target.transform.position;
         Vector2 myPos = controller.transform.position;
@@ -55,9 +62,11 @@ public class PatternE_State : IEnemyState
         {
             Debug.Log(num + "타 시작");
             yield return new WaitForSeconds(frontDelay / BASE_FPS);
-            //.SetActive(true);
+            controller.isAttaking_E = true;
+            controller.HitBox_E.SetActive(true);
             yield return new WaitForSeconds(attackDuration / BASE_FPS);
-            //.SetActive(false);
+            controller.HitBox_E.SetActive(false);
+            controller.isAttaking_E = false;
             yield return new WaitForSeconds(backDelay / BASE_FPS);
             num+=1;
             yield return null;

@@ -40,7 +40,6 @@ public class PatternD_State : IEnemyState
         if (controller.isFar == true)
         {
             middlePoint = (rangedD + damageD) / 2.0f;
-            Debug.Log(middlePoint);
         }
         endStart = true;
     }
@@ -52,7 +51,16 @@ public class PatternD_State : IEnemyState
 
     public void Update(E_PuppeteerController controller)
     {
-        if(!endStart) { return; }
+        if (controller.isFar)
+        {
+            controller.LookAtLocation(middlePoint.x);
+        }
+        else if (controller.targetPlayer != null) //flip
+        {
+            controller.LookAtLocation(controller.targetPlayer.transform.position.x);
+        }
+
+        if (!endStart) { return; }
         myPos = controller.transform.position;
        
         if (controller.isFar == true)

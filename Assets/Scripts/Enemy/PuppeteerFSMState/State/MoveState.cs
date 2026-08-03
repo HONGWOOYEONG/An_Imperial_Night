@@ -25,8 +25,16 @@ public class MoveState : IEnemyState
 
     public void Update(E_PuppeteerController controller)
     {
-        if(controller.targetPlayer == null)
+        if (controller.targetPlayer != null) //flip
         {
+            controller.LookAtLocation(controller.targetPlayer.transform.position.x);
+        }
+        if (controller.targetPlayer == null)
+        {
+            if (controller.chooseState != null)
+            {
+                controller.ChangeState(controller.chooseState);
+            }
             return;
         }
         Vector2 enemyPos = controller.transform.position; //현재 나의 위치
@@ -35,6 +43,7 @@ public class MoveState : IEnemyState
         //타겟 플레이어가 적과의 거리가 attackRange보다 가까워지면
         if (distance <= attackRange)
         {
+            Debug.Log("현재 타겟 플레이어 " + controller.targetPlayer.name);
             controller.ChangeState(controller.chooseState);
         }
         else
@@ -42,23 +51,17 @@ public class MoveState : IEnemyState
             float step = moveSpeed * Time.deltaTime;
             controller.transform.position = Vector2.MoveTowards(enemyPos, playerPos, step); //타겟 방향으로 이동
         }
-          
     }
 
     //타겟 결정
     void DecideTarget(E_PuppeteerController controller)
     {
+        if (controller.chooseState == null) return;
+
         if (controller.chooseState is PatternB_State) //원거리딜러에게 점프
         {
             int randomNum = Random.Range(1, 3);
-            if (randomNum == 1) //회월
-            {
-                controller.targetPlayer = controller.damageDealer;
-            }
-            else if (randomNum == 2) //태자
-            {
-                controller.targetPlayer = controller.rangedDealer;
-            }
+            controller.targetPlayer = (randomNum == 1) ? controller.damageDealer : controller.rangedDealer;
         }
         else if (controller.chooseState is PatternA_State) //선택된 상태가 인형돌진이라면
         {
@@ -96,21 +99,14 @@ public class MoveState : IEnemyState
             else //태자전하 회월스님의 거리가 n보다 멀다면 target을 정해주지 않고 바로 다음 상태로 넘어감
             {
                 controller.isFar = true;
-                controller.ChangeState(controller.chooseState);
+                controller.targetPlayer = null;
             }
-            //에외 상황 target이 정해질수 없음 왜냐 태자전하와 회월 스님의 거리가 n보다 멀 경우
+            //예외 상황 target이 정해질수 없음 왜냐 태자전하와 회월 스님의 거리가 n보다 멀 경우
         }
         else if (controller.chooseState is PatternE_State)
         {
             int randomNum = Random.Range(1, 3);
-            if(randomNum == 1) //회월
-            {
-                controller.targetPlayer = controller.damageDealer;                
-            }
-            else if(randomNum == 2) //태자
-            {
-                controller.targetPlayer = controller.rangedDealer;           
-            }
+            controller.targetPlayer = (randomNum == 1) ? controller.damageDealer : controller.rangedDealer;
         }
     }
 }

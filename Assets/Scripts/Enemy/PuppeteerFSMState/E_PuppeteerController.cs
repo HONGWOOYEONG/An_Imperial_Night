@@ -46,11 +46,6 @@ public class E_PuppeteerController : MonoBehaviour
     [SerializeField] bool isGroggy = false;
 
     [Header("적 감지")]
-    public GameObject attackHitBox; //히트박스
-    public Collider2D moveBox;
-    public Collider2D hitbox;
-
-    public Enemy_DollHitBox dollHitBox;
     [SerializeField] float detectRange = 10f; //감지 사거리
     [HideInInspector] public Collider2D[] colliders;
     [HideInInspector] public Collider2D targetPlayer;
@@ -60,14 +55,27 @@ public class E_PuppeteerController : MonoBehaviour
     public bool isInTargetPlayer = false;
 
 
-    [Header("공격")]
-    public bool isAttaking = false;
-
-    [Header("A : DollRush")]
+    [Header("A")]
     public Transform dollTransform;
+    public GameObject HitBox_A;
+    [HideInInspector]public bool isAttaking_A = false;
+    [HideInInspector] public int currentCount = 0;
 
-    [Header("D : ")]
-    [HideInInspector] public bool isFar = false;
+    [Header("B")]
+    public GameObject HitBox_B;
+    public GameObject HitBox_AirB;
+  //  public GameObject HitBox_LandB;
+    [HideInInspector] public bool isAttaking_AirB = false;
+    [HideInInspector] public bool isAttaking_B = false;
+    [HideInInspector] public bool isAttaling_B = false;
+    [HideInInspector] public int count = 0;
+
+    [Header("D")]
+    [HideInInspector] public bool isFar = false; //회월이랑 태자랑 먼지 알기위한 변수
+
+    [Header("E")]
+    public GameObject HitBox_E;
+    [HideInInspector] public bool isAttaking_E = false;
 
     void Start()
     {
@@ -86,13 +94,12 @@ public class E_PuppeteerController : MonoBehaviour
 
         FindPlayers();
         targetPlayer = damageDealer;
-        ChangeState(D); //첫 시작할 때 Idle 상태로 변환   
+        ChangeState(B); //첫 시작할 때 Idle 상태로 변환   
     }
 
     void Update()
     {
         FindPlayers(); //매 프레임마다 적 감지를 해줌
-        //Flip();
 
         if (currentHelth <= 0f)
         {
@@ -111,22 +118,27 @@ public class E_PuppeteerController : MonoBehaviour
         if (didState_A && Time.time > next_A)
         {
             didState_A = false;
+            Debug.Log("A 쿨타임 해제");
         }
         if (didState_B && Time.time > next_B)
         {
             didState_B = false;
+            Debug.Log("B 쿨타임 해제");
         }
         if (didState_C && Time.time > next_C)
         {
             didState_C = false;
+            Debug.Log("C 쿨타임 해제");
         }
         if (didState_D && Time.time > next_D)
         {
             didState_D = false;
+            Debug.Log("D 쿨타임 해제");
         }
         if (didState_E && Time.time > next_E)
         {
             didState_E = false;
+            Debug.Log("E 쿨타임 해제");
         }
         currentState?.Update(this);
     }
@@ -134,12 +146,18 @@ public class E_PuppeteerController : MonoBehaviour
 
     public void ChangeState(IEnemyState _state)
     {
+        if(_state == null)
+        {
+            if (idle != null && currentState != idle)
+            {
+                ChangeState(idle);
+            }
+        }
         if (currentState != null)
         {
             currentState.Exit(this); //이전 상태의 Exit 실행
             SetState(); //실행했던 state 쿨타임적용
         }
-
         currentState = _state; //현재 state를 넣어줌
         currentState.Enter(this); //현재 상태의 Enter 실행
     }
@@ -195,13 +213,11 @@ public class E_PuppeteerController : MonoBehaviour
 
     }
 
-    void Flip() //좌우
+    public void LookAtLocation(float targetX)
     {
-        if (targetPlayer != null)
-        {
-            // targetPlayer의 X가 내 X보다 작으면 왼쪽, 크면 false오른쪽
-            spriteRenderer.flipX = (targetPlayer.transform.position.x > transform.position.x);
-        }
+        bool isTargetRight = targetX < transform.position.x; //타겟이 오른쪽에 있으면 true 반환
+        float yAngle = isTargetRight ? 0 : 180;
+        transform.eulerAngles = new Vector2(0, yAngle);
     }
 
 

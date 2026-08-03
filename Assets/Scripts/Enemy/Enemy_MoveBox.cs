@@ -25,7 +25,10 @@ public class Enemy_MoveBox : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-       
+        if (e_Puppeteer == null || e_Puppeteer.targetPlayer == null)
+        {
+            return;
+        }
         if (collision.CompareTag(e_Puppeteer.targetPlayer.tag))
         {
             e_Puppeteer.isInTargetPlayer = false;
