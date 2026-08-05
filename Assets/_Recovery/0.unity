@@ -161,7 +161,7 @@ MonoBehaviour:
   d_driveDecease: 0
   d_startDelay: 2
   d_endDelay: 2
-  isHoldingDefence: 0
+  isDefencing: 0
 --- !u!114 &132726404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,12 +174,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 677340366a84f814ab39c809fc8df9e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Attack
+  isRight: 1
+  createPos: {fileID: 1975616764}
+  triggerTime: 65
+  triggerTimer: 0
   w_attackrange: 3
   w_attacktime: 0.5
-  obj: {fileID: 4820941970653982987, guid: 1095f524798c29446a7c6708290e280d, type: 3}
-  createPos: {fileID: 1975616764}
+  w_viewAngle: 85
+  w_obj: {fileID: 0}
+  s_frontDelay: 5
+  s_backDelay: 3
+  s_obj: {fileID: 0}
   sp_drvieDecrease: 100
   sp_stayCount: 1
+  sp_frontDelay: 45
+  sp_backDelay: 2
+  sp_atkRange: 5
+  sp_rayTime: 3
+  sp_isAttaking: 0
 --- !u!50 &132726405
 Rigidbody2D:
   serializedVersion: 5

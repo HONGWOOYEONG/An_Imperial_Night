@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!74 &7400000
+AnimationClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: PlayerHLightATK1
+  serializedVersion: 7
+  m_Legacy: 0
+  m_Compressed: 0
+  m_UseHighQualityCurve: 1
+  m_RotationCurves: []
+  m_CompressedRotationCurves: []
+  m_EulerCurves: []
+  m_PositionCurves: []
+  m_ScaleCurves: []
+  m_FloatCurves: []
+  m_PPtrCurves:
+  - serializedVersion: 2
+    curve:
+    - time: 0
+      value: {fileID: 21300000, guid: 7253558c80a29c8439f31b1aee0fe029, type: 3}
+    - time: 0.041666668
+      value: {fileID: 21300000, guid: 4890c3a02915a48409fffa3d297e319c, type: 3}
+    - time: 0.083333336
+      value: {fileID: 21300000, guid: 773afdfe1f7667441b5c5647fccff7c9, type: 3}
+    - time: 0.125
+      value: {fileID: 21300000, guid: c4502e5fc77203446b6f16e8288e3818, type: 3}
+    - time: 0.16666667
+      value: {fileID: 21300000, guid: 6186f50e77fe960498d6c1a130dd6d95, type: 3}
+    - time: 0.20833333
+      value: {fileID: 21300000, guid: ffd2c56159ae6df4fbc42c7f31e94792, type: 3}
+    - time: 0.25
+      value: {fileID: 21300000, guid: 32bedb7444548c54597f97b4e53c24fa, type: 3}
+    - time: 0.29166666
+      value: {fileID: 21300000, guid: 64ec638630d83a348a7f5b5704741499, type: 3}
+    - time: 0.33333334
+      value: {fileID: 21300000, guid: 05f65ddeddc30ec4c8d7b8df62e838ef, type: 3}
+    - time: 0.375
+      value: {fileID: 21300000, guid: e2b3ef7b98505ef458e8863db1b55ef8, type: 3}
+    - time: 0.41666666
+      value: {fileID: 21300000, guid: f818dc97fada49041b4e873a615c9420, type: 3}
+    - time: 0.45833334
+      value: {fileID: 21300000, guid: fe7c4072b82ce7f43aa815d4044edffc, type: 3}
+    - time: 0.5
+      value: {fileID: 21300000, guid: d9561b3cba089294cabd8b276a16b4ed, type: 3}
+    - time: 0.5416667
+      value: {fileID: 21300000, guid: 2a52e9f8a5754f34eb09992f2bb6ee42, type: 3}
+    attribute: m_Sprite
+    path: 
+    classID: 212
+    script: {fileID: 0}
+    flags: 2
+  m_SampleRate: 24
+  m_WrapMode: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_ClipBindingConstant:
+    genericBindings:
+    - serializedVersion: 2
+      path: 0
+      attribute: 0
+      script: {fileID: 0}
+      typeID: 212
+      customType: 23
+      isPPtrCurve: 1
+      isIntCurve: 0
+      isSerializeReferenceCurve: 0
+    pptrCurveMapping:
+    - {fileID: 21300000, guid: 7253558c80a29c8439f31b1aee0fe029, type: 3}
+    - {fileID: 21300000, guid: 4890c3a02915a48409fffa3d297e319c, type: 3}
+    - {fileID: 21300000, guid: 773afdfe1f7667441b5c5647fccff7c9, type: 3}
+    - {fileID: 21300000, guid: c4502e5fc77203446b6f16e8288e3818, type: 3}
+    - {fileID: 21300000, guid: 6186f50e77fe960498d6c1a130dd6d95, type: 3}
+    - {fileID: 21300000, guid: ffd2c56159ae6df4fbc42c7f31e94792, type: 3}
+    - {fileID: 21300000, guid: 32bedb7444548c54597f97b4e53c24fa, type: 3}
+    - {fileID: 21300000, guid: 64ec638630d83a348a7f5b5704741499, type: 3}
+    - {fileID: 21300000, guid: 05f65ddeddc30ec4c8d7b8df62e838ef, type: 3}
+    - {fileID: 21300000, guid: e2b3ef7b98505ef458e8863db1b55ef8, type: 3}
+    - {fileID: 21300000, guid: f818dc97fada49041b4e873a615c9420, type: 3}
+    - {fileID: 21300000, guid: fe7c4072b82ce7f43aa815d4044edffc, type: 3}
+    - {fileID: 21300000, guid: d9561b3cba089294cabd8b276a16b4ed, type: 3}
+    - {fileID: 21300000, guid: 2a52e9f8a5754f34eb09992f2bb6ee42, type: 3}
+  m_AnimationClipSettings:
+    serializedVersion: 2
+    m_AdditiveReferencePoseClip: {fileID: 0}
+    m_AdditiveReferencePoseTime: 0
+    m_StartTime: 0
+    m_StopTime: 0.5833334
+    m_OrientationOffsetY: 0
+    m_Level: 0
+    m_CycleOffset: 0
+    m_HasAdditiveReferencePose: 0
+    m_LoopTime: 0
+    m_LoopBlend: 0
+    m_LoopBlendOrientation: 0
+    m_LoopBlendPositionY: 0
+    m_LoopBlendPositionXZ: 0
+    m_KeepOriginalOrientation: 0
+    m_KeepOriginalPositionY: 1
+    m_KeepOriginalPositionXZ: 0
+    m_HeightFromFeet: 0
+    m_Mirror: 0
+  m_EditorCurves: []
+  m_EulerEditorCurves: []
+  m_HasGenericRootTransform: 0
+  m_HasMotionFloatCurves: 0
+  m_Events:
+  - time: 0
+    functionName: OpenComboWindow
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.041666668
+    functionName: AttackMove
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.33333334
+    functionName: EnableLightHitbox
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.41666666
+    functionName: DisableLightHitbox
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.5833333
+    functionName: CloseComboWindow
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.5833333
+    functionName: EndLightAttack
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
