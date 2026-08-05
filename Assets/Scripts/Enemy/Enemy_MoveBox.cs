@@ -12,26 +12,31 @@ public class Enemy_MoveBox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (e_Puppeteer == null || e_Puppeteer.targetPlayer == null)
-        {
-            return;
-        }
-        if (collision.CompareTag (e_Puppeteer.targetPlayer.tag)) //현재 타겟 플레이어가 히트박스 안에 들어온 플레이어와 같다면
-        {
-            e_Puppeteer.isInTargetPlayer = true;
-            Debug.Log("플레이어 진입 감지");
-        }
-     
+        CheckTargetCollision(collision, true);
+        Debug.Log("플레이어 진입");
     }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        CheckTargetCollision(collision, true);
+    }
+
     private void OnTriggerExit2D(Collider2D collision)
+    {
+        CheckTargetCollision(collision, false);
+    }
+
+    private void CheckTargetCollision(Collider2D collision, bool isInArea)
     {
         if (e_Puppeteer == null || e_Puppeteer.targetPlayer == null)
         {
             return;
         }
-        if (collision.CompareTag(e_Puppeteer.targetPlayer.tag))
+
+        GameObject target = e_Puppeteer.targetPlayer.gameObject;
+        if(collision.gameObject == target)
         {
-            e_Puppeteer.isInTargetPlayer = false;
+            e_Puppeteer.isInTargetPlayer = isInArea;
         }
     }
+
 }

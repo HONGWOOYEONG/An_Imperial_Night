@@ -6,20 +6,26 @@ public class MoveState : IEnemyState
 {
     [SerializeField] float attackRange = 5f; //공격 state로 바뀌는 사거리
     [SerializeField] float moveSpeed = 5f; // 이동 속도
-  
-    float distance = 0f; //나와 플레이어의 거리
+
+    Vector2 enemyPos;
+    Vector2 playerPos;
+
+    bool nextState = false;
 
     [Header("PatternD")]
     float range_RandD = 4f; //두 사람의 거리를 비교할 때 사용할 변수
 
     public void Enter(E_PuppeteerController controller) //이 State가 실행될 때 처음에 한번 실행됨
     {
+        nextState = false;
+        controller.moveEnemy = true;
         Debug.Log("Move 상태 시작");
         DecideTarget(controller); 
     }
 
     public void Exit(E_PuppeteerController controller)
     {
+       
         Debug.Log("Move 상태 종료");
     }
 
@@ -29,7 +35,8 @@ public class MoveState : IEnemyState
         {
             controller.LookAtLocation(controller.targetPlayer.transform.position.x);
         }
-        if (controller.targetPlayer == null)
+
+        if (controller.targetPlayer == null) //패턴 D에서 두 사람의 거리가 n보다 멀 경우
         {
             if (controller.chooseState != null)
             {
@@ -37,20 +44,23 @@ public class MoveState : IEnemyState
             }
             return;
         }
-        Vector2 enemyPos = controller.transform.position; //현재 나의 위치
-        Vector2 playerPos = new Vector2(controller.targetPlayer.transform.position.x, enemyPos.y); //플레이어의 위치
-        distance = Vector3.Distance(enemyPos, playerPos);
-        //타겟 플레이어가 적과의 거리가 attackRange보다 가까워지면
-        if (distance <= attackRange)
+
+        enemyPos = controller.transform.position; //현재 나의 위치
+        playerPos = new Vector2(controller.targetPlayer.transform.position.x, enemyPos.y); //플레이어의 위치
+
+        if (!controller.isInTargetPlayer && !nextState)
         {
+            controller.transform.position = Vector2.MoveTowards(enemyPos, playerPos, moveSpeed * Time.deltaTime); //타겟 방향으로 이동
+        }
+
+        if (controller.isInTargetPlayer && !nextState)
+        {
+            nextState = true;
             Debug.Log("현재 타겟 플레이어 " + controller.targetPlayer.name);
             controller.ChangeState(controller.chooseState);
+            return;
         }
-        else
-        { 
-            float step = moveSpeed * Time.deltaTime;
-            controller.transform.position = Vector2.MoveTowards(enemyPos, playerPos, step); //타겟 방향으로 이동
-        }
+
     }
 
     //타겟 결정
@@ -90,11 +100,11 @@ public class MoveState : IEnemyState
             Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, 0);
             Vector2 damageD = new Vector2(controller.damageDealer.transform.position.x, 0);
             float distanace_RandD = Vector2.Distance(rangedD, damageD); //회월 스님과 태자 전하의 거리를 계산
-
-            if (distanace_RandD > range_RandD)
+             
+            if (distanace_RandD < range_RandD) //계산한 거리가 n보다 작다면
             {
                 controller.isFar = false;
-                controller.targetPlayer = controller.rangedDealer;
+                controller.targetPlayer = controller.rangedDealer; //태자전하가 목표가 됨
             }
             else //태자전하 회월스님의 거리가 n보다 멀다면 target을 정해주지 않고 바로 다음 상태로 넘어감
             {

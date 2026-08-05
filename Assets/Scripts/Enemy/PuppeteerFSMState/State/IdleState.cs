@@ -11,10 +11,10 @@ public class IdleState : IEnemyState
     [Header("°¡ÁßÄ¡")]
 
     int maxHeight_A = 20; int height_A = 0;
-    int maxHeight_B = 30; int height_B = 0;
+    int maxHeight_B = 0; int height_B = 0; //30
     int maxHeight_C = 0; int height_C = 0;
-    int maxHeight_D = 7; int height_D = 0;
-    int maxHeight_E = 10; int height_E = 0;
+    int maxHeight_D = 0; int height_D = 0; //7
+    int maxHeight_E = 0; int height_E = 0; //10
     
 
     public void Enter(E_PuppeteerController controller)

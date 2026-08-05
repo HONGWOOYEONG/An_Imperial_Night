@@ -2,16 +2,13 @@ using System.Collections;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
-//체간
-//드라이브 게이지
-//피해량
-//히트 박스(공중 히트박스 ,  착지 공격 히트박스)
+
 
 
 //평타 2회 후 원거리 딜러에게 점프
 public class PatternB_State : IEnemyState
 {
-    Enemy_MoveBox moveBox;
+   
     float BASE_FPS = 60f;
     Collider2D target;
     Rigidbody2D rb;
@@ -32,9 +29,9 @@ public class PatternB_State : IEnemyState
     float moveSpeed = 5f; //걸어갈 속도
 
     [Header("점프에 필요한 변수")]
-    float jumpForce = 6f; //최고점 높이
-    float maxRange = 8f; //최대 사거리
-    float jumpDuration = 1f; //점프 지속 시간
+    float jumpForce = 4f; //최고점 높이
+    float maxRange = 10f; //최대 사거리 (미정)
+    float jumpDuration = 0.5f; //점프 지속 시간
     float gravityPower = 1.5f; //떨어질 때 힘
     Vector2 targetDestination; //점프 목표 위치
     
@@ -58,14 +55,14 @@ public class PatternB_State : IEnemyState
 
     public void Update(E_PuppeteerController controller)
     {
-       if(rb != null) //정점 부분에서 히트박스 킴
-        {
-            if (Mathf.Abs(rb.linearVelocity.y)< 0.3) {
-                controller.isAttaking_AirB = true;
-                controller.HitBox_AirB.SetActive(true);
-                //공격 히트박스 사라질때까지? 라는 말이 무슨 말임..?
-            }
-        }
+       //if(rb != null) //정점 부분에서 히트박스 킴
+       // {
+       //     if (Mathf.Abs(rb.linearVelocity.y) < 0.3) {
+       //         controller.isAttaking_AirB = true;
+       //         controller.HitBox_AirB.SetActive(true);
+               
+       //     }
+       // }
 
         if (controller.targetPlayer != null)
         {
@@ -74,14 +71,22 @@ public class PatternB_State : IEnemyState
 
         if (target == null) { return; }
 
-        targetPos = target.transform.position;
         myPos = controller.transform.position;
+        targetPos = new Vector2(target.transform.position.x, myPos.y);
 
-        if (!controller.isInTargetPlayer && !startB) //move 히트박스 안에 대상이 있지않으면 대상에게 이동
+        if (!controller.isInTargetPlayer && !startB)
         {
-            Debug.Log( target + "에게 이동 중");
+            Debug.Log(target + "에게 이동 중");
             controller.transform.position = Vector2.MoveTowards(myPos, targetPos, moveSpeed * Time.deltaTime);
         }
+        if (controller.isInTargetPlayer && !startB)
+        {
+            startB = true;
+            controller.StartCoroutine(StartNormalAttack(controller));
+        }
+      
+
+
         ////점프하고 떨어질 때 중력 
         //if (rb.linearVelocity.y < 0) 
         //{
@@ -90,11 +95,6 @@ public class PatternB_State : IEnemyState
         //    rb.linearVelocity = vel;
         //}
 
-        if (controller.isInTargetPlayer && !startB)
-        {
-            startB = true;
-            controller.StartCoroutine(StartNormalAttack(controller));
-        }
 
     }
 
@@ -126,7 +126,7 @@ public class PatternB_State : IEnemyState
         if(target != null)
         {
             Vector2 currentMyPos = controller.transform.position;
-            Vector2 targetPos = new Vector2(target.transform.position.x, controller.transform.position.y);
+            Vector2 targetPos = new Vector2(target.transform.position.x, currentMyPos.y);
 
             float distance = Vector2.Distance(currentMyPos, targetPos); //거리
 
@@ -147,13 +147,19 @@ public class PatternB_State : IEnemyState
     {
         Debug.Log("점프 시작");
         float timer = 0f;
-        
+
+        Vector2 startPos = controller.transform.position;
+        //float distance = Vector2.Distance(startPos, targetDestination);
+        //jumpDuration = distance / jumpForce;
+
         while (timer < jumpDuration)
         {
             timer += Time.deltaTime;
             float t = timer / jumpDuration;
 
-            Vector2 currentPos = Vector2.Lerp(controller.transform.position, targetDestination, t);
+            Vector2 currentPos = Vector2.Lerp(startPos, targetDestination, t);
+            //** 포물선 점프 수정 **
+            //거리에 따라서 점프 시간 조정
             currentPos.y += 4 * jumpForce * t * (1 - t); //포물선 점프 공식
 
             controller.transform.position = currentPos;

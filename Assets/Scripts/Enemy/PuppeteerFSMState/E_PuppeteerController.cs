@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class E_PuppeteerController : MonoBehaviour
 {
-    public SpriteRenderer spriteRenderer;
     public IEnemyState currentState;
     public IEnemyState chooseState;
     Rigidbody2D rb;
@@ -53,6 +52,7 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public Collider2D rangedDealer; //원거리 딜러
     [HideInInspector] public Collider2D damageDealer; //근거리 딜러
     public bool isInTargetPlayer = false;
+    public bool moveEnemy = false;
 
 
     [Header("A")]
@@ -93,8 +93,7 @@ public class E_PuppeteerController : MonoBehaviour
         currentHelth = maxHealth;
 
         FindPlayers();
-        targetPlayer = damageDealer;
-        ChangeState(B); //첫 시작할 때 Idle 상태로 변환   
+        ChangeState(idle); //첫 시작할 때 Idle 상태로 변환   
     }
 
     void Update()
@@ -198,6 +197,7 @@ public class E_PuppeteerController : MonoBehaviour
 
     void FindPlayers()
     {
+
         colliders = Physics2D.OverlapCircleAll(transform.position, detectRange);
         foreach (Collider2D collider in colliders)
         {
