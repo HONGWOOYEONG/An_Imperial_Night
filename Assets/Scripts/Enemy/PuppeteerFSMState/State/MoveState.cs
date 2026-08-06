@@ -10,15 +10,12 @@ public class MoveState : IEnemyState
     Vector2 enemyPos;
     Vector2 playerPos;
 
-    bool nextState = false;
 
     [Header("PatternD")]
-    float range_RandD = 4f; //두 사람의 거리를 비교할 때 사용할 변수
+    float range_RandD = 6f; //두 사람의 거리를 비교할 때 사용할 변수
 
     public void Enter(E_PuppeteerController controller) //이 State가 실행될 때 처음에 한번 실행됨
     {
-        nextState = false;
-        controller.moveEnemy = true;
         Debug.Log("Move 상태 시작");
         DecideTarget(controller); 
     }
@@ -30,37 +27,32 @@ public class MoveState : IEnemyState
     }
 
     public void Update(E_PuppeteerController controller)
-    {
-        if (controller.targetPlayer != null) //flip
-        {
-            controller.LookAtLocation(controller.targetPlayer.transform.position.x);
-        }
-
-        if (controller.targetPlayer == null) //패턴 D에서 두 사람의 거리가 n보다 멀 경우
+    { 
+        if (controller.targetPlayer == null)
         {
             if (controller.chooseState != null)
             {
                 controller.ChangeState(controller.chooseState);
             }
-            return;
         }
-
-        enemyPos = controller.transform.position; //현재 나의 위치
-        playerPos = new Vector2(controller.targetPlayer.transform.position.x, enemyPos.y); //플레이어의 위치
-
-        if (!controller.isInTargetPlayer && !nextState)
+        else
         {
-            controller.transform.position = Vector2.MoveTowards(enemyPos, playerPos, moveSpeed * Time.deltaTime); //타겟 방향으로 이동
-        }
+            controller.LookAtLocation(controller.targetPlayer.transform.position.x); //flip
 
-        if (controller.isInTargetPlayer && !nextState)
-        {
-            nextState = true;
-            Debug.Log("현재 타겟 플레이어 " + controller.targetPlayer.name);
-            controller.ChangeState(controller.chooseState);
-            return;
-        }
+            enemyPos = controller.transform.position; //현재 나의 위치
+            playerPos = new Vector2(controller.targetPlayer.transform.position.x, enemyPos.y); //플레이어의 위치
 
+            if (!controller.isInTargetPlayer)
+            {
+                controller.transform.position = Vector2.MoveTowards(enemyPos, playerPos, moveSpeed * Time.deltaTime); //타겟 방향으로 이동
+            }
+
+            if (controller.isInTargetPlayer)
+            {
+                Debug.Log("현재 타겟 플레이어 " + controller.targetPlayer.name);
+                controller.ChangeState(controller.chooseState);
+            }
+        }
     }
 
     //타겟 결정
@@ -68,28 +60,20 @@ public class MoveState : IEnemyState
     {
         if (controller.chooseState == null) return;
 
-        if (controller.chooseState is PatternB_State) //원거리딜러에게 점프
+        if (controller.chooseState is PatternA_State) //선택된 상태가 인형돌진이라면
         {
-            int randomNum = Random.Range(1, 3);
-            controller.targetPlayer = (randomNum == 1) ? controller.damageDealer : controller.rangedDealer;
-        }
-        else if (controller.chooseState is PatternA_State) //선택된 상태가 인형돌진이라면
-        {
-            Vector2 rangedD = controller.rangedDealer.transform.position;
-            Vector2 damageD = controller.damageDealer.transform.position;
-            float rangedDis = Vector2.Distance(controller.transform.position, rangedD); //거리 계산
-            float damageDis = Vector2.Distance(controller.transform.position, damageD); //거리 계산
+            Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
+            Vector2 meleeD = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
+            float rangedDis = Vector2.Distance(controller.transform.position, rangedD); //적과 원거리 거리 계산
+            float meleeDis = Vector2.Distance(controller.transform.position, meleeD); //적과 근거리 거리 계산
 
             //더 가까운 플레이어 캐릭터를 targetPlayer에 넣어줌
-            controller.targetPlayer = rangedDis > damageDis ? controller.damageDealer : controller.rangedDealer;
-            if (rangedDis > damageDis)
-            {
-                controller.targetPlayer = controller.damageDealer;
-            }
-            else
-            {
-                controller.targetPlayer = controller.rangedDealer;
-            }
+            controller.targetPlayer = rangedDis > meleeDis ? controller.meleeDealer : controller.rangedDealer;         
+        }
+        else if (controller.chooseState is PatternB_State) //원거리딜러에게 점프
+        {
+            int randomNum = Random.Range(1, 3);
+            controller.targetPlayer = (randomNum == 1) ? controller.meleeDealer : controller.rangedDealer;
         }
         else if (controller.chooseState is PatternC_State)
         {
@@ -97,11 +81,11 @@ public class MoveState : IEnemyState
         }
         else if (controller.chooseState is PatternD_State)
         {
-            Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, 0);
-            Vector2 damageD = new Vector2(controller.damageDealer.transform.position.x, 0);
+            Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
+            Vector2 damageD = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
             float distanace_RandD = Vector2.Distance(rangedD, damageD); //회월 스님과 태자 전하의 거리를 계산
              
-            if (distanace_RandD < range_RandD) //계산한 거리가 n보다 작다면
+            if (distanace_RandD < range_RandD) //계산한 거리가 n보다 가깝다면
             {
                 controller.isFar = false;
                 controller.targetPlayer = controller.rangedDealer; //태자전하가 목표가 됨
@@ -109,6 +93,7 @@ public class MoveState : IEnemyState
             else //태자전하 회월스님의 거리가 n보다 멀다면 target을 정해주지 않고 바로 다음 상태로 넘어감
             {
                 controller.isFar = true;
+                controller.middlePoint = (rangedD + damageD) / 2.0f; //회월스님과 태자전하의 가운데 값         
                 controller.targetPlayer = null;
             }
             //예외 상황 target이 정해질수 없음 왜냐 태자전하와 회월 스님의 거리가 n보다 멀 경우
@@ -116,7 +101,7 @@ public class MoveState : IEnemyState
         else if (controller.chooseState is PatternE_State)
         {
             int randomNum = Random.Range(1, 3);
-            controller.targetPlayer = (randomNum == 1) ? controller.damageDealer : controller.rangedDealer;
+            controller.targetPlayer = (randomNum == 1) ? controller.meleeDealer : controller.rangedDealer;
         }
     }
 }

@@ -10,7 +10,7 @@ public class PatternE_State : IEnemyState
     float attackDuration = 5f;
     float frontDelay = 120f; //1타 선딜레이
     float backDelay = 30f;
-    float moveSpeed;
+    float moveSpeed = (5f * 1.3f); //회월스님의 1.3배
 
     bool isAttack = false;
     int randAtkNum; //랜덤 공격 숫자를 담을 변수
@@ -20,7 +20,6 @@ public class PatternE_State : IEnemyState
 
         randAtkNum = Random.Range(1, 4);
         Debug.Log("랜덤한 공격 횟수 : " + randAtkNum);
-        moveSpeed = (5f * 1.3f); //회월 스님의 1.3배 
         if (controller.targetPlayer != null)
         {
             target = controller.targetPlayer;
@@ -29,6 +28,7 @@ public class PatternE_State : IEnemyState
 
     public void Exit(E_PuppeteerController controller)
     {
+        isAttack = false;
         controller.isAttaking_E = false;
         controller.HitBox_E.SetActive(false);
         Debug.Log("PatternD 상태 종료");
@@ -42,6 +42,7 @@ public class PatternE_State : IEnemyState
         }
 
         if (!target) { return; }
+
         Vector2 targetPos = target.transform.position;
         Vector2 myPos = controller.transform.position;
         if (!controller.isInTargetPlayer)
@@ -49,6 +50,8 @@ public class PatternE_State : IEnemyState
             Debug.Log( target.name + "에게 이동 중");   
             controller.transform.position = Vector2.MoveTowards(myPos, targetPos, moveSpeed * Time.deltaTime);
         } 
+
+        //공격 실행
         if (!isAttack && controller.isInTargetPlayer)
         {
             isAttack = true;
@@ -72,7 +75,5 @@ public class PatternE_State : IEnemyState
             yield return null;
         }
         controller.ChangeState(controller.idle);
-        isAttack = false;
     }
-  
 }

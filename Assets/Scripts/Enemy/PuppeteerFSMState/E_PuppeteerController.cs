@@ -50,13 +50,11 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public Collider2D targetPlayer;
 
     [HideInInspector] public Collider2D rangedDealer; //원거리 딜러
-    [HideInInspector] public Collider2D damageDealer; //근거리 딜러
+    [HideInInspector] public Collider2D meleeDealer; //근거리 딜러
     public bool isInTargetPlayer = false;
-    public bool moveEnemy = false;
 
 
     [Header("A")]
-    public Transform dollTransform;
     public GameObject HitBox_A;
     [HideInInspector]public bool isAttaking_A = false;
     [HideInInspector] public int currentCount = 0;
@@ -72,6 +70,7 @@ public class E_PuppeteerController : MonoBehaviour
 
     [Header("D")]
     [HideInInspector] public bool isFar = false; //회월이랑 태자랑 먼지 알기위한 변수
+    [HideInInspector] public Vector2 middlePoint = Vector2.zero;
 
     [Header("E")]
     public GameObject HitBox_E;
@@ -145,12 +144,14 @@ public class E_PuppeteerController : MonoBehaviour
 
     public void ChangeState(IEnemyState _state)
     {
-        if(_state == null)
+        if (currentState == _state) return;
+        if (_state == null)
         {
             if (idle != null && currentState != idle)
             {
                 ChangeState(idle);
             }
+            return;
         }
         if (currentState != null)
         {
@@ -203,7 +204,7 @@ public class E_PuppeteerController : MonoBehaviour
         {
             if (collider.gameObject.CompareTag("DamageDealer")) //근딜이라면
             {
-                damageDealer = collider;
+                meleeDealer = collider;
             }
             else if (collider.gameObject.CompareTag("RangedDealer")) //원딜라면
             {

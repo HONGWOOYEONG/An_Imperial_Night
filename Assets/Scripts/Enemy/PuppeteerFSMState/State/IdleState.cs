@@ -10,11 +10,11 @@ public class IdleState : IEnemyState
     float frontDelay = 3f; //Idle진입 후 판단 대기시간
     [Header("가중치")]
 
-    int maxHeight_A = 20; int height_A = 0;
-    int maxHeight_B = 0; int height_B = 0; //30
+    int maxHeight_A = 20; int height_A = 0;//20
+    int maxHeight_B = 30; int height_B = 0; //30
     int maxHeight_C = 0; int height_C = 0;
-    int maxHeight_D = 0; int height_D = 0; //7
-    int maxHeight_E = 0; int height_E = 0; //10
+    int maxHeight_D = 7; int height_D = 0; //7
+    int maxHeight_E = 10; int height_E = 0; //10
     
 
     public void Enter(E_PuppeteerController controller)
@@ -44,7 +44,17 @@ public class IdleState : IEnemyState
     {
         yield return new WaitForSeconds(frontDelay / BASE_FPS); //선딜
 
-        ChooseState(controller);
+        while (controller.chooseState == null) //null이 아닐 때까지 
+        {
+            ChooseState(controller);
+            if (controller.chooseState == null)
+            {
+                yield return new WaitForSeconds(0.2f);
+            }
+            yield return null;
+        }
+
+        controller.ChangeState(controller.move);
     }
 
     void ChooseState(E_PuppeteerController controller)
@@ -62,19 +72,18 @@ public class IdleState : IEnemyState
         if (controller.didState_E) height_E = 0;
         int finalWeight = height_A + height_B + height_C + height_D + height_E; //전체 가중치
 
-        int RandNum = Random.Range(0, finalWeight); //전체 가중치 안에서의 랜덤 가중치값
-
         if (finalWeight <= 0)
-        {
-            controller.StartCoroutine(Idle(controller));
+        {          
             return;
         }
 
-        if (RandNum < height_A)//JumpToRangedDealer
+        int RandNum = Random.Range(0, finalWeight); //전체 가중치 안에서의 랜덤 가중치값
+
+        if (RandNum < height_A)
         {
             controller.chooseState = controller.A;
         }
-        else if ((RandNum -= height_A) < height_B)//RunLikeHorse
+        else if ((RandNum -= height_A) < height_B)
         {
             controller.chooseState = controller.B;   
         }
@@ -90,13 +99,6 @@ public class IdleState : IEnemyState
         {
             controller.chooseState = controller.E;
         }
-        if (controller.chooseState != null)
-        {
-            controller.ChangeState(controller.move);
-        }
-        else
-        {     
-            controller.StartCoroutine(Idle(controller));
-        }
+       
     } 
 }
