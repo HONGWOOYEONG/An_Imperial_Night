@@ -3,18 +3,18 @@ using JetBrains.Annotations;
 using UnityEngine;
 //가만히 있는 상태, 상태를 선택하게 됨
 //모든 상태가 Idle을 거쳐감
-public class IdleState : IEnemyState
+public class P_IdleState : IPuppeteerState
 {
     float BASE_FPS = 60f;
 
     float frontDelay = 3f; //Idle진입 후 판단 대기시간
     [Header("가중치")]
 
-    int maxHeight_A = 20; int height_A = 0;//20
-    int maxHeight_B = 30; int height_B = 0; //30
-    int maxHeight_C = 0; int height_C = 0;
-    int maxHeight_D = 7; int height_D = 0; //7
-    int maxHeight_E = 10; int height_E = 0; //10
+    int maxHeight_A = 0; int height_A = 0;//20
+    int maxHeight_B = 0; int height_B = 0; //30
+    int maxHeight_C = 5; int height_C = 0; //임의의 값으로 정해짐
+    int maxHeight_D = 0; int height_D = 0; //7
+    int maxHeight_E = 0; int height_E = 0; //10
     
 
     public void Enter(E_PuppeteerController controller)

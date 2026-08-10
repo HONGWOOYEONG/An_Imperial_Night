@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.UIElements;
 
 //적과 타겟 플레이어간의 일정 거리 이상일 경우에 move State인거고 거리보다 가까워지면 chooseState로 상태 변환됨
-public class MoveState : IEnemyState
+public class P_MoveState : IPuppeteerState
 {
     [SerializeField] float attackRange = 5f; //공격 state로 바뀌는 사거리
     [SerializeField] float moveSpeed = 5f; // 이동 속도
@@ -60,7 +61,7 @@ public class MoveState : IEnemyState
     {
         if (controller.chooseState == null) return;
 
-        if (controller.chooseState is PatternA_State) //선택된 상태가 인형돌진이라면
+        if (controller.chooseState is P_PatternA_State) //선택된 상태가 인형돌진이라면
         {
             Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
             Vector2 meleeD = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
@@ -70,16 +71,50 @@ public class MoveState : IEnemyState
             //더 가까운 플레이어 캐릭터를 targetPlayer에 넣어줌
             controller.targetPlayer = rangedDis > meleeDis ? controller.meleeDealer : controller.rangedDealer;         
         }
-        else if (controller.chooseState is PatternB_State) //원거리딜러에게 점프
+        else if (controller.chooseState is P_PatternB_State) //원거리딜러에게 점프
         {
             int randomNum = Random.Range(1, 3);
             controller.targetPlayer = (randomNum == 1) ? controller.meleeDealer : controller.rangedDealer;
         }
-        else if (controller.chooseState is PatternC_State)
+        else if (controller.chooseState is P_PatternC_State)
         {
-            //보류
+            //적이 가운데이 있는지 구하기
+            float ragedX = controller.rangedDealer.transform.position.x;
+            float meleeX = controller.meleeDealer.transform.position.x;
+            float myX = controller.transform.position.x;
+            float minX = Mathf.Min(ragedX, meleeX);
+            float maxX = Mathf.Max(ragedX, meleeX);
+
+            if(minX <= myX && myX <= maxX)
+            {
+                //적 사이에 있음
+                controller.isCase_1 = true;
+                controller.countAtk = 3;
+                //가장 가까운 적 구하기
+                Vector2 myPos = controller.transform.position;
+                Vector2 rangedPos = new Vector2(controller.rangedDealer.transform.position.x, myPos.y);
+                Vector2 meleePos = new Vector2(controller.meleeDealer.transform.position.x, myPos.y);
+                float distance_EandR = Vector2.Distance(myPos, rangedPos);
+                float distance_EandM = Vector2.Distance(myPos, meleePos);
+
+                //타겟 설정
+                controller.targetPlayer = (distance_EandR <= distance_EandM) ? controller.rangedDealer : controller.meleeDealer;          
+            }
+            else
+            {
+                //적 사이에 있지 않음
+                controller.countAtk = 2;
+                //가장 가까운 적 구하기
+                Vector2 myPos = controller.transform.position;
+                Vector2 rangedPos = new Vector2(controller.rangedDealer.transform.position.x, myPos.y);
+                Vector2 meleePos = new Vector2(controller.meleeDealer.transform.position.x, myPos.y);
+                float distance_EandR = Vector2.Distance(myPos, rangedPos);
+                float distance_EandM = Vector2.Distance(myPos, meleePos);
+
+                controller.targetPlayer = (distance_EandR <= distance_EandM) ? controller.rangedDealer : controller.meleeDealer;
+            }
         }
-        else if (controller.chooseState is PatternD_State)
+        else if (controller.chooseState is P_PatternD_State)
         {
             Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
             Vector2 damageD = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
@@ -98,7 +133,7 @@ public class MoveState : IEnemyState
             }
             //예외 상황 target이 정해질수 없음 왜냐 태자전하와 회월 스님의 거리가 n보다 멀 경우
         }
-        else if (controller.chooseState is PatternE_State)
+        else if (controller.chooseState is P_PatternE_State)
         {
             int randomNum = Random.Range(1, 3);
             controller.targetPlayer = (randomNum == 1) ? controller.meleeDealer : controller.rangedDealer;

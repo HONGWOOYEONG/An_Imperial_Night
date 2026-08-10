@@ -2,7 +2,7 @@ using UnityEngine;
 
 //플레이어블 캐릭터 사이로 들어가기
 
-public class PatternD_State : IEnemyState
+public class P_PatternD_State : IPuppeteerState
 {
     float moveSpeed = (5f * 1.2f);
     float range_RandD = 6f; //회월, 태자 사거리 (미정)

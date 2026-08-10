@@ -3,7 +3,7 @@ using UnityEngine;
 
 //인형을 발로 차서 돌진 시키기
 
-public class PatternA_State : IEnemyState
+public class P_PatternA_State : IPuppeteerState
 {
     float BASE_FPS = 60f;
     public float patternFrontDeley = 41f; //패턴 선딜레이

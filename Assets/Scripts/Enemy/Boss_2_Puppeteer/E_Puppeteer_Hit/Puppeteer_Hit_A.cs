@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class Enemy_Hit_A : MonoBehaviour
+public class Puppeteer_Hit_A : MonoBehaviour
 {
-
     E_PuppeteerController e_Puppeteer;
     public float[] damage = { 300, 300, 300, 300, 500 }; //피해량
     public float[] groggyDamage = { 270, 270, 270, 270, 320 }; //체간 피해량
@@ -18,17 +17,17 @@ public class Enemy_Hit_A : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (e_Puppeteer == null|| !e_Puppeteer.isAttaking_A)
+        if (e_Puppeteer == null || !e_Puppeteer.isAttaking_A)
         {
             return;
         }
         IDamageReceiver receiver = collision.GetComponent<IDamageReceiver>();
-        if(receiver != null)
+        if (receiver != null)
         {
             int index = e_Puppeteer.currentCount;
 
@@ -36,14 +35,15 @@ public class Enemy_Hit_A : MonoBehaviour
             Vector2 hitDir = (collision.transform.position - transform.position).normalized;
 
             DamageInfo damageInfo = new DamageInfo
-            {   damage = damage[index],
+            {
+                damage = damage[index],
                 damageDir = hitDir,
                 knockbackPower = 0,
                 stunTime = 0,
-               // DamageType damageType, 
+                // DamageType damageType, 
                 postureDamage = addGroggy[index],
                 driveDamage = decreaseDrive[index]
-};
+            };
             receiver.ReceiveAttack(damageInfo);
         }
     }

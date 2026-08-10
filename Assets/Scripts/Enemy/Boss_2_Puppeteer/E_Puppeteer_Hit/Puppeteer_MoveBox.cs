@@ -1,7 +1,6 @@
 using UnityEngine;
 
-//ÇöÀç 
-public class Enemy_MoveBox : MonoBehaviour
+public class Puppeteer_MoveBox : MonoBehaviour
 {
     E_PuppeteerController e_Puppeteer;
 
@@ -33,10 +32,9 @@ public class Enemy_MoveBox : MonoBehaviour
         }
 
         GameObject target = e_Puppeteer.targetPlayer.gameObject;
-        if(collision.gameObject == target)
+        if (collision.gameObject == target)
         {
             e_Puppeteer.isInTargetPlayer = isInArea;
         }
     }
-
 }

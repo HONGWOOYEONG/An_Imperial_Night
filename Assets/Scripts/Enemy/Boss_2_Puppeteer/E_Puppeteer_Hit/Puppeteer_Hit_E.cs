@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Enemy_Hit_E : MonoBehaviour
+public class Puppeteer_Hit_E : MonoBehaviour
 {
     E_PuppeteerController e_Puppeteer;
     float damage = 400f;
@@ -15,7 +15,7 @@ public class Enemy_Hit_E : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -42,7 +42,7 @@ public class Enemy_Hit_E : MonoBehaviour
                 driveDamage = decreaseDrive
             };
             receiver.ReceiveAttack(damageInfo);
-        
+
         }
     }
 }

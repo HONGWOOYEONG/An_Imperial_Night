@@ -2,35 +2,35 @@ using UnityEngine;
 
 public class E_PuppeteerController : MonoBehaviour
 {
-    public IEnemyState currentState;
-    public IEnemyState chooseState;
+    public IPuppeteerState currentState;
+    public IPuppeteerState chooseState;
     Rigidbody2D rb;
 
     [Header("상태")]
-    public IEnemyState idle;
-    public IEnemyState groggy;
-    public IEnemyState move;
-    public IEnemyState A;
-    public IEnemyState B;
-    public IEnemyState C;
-    public IEnemyState D;
-    public IEnemyState E;
+    public IPuppeteerState idle;
+    public IPuppeteerState groggy;
+    public IPuppeteerState move;
+    public IPuppeteerState A;
+    public IPuppeteerState B;
+    public IPuppeteerState C;
+    public IPuppeteerState D;
+    public IPuppeteerState E;
 
 
     [Header("상태 쿨타임")]
     [SerializeField] float coolTime_A = 15f;
     [SerializeField] float coolTime_B = 17f;
-    [SerializeField] float coolTime_C = 0f;
+    [SerializeField] float coolTime_C = 20f; //아직 정해지지않음 임의의 값
     [SerializeField] float coolTime_D = 12f;
     [SerializeField] float coolTime_E = 13f;
     //쿨타임을 위한 변수
-    public bool didState_B = false; //JumpToRangedDealer State
-    public bool didState_A = false; //DollRush State
-    public bool didState_C = false; //RunLikeHorse
+    public bool didState_A = false;
+    public bool didState_B = false;
+    public bool didState_C = false; 
     public bool didState_D = false;
     public bool didState_E = false;
-    float next_B = 0f;
     float next_A = 0f;
+    float next_B = 0f;
     float next_C = 0f;
     float next_D = 0f;
     float next_E = 0f;
@@ -68,6 +68,10 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public bool isAttaling_B = false;
     [HideInInspector] public int count = 0;
 
+    [Header("C")]
+    [HideInInspector] public bool isCase_1 = false; //케이스 1과 2를 구분하기 위한 변수
+    [HideInInspector] public int countAtk = 0;
+
     [Header("D")]
     [HideInInspector] public bool isFar = false; //회월이랑 태자랑 먼지 알기위한 변수
     [HideInInspector] public Vector2 middlePoint = Vector2.zero;
@@ -78,14 +82,14 @@ public class E_PuppeteerController : MonoBehaviour
 
     void Start()
     {
-        idle = new IdleState();
-        groggy = new GroggyState();
-        move = new MoveState();
-        A = new PatternA_State();
-        B = new PatternB_State();
-        C = new PatternC_State();
-        D = new PatternD_State();
-        E = new PatternE_State();
+        idle = new P_IdleState();
+        groggy = new P_GroggyState();
+        move = new P_MoveState();
+        A = new P_PatternA_State();
+        B = new P_PatternB_State();
+        C = new P_PatternC_State();
+        D = new P_PatternD_State();
+        E = new P_PatternE_State();
 
         rb = GetComponent<Rigidbody2D>();
         currentGroggy = 0f;
@@ -101,7 +105,7 @@ public class E_PuppeteerController : MonoBehaviour
 
         if (currentHelth <= 0f)
         {
-            ChangeState(new DeadState());
+            ChangeState(new P_DeadState());
         }
         if (currentGroggy >= maxGroggy)
         {
@@ -116,33 +120,28 @@ public class E_PuppeteerController : MonoBehaviour
         if (didState_A && Time.time > next_A)
         {
             didState_A = false;
-            Debug.Log("A 쿨타임 해제");
         }
         if (didState_B && Time.time > next_B)
         {
             didState_B = false;
-            Debug.Log("B 쿨타임 해제");
         }
         if (didState_C && Time.time > next_C)
         {
             didState_C = false;
-            Debug.Log("C 쿨타임 해제");
         }
         if (didState_D && Time.time > next_D)
         {
             didState_D = false;
-            Debug.Log("D 쿨타임 해제");
         }
         if (didState_E && Time.time > next_E)
         {
             didState_E = false;
-            Debug.Log("E 쿨타임 해제");
         }
         currentState?.Update(this);
     }
 
 
-    public void ChangeState(IEnemyState _state)
+    public void ChangeState(IPuppeteerState _state)
     {
         if (currentState == _state) return;
         if (_state == null)
@@ -169,27 +168,27 @@ public class E_PuppeteerController : MonoBehaviour
         //    didStateRLH = true;
         //    next_RLH = Time.time + coolTime_state;
         //}
-        if (currentState is PatternB_State)
+        if (currentState is P_PatternB_State)
         {
             didState_B = true;
             next_B = Time.time + coolTime_B;
         }
-        else if (currentState is PatternA_State)
+        else if (currentState is P_PatternA_State)
         {
             didState_A = true;
             next_A = Time.time + coolTime_A;
         }
-        else if (currentState is PatternC_State)
+        else if (currentState is P_PatternC_State)
         {
             didState_C = true;
             next_C = Time.time + coolTime_C;
         }
-        else if (currentState is PatternD_State)
+        else if (currentState is P_PatternD_State)
         {
             didState_D = true;
             next_D = Time.time + coolTime_D;
         }
-        else if (currentState is PatternE_State)
+        else if (currentState is P_PatternE_State)
         {
             didState_E = true;
             next_E = Time.time + coolTime_E;

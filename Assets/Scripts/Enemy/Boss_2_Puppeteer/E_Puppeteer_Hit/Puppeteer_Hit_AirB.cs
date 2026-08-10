@@ -1,30 +1,26 @@
 using UnityEngine;
 
-//착지 전 공격 코드
-public class Enemy_Hit_B : MonoBehaviour
+public class Puppeteer_Hit_AirB : MonoBehaviour
 {
     E_PuppeteerController e_Puppeteer;
-    float[] damage = { 400, 300 };
-    float addGroggy = 100;
-    float[] decreaseDrive ={ 300 , 250};
+    float damage = 300f;
+    float addGroggy = 100f;
+    float decreaseDrive = 0f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         e_Puppeteer = GetComponent<E_PuppeteerController>();
     }
-
-    // Update is called once per frame
     void Update()
     {
-        
+
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (e_Puppeteer == null || !e_Puppeteer.isAttaking_B)
+        if (e_Puppeteer == null || !e_Puppeteer.isAttaking_AirB)
         {
             return;
         }
-        int index = e_Puppeteer.count;
 
         IDamageReceiver receiver = collision.GetComponent<IDamageReceiver>();
         if (receiver != null)
@@ -35,13 +31,13 @@ public class Enemy_Hit_B : MonoBehaviour
 
             DamageInfo damageInfo = new DamageInfo
             {
-                damage = damage[index],
+                damage = damage,
                 damageDir = hitDir,
                 knockbackPower = 0,
                 stunTime = 0,
                 // DamageType damageType, 
                 postureDamage = addGroggy,
-                driveDamage = decreaseDrive[index]
+                driveDamage = decreaseDrive
             };
             receiver.ReceiveAttack(damageInfo);
         }

@@ -4,7 +4,7 @@ using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 //평타 2회 후 원거리 딜러에게 점프
-public class PatternB_State : IEnemyState
+public class P_PatternB_State : IPuppeteerState
 {
     float BASE_FPS = 60f;
     Rigidbody2D rb;
@@ -21,7 +21,6 @@ public class PatternB_State : IEnemyState
 
     [Header("처음 대상에게 걸어갈 때")]
     Vector2 targetPos;
-    Vector2 myPos;
     float moveSpeed = 5f; //걸어갈 속도
 
     [Header("점프에 필요한 변수")]

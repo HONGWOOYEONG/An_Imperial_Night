@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IEnemyState
+public interface IPuppeteerState
 {
     public void Enter(E_PuppeteerController controller);
     public void Update(E_PuppeteerController controller);

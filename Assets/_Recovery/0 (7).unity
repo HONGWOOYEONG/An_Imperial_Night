@@ -207,9 +207,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 126469322}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99bf0b654f59fdf44b4c338dac381a8f, type: 3}
+  m_Script: {fileID: 11500000, guid: 852a7b2089599e94d9070b5f443e44b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Puppeteer_Hit_AirB
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_Hit_AirB
 --- !u!1 &184200690
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,9 +298,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 184200690}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35c23352e04afe44fbe9d03d4a0e908e, type: 3}
+  m_Script: {fileID: 11500000, guid: 592ccbf5ec41fe24d8a6e005ac849e32, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Puppeteer_Hit_E
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_DollHitBox
 --- !u!1 &228033251
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,7 +311,7 @@ GameObject:
   m_Component:
   - component: {fileID: 228033252}
   - component: {fileID: 228033254}
-  - component: {fileID: 228033255}
+  - component: {fileID: 228033253}
   m_Layer: 9
   m_Name: MoveBox
   m_TagString: Untagged
@@ -334,6 +334,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1969824336}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &228033253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 228033251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 156ba47130feea14784bb99851543a4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_MoveBox
 --- !u!61 &228033254
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -380,18 +392,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5.710833, y: 6.705458}
   m_EdgeRadius: 0
---- !u!114 &228033255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 228033251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa8b44edb99cb2458c7f6d4c88e4aea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Puppeteer_MoveBox
 --- !u!1 &367868005
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,9 +480,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 367868005}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50ae6458f743d3c40ae35884dc839139, type: 3}
+  m_Script: {fileID: 11500000, guid: be82160e98c9eec42b5321df7cdb759c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Puppeteer_Hit_A
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_Hit_A
   damage:
   - 300
   - 300
@@ -1672,9 +1672,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1509326773}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d4ab6515a825dc4194c270692b67283, type: 3}
+  m_Script: {fileID: 11500000, guid: 6723d6b300676564c9184a57bc49a979, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Puppeteer_Hit_B
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_Hit_B
 --- !u!1 &1931386278
 GameObject:
   m_ObjectHideFlags: 0

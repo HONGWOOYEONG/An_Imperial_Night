@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 //그냥 평타 치기
-public class PatternE_State : IEnemyState
+public class P_PatternE_State : IPuppeteerState
 {
     Collider2D target;
     float BASE_FPS = 60f;

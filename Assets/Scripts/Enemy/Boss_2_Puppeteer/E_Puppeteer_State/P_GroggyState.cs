@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 //그로기 상태
-public class GroggyState : IEnemyState
+public class P_GroggyState : IPuppeteerState
 {
     [SerializeField] float groggyTime = 5f; //그로기 지속 시간
     [SerializeField] float gravity = 2f; //그로기 상태일 때 원래의 중력에 곱해질 값
