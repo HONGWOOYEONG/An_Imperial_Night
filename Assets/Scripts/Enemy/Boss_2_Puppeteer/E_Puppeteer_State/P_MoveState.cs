@@ -98,7 +98,8 @@ public class P_MoveState : IPuppeteerState
                 float distance_EandM = Vector2.Distance(myPos, meleePos);
 
                 //Å¸°Ù ¼³Á¤
-                controller.targetPlayer = (distance_EandR <= distance_EandM) ? controller.rangedDealer : controller.meleeDealer;          
+                controller.targetPlayer = (distance_EandR <= distance_EandM) ? controller.rangedDealer : controller.meleeDealer;    
+                
             }
             else
             {

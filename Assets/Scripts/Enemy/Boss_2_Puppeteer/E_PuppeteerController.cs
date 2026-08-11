@@ -70,6 +70,7 @@ public class E_PuppeteerController : MonoBehaviour
 
     [Header("C")]
     [HideInInspector] public bool isCase_1 = false; //케이스 1과 2를 구분하기 위한 변수
+    [HideInInspector] public bool isRaged = false;
     [HideInInspector] public int countAtk = 0;
 
     [Header("D")]

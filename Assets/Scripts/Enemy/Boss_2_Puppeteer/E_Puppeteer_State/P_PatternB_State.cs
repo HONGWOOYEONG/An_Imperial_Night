@@ -26,7 +26,6 @@ public class P_PatternB_State : IPuppeteerState
     [Header("점프에 필요한 변수")]
     float jumpForce = 6f; //최고점 높이
     float maxRange = 10f; //최대 사거리 (미정)
-    float jumpDuration = 0f; //점프 지속 시간
                              // float gravityPower = 1.5f; //떨어질 때 힘
     float minJumpDuration = 0.4f; //가까울 때 공중에 머무를 최소 시간
     float maxJumpDuration = 1.0f; //멀 때 공중에 머무를 최대 시간
