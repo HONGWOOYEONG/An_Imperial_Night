@@ -4,9 +4,11 @@ using UnityEngine.InputSystem;
 
 public class AugmentManager : MonoBehaviour
 {
+    public static AugmentManager Instance { get; private set; }
     [SerializeField] private GameObject augmentPanel;
 
     private List<Dictionary<string, object>> data;
+    float remainingN;
 
     [Header("CardList")]
     [SerializeField] private AugmentCard[] augmentCards;
@@ -22,20 +24,36 @@ public class AugmentManager : MonoBehaviour
         augmentPanel.SetActive(false);
     }
 
-    // Update is called once per frame
-    public void RandomAugment()
+    public void StartAugmentSequence(int n)
     {
-        Debug.Log("RandomAugment");
+        if (n <= 0) return;
+        remainingN = n;
+        ShowNextAugment();
 
-        Debug.Log(data);
-        Debug.Log(augmentPanel);
-        Debug.Log(augmentCards);
+    }
+
+    private void ShowNextAugment()
+    {
+        if (remainingN <= 0)
+        {
+            augmentPanel.SetActive(false);
+            return;
+        }
+
+        RandomAugment();
+    }
+
+    private void RandomAugment()
+    {
+        List<int> pool = new List<int>();
+        for(int i=0; i< data.Count; i++) pool.Add(i); 
 
         for (int i = 0; i < augmentCards.Length; i++)
         {
-            Debug.Log($"Card {i}: {augmentCards[i]}");
+            if (pool.Count == 0) break;
 
-            int index = Random.Range(0, data.Count);
+            int poolIndex = Random.Range(0, pool.Count);
+            int index = pool[poolIndex];
 
             augmentCards[i].SetData(data[index], ApplyAugment);
         }
@@ -44,11 +62,13 @@ public class AugmentManager : MonoBehaviour
     }
     public void ApplyAugment(Dictionary<string, object> augmentData)
     {
-        // 테스트용으로 선택된 증강체 이름 출력
-        Debug.Log($"선택한 증강체: {augmentData["Name"]}");
+        remainingN--;
 
         // 선택 완료 후 증강체 선택창 숨김
         augmentPanel.SetActive(false);
+
+        //남아있으면 반복
+        ShowNextAugment();
     }
 
     public void OnCrouch(InputValue value)
