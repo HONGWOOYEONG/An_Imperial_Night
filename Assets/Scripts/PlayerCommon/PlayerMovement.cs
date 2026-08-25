@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Vector2 moveInput;
+    private PlayerTarget playerTarget;
 
 
     private int facingDirection = 1;
@@ -28,6 +29,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Coroutine dashCoroutine;
 
+    public bool HasMoveInput => Mathf.Abs(moveInput.x) > 0.01f;
+
 
     public bool IsJumpCharging => isJumpCharging;
     public int FacingDirection => facingDirection;
@@ -42,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerTarget = GetComponentInChildren<PlayerTarget>();
 
         defaultGravityScale = rb.gravityScale;
 
@@ -94,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
 
     //    if (!isGrounded)
     //        return;
-      
+
 
     //    isGrounded = false;
 
@@ -104,6 +108,13 @@ public class PlayerMovement : MonoBehaviour
     //    );
     //}
 
+    public void OnCrouch(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        playerTarget.ToggleLockOn();
+    } //추후 인풋 매니저 설정
 
 
     public void SetDefending(bool defending)
@@ -181,6 +192,17 @@ public class PlayerMovement : MonoBehaviour
             facingDirection = -1;
             Flip();
         }
+    }
+    public void SetFacingDirection(int direction)
+    {
+        if (direction == 0)
+            return;
+
+        if (facingDirection == direction)
+            return;
+
+        facingDirection = direction;
+        Flip();
     }
 
     private void Flip()
