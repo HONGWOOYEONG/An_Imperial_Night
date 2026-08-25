@@ -6,9 +6,11 @@ TagManager:
   tags:
   - Ground
   - Floor
-  - Enemy
-  - CloseRangeDealer
   - RangedDealer
+  - DamageDealer
+  - Enemy_Doll
+  - Enemy_Puppeteer
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -16,10 +18,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - EnemyBody
+  - Player
+  - Ground
+  - EnemyDetector
   - 
   - 
   - 
