@@ -57,7 +57,7 @@ public class P_PatternD_State : IPuppeteerState
             }
             else
             {             
-                controller.ChangeState(controller.idle);
+                controller.ChangeState(controller.states["idle"]);
             }
         }
         else //태자 전하가 목표인 경우
@@ -73,7 +73,7 @@ public class P_PatternD_State : IPuppeteerState
                 }
                 else
                 {
-                    controller.ChangeState(controller.idle);
+                    controller.ChangeState(controller.states["idle"]);
                 }
             }
         }

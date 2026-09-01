@@ -1,39 +1,28 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class E_PuppeteerController : MonoBehaviour
 {
-    public IPuppeteerState currentState;
-    public IPuppeteerState chooseState;
-    Rigidbody2D rb;
+    [SerializeField] public float BASE_FPS = 60f;
+    [SerializeField] public IPuppeteerState currentState;
+    [SerializeField] public IPuppeteerState chooseState;
+    [SerializeField] public Rigidbody2D rb;
 
     [Header("상태")]
-    public IPuppeteerState idle;
-    public IPuppeteerState groggy;
-    public IPuppeteerState move;
-    public IPuppeteerState A;
-    public IPuppeteerState B;
-    public IPuppeteerState C;
-    public IPuppeteerState D;
-    public IPuppeteerState E;
+    public Dictionary<string, IPuppeteerState> states;
 
 
     [Header("상태 쿨타임")]
+    public Dictionary<Type,float> cooldowns = new Dictionary<Type, float>();
     [SerializeField] float coolTime_A = 15f;
     [SerializeField] float coolTime_B = 17f;
-    [SerializeField] float coolTime_C = 20f; //아직 정해지지않음 임의의 값
+    [SerializeField] float coolTime_C = 20f; //임의
     [SerializeField] float coolTime_D = 12f;
     [SerializeField] float coolTime_E = 13f;
-    //쿨타임을 위한 변수
-    public bool didState_A = false;
-    public bool didState_B = false;
-    public bool didState_C = false; 
-    public bool didState_D = false;
-    public bool didState_E = false;
-    float next_A = 0f;
-    float next_B = 0f;
-    float next_C = 0f;
-    float next_D = 0f;
-    float next_E = 0f;
+    [SerializeField] float coolTime_F = 13f; //임의
+    [SerializeField] float coolTime_G = 13f; //임의
+
 
     [Header("체력")]
     [SerializeField] float maxHealth = 1000f;
@@ -69,9 +58,7 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public int count = 0;
 
     [Header("C")]
-    [HideInInspector] public bool isCase_1 = false; //케이스 1과 2를 구분하기 위한 변수
-    [HideInInspector] public bool isRaged = false;
-    [HideInInspector] public int countAtk = 0;
+    public float rangeToPlayer_C = 3f; //임의 
 
     [Header("D")]
     [HideInInspector] public bool isFar = false; //회월이랑 태자랑 먼지 알기위한 변수
@@ -81,23 +68,46 @@ public class E_PuppeteerController : MonoBehaviour
     public GameObject HitBox_E;
     [HideInInspector] public bool isAttaking_E = false;
 
+    [Header("F")]
+    public GameObject spiderWeb; //거미줄
+    public GameObject spiderwebSwamp; //거미줄 늪
+    public GameObject spiderwebPillar; //거미줄 기둥
+    public Transform throwFire; //거미줄 던지는 위치
+    [HideInInspector]public GameObject leftSpiderWeb;
+    [HideInInspector]public GameObject rightSpiderWeb;
+    [HideInInspector] public GameObject leftSpiderWebSwamp;
+    [HideInInspector] public GameObject rightSpiderWebSwamp;
+    [HideInInspector] public bool isPatternEnded_F = false;
+    public float rangeToPlayer_F = 3f; //n1 (임의)
+    public float enemyRange = 6f; //n2 (임의)
+
+    [Header("G")]
+    public float minRange = 2f; //n1 이상 (임의)
+    public float maxRange = 4f; //n2 이하 (임의)
+
+
     void Start()
     {
-        idle = new P_IdleState();
-        groggy = new P_GroggyState();
-        move = new P_MoveState();
-        A = new P_PatternA_State();
-        B = new P_PatternB_State();
-        C = new P_PatternC_State();
-        D = new P_PatternD_State();
-        E = new P_PatternE_State();
+        states = new Dictionary<string, IPuppeteerState>{
+            { "idle", new P_IdleState() },
+            { "groggy", new P_GroggyState() }, 
+            { "move", new P_MoveState() }, 
+            { "A", new P_PatternA_State() }, 
+            { "B", new P_PatternB_State() }, 
+            { "C", new P_PatternC_State() },
+            { "D", new P_PatternD_State() },
+            { "E", new P_PatternE_State() },
+            { "F", new P_PatternF_State() },
+            { "G", new P_PatternG_State() }
+        };
+
 
         rb = GetComponent<Rigidbody2D>();
         currentGroggy = 0f;
         currentHelth = maxHealth;
 
         FindPlayers();
-        ChangeState(idle); //첫 시작할 때 Idle 상태로 변환   
+        ChangeState(states["idle"]); //첫 시작할 때 Idle 상태로 변환   
     }
 
     void Update()
@@ -114,30 +124,11 @@ public class E_PuppeteerController : MonoBehaviour
         }
         if (isGroggy) //그로기수치 이상이 되면 강제로 그로기 상태로 변환
         {
-            ChangeState(groggy);
+            ChangeState(states["groggy"]);
         }
 
         //상태 쿨타임 해제
-        if (didState_A && Time.time > next_A)
-        {
-            didState_A = false;
-        }
-        if (didState_B && Time.time > next_B)
-        {
-            didState_B = false;
-        }
-        if (didState_C && Time.time > next_C)
-        {
-            didState_C = false;
-        }
-        if (didState_D && Time.time > next_D)
-        {
-            didState_D = false;
-        }
-        if (didState_E && Time.time > next_E)
-        {
-            didState_E = false;
-        }
+      
         currentState?.Update(this);
     }
 
@@ -147,9 +138,9 @@ public class E_PuppeteerController : MonoBehaviour
         if (currentState == _state) return;
         if (_state == null)
         {
-            if (idle != null && currentState != idle)
+            if (states["idle"] != null && currentState != states["idle"])
             {
-                ChangeState(idle);
+                ChangeState(states["idle"]);
             }
             return;
         }
@@ -164,38 +155,40 @@ public class E_PuppeteerController : MonoBehaviour
 
     void SetState() //쿨타임 시작
     {
-        //if(currentState is  RunLikeHorseState)
-        //{
-        //    didStateRLH = true;
-        //    next_RLH = Time.time + coolTime_state;
-        //}
+        cooldowns[currentState.GetType()] = Time.time + GetCooldown(currentState);
+    }
+    float GetCooldown(IPuppeteerState state)
+    {
+        if (currentState is P_PatternA_State)
+        {
+            return coolTime_A;
+        }
         if (currentState is P_PatternB_State)
         {
-            didState_B = true;
-            next_B = Time.time + coolTime_B;
+            return coolTime_B;
         }
-        else if (currentState is P_PatternA_State)
+        if (currentState is P_PatternC_State)
         {
-            didState_A = true;
-            next_A = Time.time + coolTime_A;
+            return coolTime_C;
         }
-        else if (currentState is P_PatternC_State)
+        if (currentState is P_PatternD_State)
         {
-            didState_C = true;
-            next_C = Time.time + coolTime_C;
+            return coolTime_D;
         }
-        else if (currentState is P_PatternD_State)
+        if (currentState is P_PatternE_State)
         {
-            didState_D = true;
-            next_D = Time.time + coolTime_D;
+            return coolTime_E;
         }
-        else if (currentState is P_PatternE_State)
+        if (currentState is P_PatternF_State)
         {
-            didState_E = true;
-            next_E = Time.time + coolTime_E;
+            return coolTime_F;
         }
+        if (currentState is P_PatternG_State)
+        {
+            return coolTime_G;
+        }
+        return 0f;
     }
-
     void FindPlayers()
     {
 

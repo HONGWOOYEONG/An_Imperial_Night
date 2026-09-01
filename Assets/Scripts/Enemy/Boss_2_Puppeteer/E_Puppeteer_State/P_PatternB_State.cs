@@ -157,7 +157,6 @@ public class P_PatternB_State : IPuppeteerState
 
             controller.transform.position = currentPos;
             yield return null;
-
         }
         controller.transform.position = targetDestination;
         //원거리 딜러에게 포물선 점프
@@ -167,7 +166,7 @@ public class P_PatternB_State : IPuppeteerState
         controller.HitBox_B.SetActive(false);
         yield return new WaitForSeconds(backAtkDelay / BASE_FPS); //착지 후 공격 후딜레이
 
-        controller.ChangeState(controller.idle);
+        controller.ChangeState(controller.states["idle"]);
         startB = false;
     
 }}

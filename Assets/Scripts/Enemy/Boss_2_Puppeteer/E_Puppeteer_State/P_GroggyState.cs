@@ -31,7 +31,7 @@ public class P_GroggyState : IPuppeteerState
         {
             nextStateTime = 0f;
             rb.gravityScale = normalGravity; //원래 중력 값으로 복귀
-            controller.ChangeState(controller.idle);
+            controller.ChangeState(controller.states["idle"]);
         }
     }
 }

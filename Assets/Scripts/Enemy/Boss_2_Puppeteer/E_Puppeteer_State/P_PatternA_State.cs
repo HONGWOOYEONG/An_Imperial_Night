@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class P_PatternA_State : IPuppeteerState
 {
-    float BASE_FPS = 60f;
+    private E_PuppeteerAction action = new E_PuppeteerAction();
     public float patternFrontDeley = 41f; //패턴 선딜레이
     public float[] frontDelay = { 5, 5, 5, 5, 30 }; //선딜레이
     public float[] backDelay = { 3, 3, 3, 3, 50 }; //후딜레이
@@ -47,8 +47,8 @@ public class P_PatternA_State : IPuppeteerState
         }
         //돌진
         if (isRushing)
-        {           
-            controller.transform.position = Vector2.MoveTowards(controller.transform.position, playerPos, rushSpeed * Time.deltaTime);
+        {
+            action.Rush(controller, playerPos, rushSpeed);
         }
     }
 
@@ -62,37 +62,28 @@ public class P_PatternA_State : IPuppeteerState
             {
                 if(controller.rangedDealer != null && controller.meleeDealer != null)
                 {
-                    Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
-                    Vector2 meleeD = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
-                    float rangedDis = Vector2.Distance(controller.transform.position, rangedD); //적과 원거리 거리 계산
-                    float meleeDis = Vector2.Distance(controller.transform.position, meleeD); //적과 근거리 거리 계산
-
-                    controller.targetPlayer = rangedDis > meleeDis ? controller.meleeDealer : controller.rangedDealer;
+                    action.ChangeTarget(controller);
                     Debug.Log("5타째 타겟 변경 완료: " + controller.targetPlayer.name);
                 }             
             }
            
             if (controller.currentCount == 0)
             {
-                yield return new WaitForSeconds(patternFrontDeley / BASE_FPS); //패턴 선딜
+                yield return new WaitForSeconds(patternFrontDeley / controller.BASE_FPS); //패턴 선딜
             }
 
-            yield return new WaitForSeconds(frontDelay[controller.currentCount] / BASE_FPS); //선딜       
-            controller.isAttaking_A = true;
-            controller.HitBox_A.SetActive(true); //히트박스 킴
-            yield return new WaitForSeconds(attackHoldTime[controller.currentCount] / BASE_FPS);
-            controller.HitBox_A.SetActive(false); //히트박스 끔
-            controller.isAttaking_A = false;
-            yield return new WaitForSeconds(backDelay[controller.currentCount] / BASE_FPS); //후딜
+            yield return new WaitForSeconds(frontDelay[controller.currentCount] / controller.BASE_FPS); //선딜       
+            action.Attack(controller, attackHoldTime);
+            yield return new WaitForSeconds(backDelay[controller.currentCount] / controller.BASE_FPS); //후딜
 
             if (controller.currentCount == 4)
             {
-                yield return new WaitForSeconds(reBackDelay / BASE_FPS); //복귀 후 후딜레이
+                yield return new WaitForSeconds(reBackDelay / controller.BASE_FPS); //복귀 후 후딜레이
             }
             controller.currentCount++;
         }
 
-        controller.ChangeState(controller.idle);
+        controller.ChangeState(controller.states["idle"]);
     }
 
 

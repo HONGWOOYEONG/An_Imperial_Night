@@ -74,6 +74,6 @@ public class P_PatternE_State : IPuppeteerState
             num+=1;
             yield return null;
         }
-        controller.ChangeState(controller.idle);
+        controller.ChangeState(controller.states["idle"]);
     }
 }
