@@ -5,6 +5,7 @@ public class PlayerContext : MonoBehaviour
 {
     private Transform thisTransform;
     private Vector3 currentPosition;
+    private bool doTransPosition;
 
     private void Awake()
     {
@@ -20,5 +21,10 @@ public class PlayerContext : MonoBehaviour
     public Vector3 getPosition()
     {
         return currentPosition;
+    }
+
+    public void setTransPosition()
+    {
+        doTransPosition = true;
     }
 }

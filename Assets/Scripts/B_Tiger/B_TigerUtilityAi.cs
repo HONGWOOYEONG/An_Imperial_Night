@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
+癤퓎sing System.Collections.Generic;
 using UnityEngine;
 
 public class B_TigerUtilityAI : MonoBehaviour
@@ -8,82 +6,102 @@ public class B_TigerUtilityAI : MonoBehaviour
     [Header("Pattern List")]
     [SerializeField] private List<BossPatternData> patterns;
 
-    private B_TigerContext B_TigerContext;
+    private B_TigerContext bTigerContext;
 
     [Header("Playable Character")]
-    [SerializeField]private PlayerContext H_playerContext;
-    [SerializeField]private PlayerContext T_playerContext;
+    [SerializeField] private PlayerContext hPlayerContext;
+    [SerializeField] private PlayerContext tPlayerContext;
 
     private void Awake()
     {
-        B_TigerContext = GetComponent<B_TigerContext>();
+        bTigerContext = GetComponent<B_TigerContext>();
+    }
+
+    public void SetTarget(PlayerContext playerContext)
+    {
+        hPlayerContext = playerContext;
     }
 
     public BossPatternData SelectPattern()
     {
-        List<float> patternsScores = new List<float>();
+        if (bTigerContext == null || hPlayerContext == null)
+        {
+            return null;
+        }
+
+        List<float> patternScores = new List<float>();
         float totalWeight = 0f;
 
         foreach (BossPatternData pattern in patterns)
         {
             float score = EvaluatePattern(pattern);
-            
-            patternsScores.Add(score);
+            patternScores.Add(score);
             totalWeight += score;
         }
 
-        if (totalWeight <= 0f) return null; // 추후 쿨타임시 작동하는 패턴으로 설정
+        if (totalWeight <= 0f)
+        {
+            return null;
+        }
 
         float randomValue = Random.Range(0f, totalWeight);
 
         for (int i = 0; i < patterns.Count; i++)
         {
-            randomValue -= patternsScores[i];
+            randomValue -= patternScores[i];
 
-            if (randomValue <= 0f) return patterns[i];
+            if (randomValue <= 0f)
+            {
+                return patterns[i];
+            }
         }
 
         return null;
-
     }
 
     private float EvaluatePattern(BossPatternData pattern)
     {
-        if (IsOnCooldown(pattern)) return 0;
-
-        float currentDistance = GetTargetDistance();
-
-        if (currentDistance < pattern.minDistance ||currentDistance > pattern.maxDistance)
+        if (pattern == null)
         {
             return 0f;
         }
 
-        float distanceScore = CalculateDistanceScore(currentDistance,pattern);
-        float finalScore = pattern.baseWeight * distanceScore;
+        if (IsOnCooldown(pattern))
+        {
+            return 0f;
+        }
 
-        return finalScore;
+        float currentDistance = GetTargetDistance();
+        if (currentDistance < pattern.minDistance || currentDistance > pattern.maxDistance)
+        {
+            return 0f;
+        }
+
+        float distanceScore = CalculateDistanceScore(currentDistance, pattern);
+        return pattern.baseWeight * distanceScore;
     }
 
     private bool IsOnCooldown(BossPatternData pattern)
     {
-        if(pattern == null) return false;
-        if (B_TigerContext.GetPattern(pattern.patternId) + pattern.skillCooldown < Time.time) return false;
-        // lastUsed랑 쿨타임 더해서 Time.time보다 작으면 false
-        return true;
+        float lastUsedTime = bTigerContext.GetPattern(pattern.patternId);
+        return lastUsedTime + pattern.skillCooldown >= Time.time;
     }
 
     private float GetTargetDistance()
     {
-         
-        return Vector3.Distance(B_TigerContext.getCurrentPosition(), H_playerContext.getPosition());
+        return Vector3.Distance(bTigerContext.GetCurrentPosition(), hPlayerContext.getPosition());
     }
 
-    private float CalculateDistanceScore(float currentDistance,BossPatternData pattern)
+    private float CalculateDistanceScore(float currentDistance, BossPatternData pattern)
     {
         float distanceFromPreferred = Mathf.Abs(currentDistance - pattern.preferredDistance);
         float range = pattern.maxDistance - pattern.minDistance;
-        
+
+        if (range <= 0f)
+        {
+            return 0f;
+        }
+
         return 1f - (distanceFromPreferred / range);
     }
-
 }

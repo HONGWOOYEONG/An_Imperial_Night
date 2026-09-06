@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+Ôªøusing System.Collections.Generic;
 using UnityEngine;
 
 public class B_TigerContext : MonoBehaviour
@@ -11,35 +11,82 @@ public class B_TigerContext : MonoBehaviour
     private Vector3 currentPosition;
 
     private Dictionary<string, float> patternDict;
+    private PlayerContext targetPlayer;
 
     private void Awake()
     {
         thisTransform = GetComponent<Transform>();
+        patternDict = new Dictionary<string, float>();
     }
 
     private void Update()
     {
-        currentPosition = transform.position;
+        currentPosition = thisTransform.position;
     }
 
-    // ««∞› Ω√ »£√‚«œ±‚
-    public void updateStatus(float hp, float posture)
+    public void SetTarget(PlayerContext player)
+    {
+        targetPlayer = player;
+    }
+
+    public PlayerContext GetTarget()
+    {
+        return targetPlayer;
+    }
+
+    public void UpdateStatus(float hp, float posture)
     {
         currentHP = hp;
         currentPosture = posture;
     }
 
-    public void updatePhase(float phase) { currentPhase = phase; }
-    public void updateLastPattern(string patternID , float lastUsedTime) 
-    { 
+    public void UpdatePhase(float phase)
+    {
+        currentPhase = phase;
+    }
+
+    public void UpdateLastPattern(string patternID, float lastUsedTime)
+    {
+        if (string.IsNullOrEmpty(patternID))
+        {
+            return;
+        }
+
         patternDict[patternID] = lastUsedTime;
     }
 
     public float GetPattern(string patternID)
     {
-        return patternDict[patternID];
+        if (string.IsNullOrEmpty(patternID))
+        {
+            return 0f;
+        }
+
+        if (patternDict.TryGetValue(patternID, out float value))
+        {
+            return value;
+        }
+
+        return 0f;
     }
 
-    public Vector3 getCurrentPosition() { return  currentPosition; }
+    public float GetHP()
+    {
+        return currentHP;
+    }
 
+    public float GetPosture()
+    {
+        return currentPosture;
+    }
+
+    public float GetPhase()
+    {
+        return currentPhase;
+    }
+
+    public Vector3 GetCurrentPosition()
+    {
+        return currentPosition;
+    }
 }

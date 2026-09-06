@@ -130,6 +130,9 @@ GameObject:
   - component: {fileID: 158702851}
   - component: {fileID: 158702850}
   - component: {fileID: 158702852}
+  - component: {fileID: 158702853}
+  - component: {fileID: 158702855}
+  - component: {fileID: 158702854}
   m_Layer: 0
   m_Name: B_Tiger
   m_TagString: Untagged
@@ -223,6 +226,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d90fe61b9a4a6ce49872c065b264aae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::B_TigerContext
+--- !u!114 &158702853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 592f3a27fde98d140801b7f420c639a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::B_TigerFSM
+--- !u!114 &158702854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f52bd1c58d4ad40bafc672a96f73b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::B_TigerController
+  maxHealth: 100
+  currentHealth: 0
+  maxPosture: 5
+  currentPosture: 0
+--- !u!114 &158702855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 189cda89c642dfc42a10f06bd4b3d2ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::B_TigerUtilityAI
+  patterns: []
+  hPlayerContext: {fileID: 0}
+  tPlayerContext: {fileID: 0}
 --- !u!1 &1657560701
 GameObject:
   m_ObjectHideFlags: 0
