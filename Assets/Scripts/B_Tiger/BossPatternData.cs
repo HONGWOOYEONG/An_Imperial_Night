@@ -12,4 +12,10 @@ public class BossPatternData : ScriptableObject
     public float maxDistance;
     public float preferredDistance;
     public string target;
+    public float HPDamage;
+    public float postureDamage;
+    public string damageType;
+    public float driveDamage;
+    public float knockbackPower;
+    public float stunTime;
 }

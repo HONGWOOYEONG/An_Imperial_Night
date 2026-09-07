@@ -9,7 +9,7 @@ public class B_TigerController : MonoBehaviour
     [Header("Status")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private float currentHealth;
-    [SerializeField] private float maxPosture = 5f;
+    [SerializeField] private float maxPosture = 100f;
     [SerializeField] private float currentPosture;
     private bool isGroggy;
     public bool IsGroggy => isGroggy;
@@ -21,7 +21,7 @@ public class B_TigerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         currentHealth = maxHealth;
-        currentPosture = maxPosture;
+        currentPosture = 0f;
         isGroggy = false;
     }
 

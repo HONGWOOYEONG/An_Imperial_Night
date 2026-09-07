@@ -266,7 +266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189cda89c642dfc42a10f06bd4b3d2ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::B_TigerUtilityAI
-  patterns: []
+  patterns:
+  - {fileID: 0}
   hPlayerContext: {fileID: 0}
   tPlayerContext: {fileID: 0}
 --- !u!1 &1657560701

@@ -3,6 +3,7 @@ using UnityEngine;
 public class B_TigerFSM : MonoBehaviour
 {
     public IBossState currentBossState;
+    private StateExecutor StateExecutor;
 
     [Header("State")]
     private IBossState idleState;
@@ -20,6 +21,8 @@ public class B_TigerFSM : MonoBehaviour
         moveState = new BT_MoveState();
 
         ChangeState(idleState);
+
+        StateExecutor = GetComponent<StateExecutor> ();
     }
 
 
