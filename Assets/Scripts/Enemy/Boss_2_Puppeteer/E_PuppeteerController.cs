@@ -17,7 +17,7 @@ public class E_PuppeteerController : MonoBehaviour
     public Dictionary<Type,float> cooldowns = new Dictionary<Type, float>();
     [SerializeField] float coolTime_A = 15f;
     [SerializeField] float coolTime_B = 17f;
-    [SerializeField] float coolTime_C = 20f; //임의
+    [SerializeField] float coolTime_C = 40f; //임의
     [SerializeField] float coolTime_D = 12f;
     [SerializeField] float coolTime_E = 13f;
     [SerializeField] float coolTime_F = 13f; //임의
@@ -59,6 +59,7 @@ public class E_PuppeteerController : MonoBehaviour
 
     [Header("C")]
     public float rangeToPlayer_C = 3f; //임의 
+    public GameObject hitBoxHeadButt;
 
     [Header("D")]
     [HideInInspector] public bool isFar = false; //회월이랑 태자랑 먼지 알기위한 변수
@@ -73,8 +74,6 @@ public class E_PuppeteerController : MonoBehaviour
     public GameObject spiderwebSwamp; //거미줄 늪
     public GameObject spiderwebPillar; //거미줄 기둥
     public Transform throwFire; //거미줄 던지는 위치
-    [HideInInspector]public GameObject leftSpiderWeb;
-    [HideInInspector]public GameObject rightSpiderWeb;
     [HideInInspector] public GameObject leftSpiderWebSwamp;
     [HideInInspector] public GameObject rightSpiderWebSwamp;
     [HideInInspector] public bool isPatternEnded_F = false;
@@ -146,44 +145,50 @@ public class E_PuppeteerController : MonoBehaviour
         }
         if (currentState != null)
         {
+            var prevState = currentState;
             currentState.Exit(this); //이전 상태의 Exit 실행
-            SetState(); //실행했던 state 쿨타임적용
+            if (!(prevState is P_IdleState) && !(prevState is P_MoveState))
+                SetState(prevState); // 이전 상태 기준으로 쿨타임 등록
         }
         currentState = _state; //현재 state를 넣어줌
         currentState.Enter(this); //현재 상태의 Enter 실행
+
+        
+          
     }
 
-    void SetState() //쿨타임 시작
+    public void SetState(IPuppeteerState state) //쿨타임 시작
     {
-        cooldowns[currentState.GetType()] = Time.time + GetCooldown(currentState);
+        cooldowns[state.GetType()] = Time.time + GetCooldown(state);
+        Debug.Log($"{state.GetType()} 쿨타임: {GetCooldown(state)}");
     }
     float GetCooldown(IPuppeteerState state)
     {
-        if (currentState is P_PatternA_State)
+        if (state is P_PatternA_State)
         {
             return coolTime_A;
         }
-        if (currentState is P_PatternB_State)
+        if (state is P_PatternB_State)
         {
             return coolTime_B;
         }
-        if (currentState is P_PatternC_State)
+        if (state is P_PatternC_State)
         {
             return coolTime_C;
         }
-        if (currentState is P_PatternD_State)
+        if (state is P_PatternD_State)
         {
             return coolTime_D;
         }
-        if (currentState is P_PatternE_State)
+        if (state is P_PatternE_State)
         {
             return coolTime_E;
         }
-        if (currentState is P_PatternF_State)
+        if (state is P_PatternF_State)
         {
             return coolTime_F;
         }
-        if (currentState is P_PatternG_State)
+        if (state is P_PatternG_State)
         {
             return coolTime_G;
         }
@@ -195,7 +200,7 @@ public class E_PuppeteerController : MonoBehaviour
         colliders = Physics2D.OverlapCircleAll(transform.position, detectRange);
         foreach (Collider2D collider in colliders)
         {
-            if (collider.gameObject.CompareTag("DamageDealer")) //근딜이라면
+            if (collider.gameObject.CompareTag("MeleeDealer")) //근딜이라면
             {
                 meleeDealer = collider;
             }

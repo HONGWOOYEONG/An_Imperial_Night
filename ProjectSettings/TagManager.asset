@@ -7,10 +7,9 @@ TagManager:
   - Ground
   - Floor
   - RangedDealer
-  - DamageDealer
-  - Enemy_Doll
   - Enemy_Puppeteer
   - Enemy
+  - MeleeDealer
   layers:
   - Default
   - TransparentFX

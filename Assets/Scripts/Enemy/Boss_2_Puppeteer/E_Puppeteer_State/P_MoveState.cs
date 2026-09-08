@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 //적과 타겟 플레이어간의 일정 거리 이상일 경우에 move State인거고 거리보다 가까워지면 chooseState로 상태 변환됨
 public class P_MoveState : IPuppeteerState
 {
+    E_PuppeteerAction action = new E_PuppeteerAction();
     float moveSpeed = 5f; // 이동 속도
 
     Vector2 enemyPos;
@@ -11,7 +11,7 @@ public class P_MoveState : IPuppeteerState
 
 
     [Header("PatternD")]
-    float range_RandD = 6f; //두 사람의 거리를 비교할 때 사용할 변수
+    float rangeBetweenPlayer = 6f; //두 사람의 거리를 비교할 때 사용할 변수
 
     public void Enter(E_PuppeteerController controller) //이 State가 실행될 때 처음에 한번 실행됨
     {
@@ -59,7 +59,7 @@ public class P_MoveState : IPuppeteerState
     {
         if (controller.chooseState == null) return;
 
-        if (controller.chooseState is P_PatternA_State) //선택된 상태가 인형돌진이라면
+        if (controller.chooseState is P_PatternA_State) 
         {
             Vector2 rangedD = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
             Vector2 meleeD = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
@@ -69,21 +69,13 @@ public class P_MoveState : IPuppeteerState
             //더 가까운 플레이어 캐릭터를 targetPlayer에 넣어줌
             controller.targetPlayer = disToRanged > disToMelee ? controller.meleeDealer : controller.rangedDealer;         
         }
-        else if (controller.chooseState is P_PatternB_State) //원거리딜러에게 점프
+        else if (controller.chooseState is P_PatternB_State) 
         {
-            int randomNum = Random.Range(1, 3);
-            controller.targetPlayer = (randomNum == 1) ? controller.meleeDealer : controller.rangedDealer;
+            action.SetNearTargetPlayer(controller);
         }
         else if (controller.chooseState is P_PatternC_State)
         {
-            Vector2 myPos = controller.transform.position;
-            Vector2 rangedPos = new Vector2(controller.rangedDealer.transform.position.x, controller.transform.position.y);
-            Vector2 meleePos = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
-            float disToRanged = Vector2.Distance(myPos, rangedPos);
-            float disToMelee = Vector2.Distance(myPos, meleePos);
-
-            controller.targetPlayer = disToRanged >= disToMelee ? controller.meleeDealer : controller.rangedDealer;
-
+            action.SetNearTargetPlayer(controller);
         }
         else if (controller.chooseState is P_PatternD_State)
         {
@@ -91,7 +83,7 @@ public class P_MoveState : IPuppeteerState
             Vector2 meleeDis = new Vector2(controller.meleeDealer.transform.position.x, controller.transform.position.y);
             float distanceBetweenPlayers = Vector2.Distance(rangedDis, meleeDis); //회월 스님과 태자 전하의 거리를 계산
              
-            if (distanceBetweenPlayers < range_RandD) //계산한 거리가 n보다 가깝다면
+            if (distanceBetweenPlayers < rangeBetweenPlayer) //계산한 거리가 n보다 가깝다면
             {
                 controller.isFar = false;
                 controller.targetPlayer = controller.rangedDealer; //태자전하가 목표가 됨

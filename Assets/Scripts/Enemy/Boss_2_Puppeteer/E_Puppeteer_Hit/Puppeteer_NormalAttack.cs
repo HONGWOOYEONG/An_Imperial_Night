@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Puppeteer_Hit_A : MonoBehaviour
+public class Puppeteer_NormalAttack : MonoBehaviour
 {
     E_PuppeteerController e_Puppeteer;
     public float[] damage = { 300, 300, 300, 300, 500 }; //피해량
@@ -8,7 +8,6 @@ public class Puppeteer_Hit_A : MonoBehaviour
     public float[] decreaseDrive = { 250, 250, 250, 250, 500 };//방어 시 드라이브게이지 감소량
     public float[] addGroggy = { 70, 70, 70, 70, 400 }; //방어 시 체간 게이지 증가량
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         e_Puppeteer = GetComponent<E_PuppeteerController>();

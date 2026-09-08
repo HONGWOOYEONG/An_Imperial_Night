@@ -62,7 +62,8 @@ public class P_PatternA_State : IPuppeteerState
             {
                 if(controller.rangedDealer != null && controller.meleeDealer != null)
                 {
-                    action.ChangeTarget(controller);
+                    //5타 치기 전에 한 번 더 가까운 타겟 탐색
+                    action.SetNearTargetPlayer(controller);
                     Debug.Log("5타째 타겟 변경 완료: " + controller.targetPlayer.name);
                 }             
             }
@@ -73,7 +74,7 @@ public class P_PatternA_State : IPuppeteerState
             }
 
             yield return new WaitForSeconds(frontDelay[controller.currentCount] / controller.BASE_FPS); //선딜       
-            action.Attack(controller, attackHoldTime);
+            yield return action.NormalAttack(controller, attackHoldTime[controller.currentCount]);
             yield return new WaitForSeconds(backDelay[controller.currentCount] / controller.BASE_FPS); //후딜
 
             if (controller.currentCount == 4)

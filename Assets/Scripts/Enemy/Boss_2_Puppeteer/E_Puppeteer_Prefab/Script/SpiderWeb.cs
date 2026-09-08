@@ -3,10 +3,11 @@ using UnityEngine;
 
 public class SpiderWeb : MonoBehaviour
 {
+    private PlayerMovement playerMovement;
     private E_PuppeteerController controller;
     private Vector2 instantiatePos;
     private Vector2 startPos; //시작
-    [SerializeField]public Vector2 endPos; //끝
+    [SerializeField] public Vector2 endPos; //끝
     private float addY = 1f;
     private float moveSpeed = 16f;
     void Start()
@@ -25,7 +26,7 @@ public class SpiderWeb : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(controller.currentState is P_PatternF_State)
+        if (controller.currentState is P_PatternF_State || controller.currentState is P_PatternC_State)
         {
             if (other.gameObject.tag == "Ground")
             {
@@ -36,13 +37,23 @@ public class SpiderWeb : MonoBehaviour
                 Debug.Log("거미줄 늪 생성");
                 Destroy(gameObject);
             }
-            else if (other.gameObject.tag == "RangedDealer" || other.gameObject.tag == "DamageDealer")
+            else if (other.gameObject.tag == "RangedDealer" || other.gameObject.tag == "MeleeDealer")
             {
                 Debug.Log("spiderWeb " + other.tag + " 명중");
+
                 Debug.Log(other.tag + " 포박");
+
+
                 //포박 상태 이동을 못하게만들고 거미줄 덩어리의 도착 지점까지 넉백을 시킴
+                playerMovement = other.gameObject.GetComponent<PlayerMovement>();
+                playerMovement.isMoving = false; //포박상태
+                Debug.Log(other.name + "포박");
+
+                Vector2 myPos = controller.transform.position;
+                Vector2 targetPos = new Vector2(other.gameObject.transform.position.x, controller.transform.position.y);
+                Vector2 dirToTarget = (targetPos - myPos).normalized;
+                playerMovement.KnockBack(dirToTarget); //넉백
                
-                Debug.Log(other.tag + "넉백");
                 instantiatePos = new Vector2(endPos.x, endPos.y + addY);
                 Instantiate(controller.spiderwebSwamp, instantiatePos, Quaternion.identity);
                 Debug.Log("거미줄 늪 생성");
