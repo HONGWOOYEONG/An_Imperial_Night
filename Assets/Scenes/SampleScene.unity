@@ -1018,6 +1018,9 @@ MonoBehaviour:
   dashPower: 45
   dashCooldown: 0
   dashDuration: 0.075
+  percent: 0
+  isSlowMoving: 0
+  isMoving: 0
   jumpPower: 6
 --- !u!114 &425567009
 MonoBehaviour:
@@ -3345,7 +3348,7 @@ GameObject:
   - component: {fileID: 1351544780}
   m_Layer: 0
   m_Name: Player_H
-  m_TagString: CloseRangeDealer
+  m_TagString: MeleeDealer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3366,6 +3369,9 @@ MonoBehaviour:
   dashPower: 30
   dashCooldown: 0
   dashDuration: 0.1
+  percent: 0
+  isSlowMoving: 0
+  isMoving: 0
   jumpPower: 7
 --- !u!114 &1351544769
 MonoBehaviour:

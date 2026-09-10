@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashPower = 30f;
     [SerializeField] private float dashCooldown = 1f;
     [SerializeField] private float dashDuration = 0.15f;
+    [HideInInspector] public float percent;
 
     private float nextDashTime;
     private float defaultGravityScale;
@@ -26,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isDefending;
     private bool isJumpCharging;
     private bool isDashing;
+    [HideInInspector] public bool isSlowMoving;
+    [HideInInspector] public bool isMoving;
 
     private Coroutine dashCoroutine;
 
@@ -78,13 +81,13 @@ public class PlayerMovement : MonoBehaviour
         isJumpCharging = false;
         isDefending = false;
         isDashing = false;
+        isMoving = true;
+        isSlowMoving = false;
 
         rb.gravityScale = defaultGravityScale;
 
-        // ���߿��� �ʱ�ȭ�Ǵ��� Y�� ���ϴ� �߷¿� �ñ�
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
-        // ��� ���� ��ҵǾ ��Ÿ�� ����
         if (wasDashing)
         {
             nextDashTime = Time.time + dashCooldown;
@@ -161,6 +164,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move()
     {
+        if (!isMoving)
+            return;
+
         if (isDashing)
             return;
 
@@ -174,8 +180,15 @@ public class PlayerMovement : MonoBehaviour
         {
             currentSpeed = defenceSpeed;
         }
+        else if (isSlowMoving)
+        {
+            if(percent != 0 )
+            {
+                currentSpeed = SlowMove(percent);
+            }    
+        }
 
-        rb.linearVelocityX = moveInput.x * currentSpeed;
+            rb.linearVelocityX = moveInput.x * currentSpeed;
 
         UpdateFacingDirection();
     }
@@ -214,6 +227,20 @@ public class PlayerMovement : MonoBehaviour
                 yRotation,
                 0f
             );
+    }
+    
+    public void KnockBack(Vector2 dir) //방향을 매개변수로 가져와서 그 방향으로 넉백
+    {
+        //targetPos까지 플레이어가 넉백해야함
+        float KnockBackPower = 7f;
+        isMoving = false;
+        rb.linearVelocity = Vector2.zero;
+        rb.AddForce(dir * KnockBackPower, ForceMode2D.Impulse);
+    }
+
+    public float SlowMove(float percent) //플레이어가 느려지는 함수
+    {
+        return moveSpeed * percent;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
