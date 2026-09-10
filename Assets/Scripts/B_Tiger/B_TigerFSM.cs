@@ -14,6 +14,8 @@ public class B_TigerFSM : MonoBehaviour
 
     void Start()
     {
+        StateExecutor = GetComponent<StateExecutor> ();
+
         idleState = new BT_IdleState();
         attackState = new BT_AttackState();
         deathState = new BT_DeathState();
@@ -21,8 +23,6 @@ public class B_TigerFSM : MonoBehaviour
         moveState = new BT_MoveState();
 
         ChangeState(idleState);
-
-        StateExecutor = GetComponent<StateExecutor> ();
     }
 
 
