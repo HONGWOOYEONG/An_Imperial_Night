@@ -77,7 +77,7 @@ public class GameSessionManager : MonoBehaviour
 
     public void OnFieldExitPointReached()
     {
-        if (currentField != FieldType.Field && currentField != FieldType.FieldClear) return;
+        if (currentField != FieldType.FieldClear) return;
         currentField = FieldType.Boss;
         currentCurtainTime = curtainTimeMax;
         Debug.Log("보스전 진입");

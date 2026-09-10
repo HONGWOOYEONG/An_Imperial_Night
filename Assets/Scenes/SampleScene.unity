@@ -1018,6 +1018,9 @@ MonoBehaviour:
   dashPower: 45
   dashCooldown: 0
   dashDuration: 0.075
+  percent: 0
+  isSlowMoving: 0
+  isMoving: 0
   jumpPower: 6
 --- !u!114 &425567009
 MonoBehaviour:
@@ -1858,7 +1861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63d3c17d2fa3e0744b5ae440c0445a8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FieldExitTrigger
-  closeRangeTag: CloseRangeDealer
+  meleeDealer: MeleeDealer
   rangedTag: RangedDealer
 --- !u!1 &606746739
 GameObject:
@@ -3345,7 +3348,7 @@ GameObject:
   - component: {fileID: 1351544780}
   m_Layer: 0
   m_Name: Player_H
-  m_TagString: CloseRangeDealer
+  m_TagString: MeleeDealer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3366,6 +3369,9 @@ MonoBehaviour:
   dashPower: 30
   dashCooldown: 0
   dashDuration: 0.1
+  percent: 0
+  isSlowMoving: 0
+  isMoving: 0
   jumpPower: 7
 --- !u!114 &1351544769
 MonoBehaviour:
@@ -4167,7 +4173,6 @@ GameObject:
   - component: {fileID: 1699219209}
   - component: {fileID: 1699219208}
   - component: {fileID: 1699219212}
-  - component: {fileID: 1699219211}
   m_Layer: 0
   m_Name: GameSessionManager
   m_TagString: Untagged
@@ -4191,7 +4196,7 @@ MonoBehaviour:
   remainingFlameCount: 3
   curtainTimeMax: 600
   currentCurtainTime: 30
-  currentField: 1
+  currentField: 2
 --- !u!4 &1699219209
 Transform:
   m_ObjectHideFlags: 0
@@ -4207,36 +4212,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1699219211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699219207}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
-  m_Actions: {fileID: -944628639613478452, guid: fc8d34a0f41f7ec468e9bc5aa0889598, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: PC
-  m_DefaultActionMap: PlayerActions
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &1699219212
 MonoBehaviour:
   m_ObjectHideFlags: 0
