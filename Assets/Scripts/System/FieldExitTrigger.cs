@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FieldExitTrigger : MonoBehaviour
 {
-    [SerializeField] private string closeRangeTag = "CloseRangeDealer";
+    [SerializeField] private string meleeDealer = "MeleeDealer";
     [SerializeField] private string rangedTag = "RangedDealer";
 
     private bool closeRangeInside = false;
@@ -10,7 +10,7 @@ public class FieldExitTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(closeRangeTag))
+        if (other.CompareTag(meleeDealer))
         {
             closeRangeInside = true;
         }
@@ -24,7 +24,7 @@ public class FieldExitTrigger : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag(closeRangeTag))
+        if (other.CompareTag(meleeDealer))
         {
             closeRangeInside = false;
         }

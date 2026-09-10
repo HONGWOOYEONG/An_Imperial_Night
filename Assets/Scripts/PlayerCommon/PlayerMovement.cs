@@ -54,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
 
         jumpSpeed = moveSpeed / 2f;
         defenceSpeed = moveSpeed / 2f;
+
+        isMoving = true;
     }
 
     private void FixedUpdate()
