@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Vector2 moveInput;
+    private PlayerTarget playerTarget;
 
 
     private int facingDirection = 1;
@@ -28,9 +29,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isDashing;
     [HideInInspector] public bool isSlowMoving;
     [HideInInspector] public bool isMoving;
-    private bool isKnockBack;
 
     private Coroutine dashCoroutine;
+
+    public bool HasMoveInput => Mathf.Abs(moveInput.x) > 0.01f;
 
 
     public bool IsJumpCharging => isJumpCharging;
@@ -46,15 +48,14 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerTarget = GetComponentInChildren<PlayerTarget>();
 
         defaultGravityScale = rb.gravityScale;
 
         jumpSpeed = moveSpeed / 2f;
         defenceSpeed = moveSpeed / 2f;
 
-        isSlowMoving = false;
         isMoving = true;
-        isKnockBack = false;
     }
 
     private void FixedUpdate()
@@ -64,10 +65,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnMove(InputValue value)
     {
-        if (!isMoving)
-            return;
-        if (isKnockBack)
-            return;
         moveInput = value.Get<Vector2>();
     }
 
@@ -87,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
         isDefending = false;
         isDashing = false;
         isMoving = true;
+        isSlowMoving = false;
 
         rb.gravityScale = defaultGravityScale;
 
@@ -105,7 +103,7 @@ public class PlayerMovement : MonoBehaviour
 
     //    if (!isGrounded)
     //        return;
-      
+
 
     //    isGrounded = false;
 
@@ -115,6 +113,13 @@ public class PlayerMovement : MonoBehaviour
     //    );
     //}
 
+    public void OnCrouch(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        playerTarget.ToggleLockOn();
+    } //추후 인풋 매니저 설정
 
 
     public void SetDefending(bool defending)
@@ -161,11 +166,13 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move()
     {
-        float currentSpeed;
-        if (isDashing || isKnockBack)
+        if (!isMoving)
             return;
 
-         currentSpeed = moveSpeed;
+        if (isDashing)
+            return;
+
+        float currentSpeed = moveSpeed;
 
         if (isJumpCharging)
         {
@@ -177,10 +184,13 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (isSlowMoving)
         {
-            currentSpeed = SlowMove(percent);
+            if(percent != 0 )
+            {
+                currentSpeed = SlowMove(percent);
+            }    
         }
-        //Debug.Log(currentSpeed);
-        rb.linearVelocityX = moveInput.x * currentSpeed;
+
+            rb.linearVelocityX = moveInput.x * currentSpeed;
 
         UpdateFacingDirection();
     }
@@ -198,6 +208,17 @@ public class PlayerMovement : MonoBehaviour
             Flip();
         }
     }
+    public void SetFacingDirection(int direction)
+    {
+        if (direction == 0)
+            return;
+
+        if (facingDirection == direction)
+            return;
+
+        facingDirection = direction;
+        Flip();
+    }
 
     private void Flip()
     {
@@ -212,23 +233,11 @@ public class PlayerMovement : MonoBehaviour
     
     public void KnockBack(Vector2 dir) //방향을 매개변수로 가져와서 그 방향으로 넉백
     {
-        //f패턴에서 넉백을 사용할 때 거미줄 덩어리 지점까지 넉백된다고 하는데 그렇게 구현하면
-        //넉백이 아니라 밀리는 형상이 나올거 같음 그래서 일단 뒤로 밀리게 구현해놓음
-        isKnockBack = true;
-        float KnockBackPower = 15f;
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-            rb.AddForce(dir * KnockBackPower, ForceMode2D.Impulse);
-            Debug.Log("넉백");
-        }
-        StartCoroutine(EndKnockBack());
-    }
-
-    private IEnumerator EndKnockBack()
-    {
-        yield return new WaitForSeconds(0.2f); // 넉백 지속 시간
-        isKnockBack = false;
+        //targetPos까지 플레이어가 넉백해야함
+        float KnockBackPower = 7f;
+        isMoving = false;
+        rb.linearVelocity = Vector2.zero;
+        rb.AddForce(dir * KnockBackPower, ForceMode2D.Impulse);
     }
 
     public float SlowMove(float percent) //플레이어가 느려지는 함수

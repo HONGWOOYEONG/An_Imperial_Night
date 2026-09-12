@@ -51,36 +51,39 @@ public class H_Posture : MonoBehaviour
             return;
         }
 
-        if (hDef.IsParrying)
+        if(Vector2.Dot(new Vector2(playerMovement.FacingDirection,0),damageInfo.damageDir) > 0) //내적으로 전방 180 범위까지 판단
         {
-            Debug.Log("패링 성공");
-            tDef.driveGauge += parryOnDrive;
-            if(tDef.driveGauge > tDef.dg_max) tDef.driveGauge = tDef.dg_max;
-            return;
-        }
-
-        if (hDef.IsDefending)
-        {
-            Debug.Log("방어 성공");
-
-            currentPosture += damageInfo.postureDamage;
-
-            if (currentPosture >= maxPosture && !isGroggy)
+            if (hDef.IsParrying)
             {
-                if (RegenPosture != null)
+                Debug.Log("패링 성공");
+                tDef.driveGauge += parryOnDrive;
+                if (tDef.driveGauge > tDef.dg_max) tDef.driveGauge = tDef.dg_max;
+                return;
+            }
+
+            if (hDef.IsDefending)
+            {
+                Debug.Log("방어 성공");
+
+                currentPosture += damageInfo.postureDamage;
+
+                if (currentPosture >= maxPosture && !isGroggy)
                 {
-                    StopCoroutine(RegenPosture);
-                    RegenPosture = null;
+                    if (RegenPosture != null)
+                    {
+                        StopCoroutine(RegenPosture);
+                        RegenPosture = null;
+                    }
+
+                    StartCoroutine(StartGroggy());
+                }
+                else
+                {
+                    RestartRegenPosture();
                 }
 
-                StartCoroutine(StartGroggy());
+                return;
             }
-            else
-            {
-                RestartRegenPosture();
-            }
-
-            return;
         }
 
         playerHealth.DamagedFromAtk(damageInfo);

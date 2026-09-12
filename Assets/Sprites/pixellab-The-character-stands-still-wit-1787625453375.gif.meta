@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 992e643468c436e4cb7d818f30ce6c3b
+guid: 64d8626febc55a14f89be2060ea10daa
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7355307111501785788
-    second: "\uB3C4\uC544\uACBD_0"
+      213: -7045021033739775060
+    second: pixellab-The-character-stands-still-wit-1787625453375_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -49,9 +49,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
+  alignment: 7
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 80
+  spritePixelsToUnits: 33
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\uB3C4\uC544\uACBD_0"
+      name: pixellab-The-character-stands-still-wit-1787625453375_0
       rect:
         serializedVersion: 2
-        x: 107
-        y: 85
-        width: 577
-        height: 798
+        x: 1
+        y: 0
+        width: 115
+        height: 87
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cbae7fa09dc431660800000000000000
-      internalID: 7355307111501785788
+      spriteID: ca319c822be0b3e90800000000000000
+      internalID: -7045021033739775060
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\uB3C4\uC544\uACBD_0": 7355307111501785788
+      pixellab-The-character-stands-still-wit-1787625453375_0: -7045021033739775060
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

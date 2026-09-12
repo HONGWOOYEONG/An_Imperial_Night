@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 992e643468c436e4cb7d818f30ce6c3b
+guid: e04c44d176dfd0a46b4d369c1aae3a02
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7355307111501785788
-    second: "\uB3C4\uC544\uACBD_0"
+      213: 7960151165405976674
+    second: pixellab-Side-scrolling-pixel-game-char-1786424472290_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 80
+  spritePixelsToUnits: 33
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\uB3C4\uC544\uACBD_0"
+      name: pixellab-Side-scrolling-pixel-game-char-1786424472290_0
       rect:
         serializedVersion: 2
-        x: 107
-        y: 85
-        width: 577
-        height: 798
+        x: 6
+        y: 0
+        width: 49
+        height: 61
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cbae7fa09dc431660800000000000000
-      internalID: 7355307111501785788
+      spriteID: 2685f6c6f43287e60800000000000000
+      internalID: 7960151165405976674
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\uB3C4\uC544\uACBD_0": 7355307111501785788
+      pixellab-Side-scrolling-pixel-game-char-1786424472290_0: 7960151165405976674
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
