@@ -18,7 +18,7 @@ public class PlayerContext : MonoBehaviour
         currentPosition = transform.position;
     }
 
-    public Vector3 getPosition()
+    public Vector2 getPosition()
     {
         return currentPosition;
     }

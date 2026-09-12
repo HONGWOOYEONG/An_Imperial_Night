@@ -17,14 +17,20 @@ public class B_TigerUtilityAI : MonoBehaviour
         bTigerContext = GetComponent<B_TigerContext>();
     }
 
-    public void SetTarget(PlayerContext playerContext)
+    private PlayerContext GetTarget(BossPatternData pattern)
     {
-        hPlayerContext = playerContext;
+        return pattern.target switch
+        {
+            "H" => hPlayerContext,
+            "T" => tPlayerContext,
+            "Nearest" => GetNearestTarget(),
+            _ => null
+        };
     }
 
     public BossPatternData SelectPattern()
     {
-        if (bTigerContext == null || hPlayerContext == null)
+        if (bTigerContext == null || hPlayerContext == null || tPlayerContext == null)
         {
             return null;
         }
@@ -71,7 +77,8 @@ public class B_TigerUtilityAI : MonoBehaviour
             return 0f;
         }
 
-        float currentDistance = GetTargetDistance();
+        PlayerContext currentTarget = GetTarget(pattern);
+        float currentDistance = GetTargetDistance(currentTarget);
         if (currentDistance < pattern.minDistance || currentDistance > pattern.maxDistance)
         {
             return 0f;
@@ -87,9 +94,9 @@ public class B_TigerUtilityAI : MonoBehaviour
         return lastUsedTime + pattern.skillCooldown >= Time.time;
     }
 
-    private float GetTargetDistance()
+    private float GetTargetDistance(PlayerContext targetContext)
     {
-        return Vector3.Distance(bTigerContext.GetCurrentPosition(), hPlayerContext.getPosition());
+        return Vector3.Distance(bTigerContext.GetCurrentPosition(), targetContext.getPosition());
     }
 
     private float CalculateDistanceScore(float currentDistance, BossPatternData pattern)
@@ -103,5 +110,22 @@ public class B_TigerUtilityAI : MonoBehaviour
         }
 
         return 1f - (distanceFromPreferred / range);
+    }
+
+    private PlayerContext GetNearestTarget()
+    {
+        if (hPlayerContext == null) return tPlayerContext;
+        if (tPlayerContext == null) return hPlayerContext;
+
+        float hDistance =(hPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
+
+        float tDistance =(tPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
+
+        return hDistance <= tDistance ? hPlayerContext : tPlayerContext;
+    }
+
+    public PlayerContext GetTraceTarget()
+    {
+        return GetNearestTarget();
     }
 }

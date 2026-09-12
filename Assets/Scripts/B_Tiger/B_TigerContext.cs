@@ -11,8 +11,7 @@ public class B_TigerContext : MonoBehaviour
     private Vector3 currentPosition;
 
     private Dictionary<string, float> patternDict;
-    private PlayerContext targetPlayer;
-
+    
     private void Awake()
     {
         thisTransform = GetComponent<Transform>();
@@ -22,16 +21,6 @@ public class B_TigerContext : MonoBehaviour
     private void Update()
     {
         currentPosition = thisTransform.position;
-    }
-
-    public void SetTarget(PlayerContext player)
-    {
-        targetPlayer = player;
-    }
-
-    public PlayerContext GetTarget()
-    {
-        return targetPlayer;
     }
 
     public void UpdateStatus(float hp, float posture)

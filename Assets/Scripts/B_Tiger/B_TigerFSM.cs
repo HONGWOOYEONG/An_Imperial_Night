@@ -1,9 +1,17 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class B_TigerFSM : MonoBehaviour
 {
     public IBossState currentBossState;
-    private StateExecutor StateExecutor;
+    public StateExecutor stateExecutor;
+    private B_TigerController tigerController;
+    private BT_TargetDetector targetDetector;
+    private B_TigerUtilityAI tigerUtilityAI;
+
+
+    [SerializeField] private PlayerContext H_playerContext;
+    [SerializeField] private PlayerContext T_playerContext;
 
     [Header("State")]
     private IBossState idleState;
@@ -12,9 +20,23 @@ public class B_TigerFSM : MonoBehaviour
     private IBossState attackState;
     private IBossState groggyState;
 
+    public IBossState IdleState => idleState;
+    public IBossState MoveState => moveState;  
+    public IBossState DeathState => deathState;
+    public IBossState AttackState => attackState;
+    public IBossState GroggyState => groggyState;
+
+    public BT_TargetDetector TargetDetector => targetDetector;
+    public B_TigerController TigerController => tigerController;
+    public bool IsTargetDetected => targetDetector.IsTargetDetected;
+    public B_TigerUtilityAI TigerUtilityAI => tigerUtilityAI;
+
     void Start()
     {
-        StateExecutor = GetComponent<StateExecutor> ();
+        stateExecutor = GetComponent<StateExecutor> ();
+        tigerController = GetComponent<B_TigerController>();
+        targetDetector = GetComponent<BT_TargetDetector>();
+        tigerUtilityAI = GetComponent<B_TigerUtilityAI>();
 
         idleState = new BT_IdleState();
         attackState = new BT_AttackState();
