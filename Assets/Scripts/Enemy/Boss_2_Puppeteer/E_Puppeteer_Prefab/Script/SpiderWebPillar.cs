@@ -46,8 +46,9 @@ public class SpiderWebPillar : MonoBehaviour
                     if(playerMovement != null)
                     {
                         Vector2 myPos = controller.transform.position;
-                        Vector2 targetPos = new Vector2(other.transform.position.x, myPos.y);
-                        Vector2 dirToTarget = (targetPos - myPos).normalized;
+                        Vector2 targetPos = other.transform.position;
+                        float dirX = (targetPos.x - myPos.x) > 0 ? 1 : -1;
+                        Vector2 dirToTarget = new Vector2(dirX, 0f);
                         playerMovement.KnockBack(dirToTarget);
                     }
                     //거미줄 벽 생성시점에, 캐릭터가 거미줄 벽 위에 있으면 양 옆으로 밀려납니다.
@@ -59,8 +60,7 @@ public class SpiderWebPillar : MonoBehaviour
             if(controller.currentState is P_PatternC_State)
             {
                 controller.ChangeState(controller.states["idle"]);
-            }
-            Debug.Log("아무것도 걸리지 않았음");
+            } 
         }
     }
 }

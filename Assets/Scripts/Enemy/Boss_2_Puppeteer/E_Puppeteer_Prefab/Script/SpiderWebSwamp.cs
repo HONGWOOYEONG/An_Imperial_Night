@@ -37,7 +37,7 @@ public class SpiderWebSwamp : MonoBehaviour
                 spawnedPillar = Instantiate(controller.spiderwebPillar, pillarPos, Quaternion.identity); //transform.position을 수정
             }
         }
-        LockToPlayer();
+        
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -47,8 +47,6 @@ public class SpiderWebSwamp : MonoBehaviour
             playerMovement = other.gameObject.GetComponent<PlayerMovement>();
             playerMovement.isSlowMoving = true;
             playerMovement.percent = 0.8f;
-            // 캐릭터의 이동속도가 20% 느려집니다
-            Invoke("SetSlowVar", 2f);
         }
     }
     private void OnDestroy() //거미줄 기둥 같이 삭제
@@ -61,19 +59,11 @@ public class SpiderWebSwamp : MonoBehaviour
         }
     }
 
-    private void LockToPlayer() //포박 설정
-    {
-        if (playerMovement != null)
-        {
-            playerMovement.isMoving = true;
-        }
-    }
     private void SetSlowMoveVar() //느려짐 관련 변수 초기화 
     {
         if(playerMovement != null)
         {
             playerMovement.isSlowMoving = false ;
-            playerMovement.percent = 0f;
         }
     }
 }
