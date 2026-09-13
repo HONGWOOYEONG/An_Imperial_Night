@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d089550909fdb94abaa9657a1a742c0, type: 3}
+  m_Name: PatternA
+  m_EditorClassIdentifier: Assembly-CSharp::BossPatternData
+  patternId: 
+  skillCooldown: 0
+  baseWeight: 0
+  minDistance: 0
+  maxDistance: 0
+  preferredDistance: 0
+  target: 
+  HPDamage: 0
+  postureDamage: 0
+  damageType: 
+  driveDamage: 0
+  knockbackPower: 0
+  stunTime: 0
