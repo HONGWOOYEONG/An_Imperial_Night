@@ -5,6 +5,7 @@ public class B_TigerFSM : MonoBehaviour
 {
     public IBossState currentBossState;
     public StateExecutor stateExecutor;
+    [SerializeField] private BT_PatternExecutor patternExecutor;
     private B_TigerController tigerController;
     private BT_TargetDetector targetDetector;
     private B_TigerUtilityAI tigerUtilityAI;
@@ -30,10 +31,12 @@ public class B_TigerFSM : MonoBehaviour
     public B_TigerController TigerController => tigerController;
     public bool IsTargetDetected => targetDetector.IsTargetDetected;
     public B_TigerUtilityAI TigerUtilityAI => tigerUtilityAI;
+    public BT_PatternExecutor PatternExecutor => patternExecutor;
 
     void Start()
     {
         stateExecutor = GetComponent<StateExecutor> ();
+        patternExecutor = GetComponent<BT_PatternExecutor>();
         tigerController = GetComponent<B_TigerController>();
         targetDetector = GetComponent<BT_TargetDetector>();
         tigerUtilityAI = GetComponent<B_TigerUtilityAI>();

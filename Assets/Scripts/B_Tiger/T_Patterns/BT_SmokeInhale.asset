@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9d089550909fdb94abaa9657a1a742c0, type: 3}
-  m_Name: PatternA
+  m_Name: BT_SmokeInhale
   m_EditorClassIdentifier: Assembly-CSharp::BossPatternData
-  patternId: 
-  skillCooldown: 0
-  baseWeight: 0
-  minDistance: 0
-  maxDistance: 0
-  preferredDistance: 0
-  target: 
-  HPDamage: 0
-  postureDamage: 0
-  damageType: 
-  driveDamage: 0
-  knockbackPower: 0
-  stunTime: 0
+  patternId: PatternA
+  skillCooldown: 12
+  baseWeight: 3
+  minDistance: 2
+  maxDistance: 15
+  preferredDistance: 10
+  target: B
+  HPDamage: 20
+  postureDamage: 10
+  damageType: normal
+  driveDamage: 10
+  knockbackPower: 2
+  stunTime: 2
