@@ -129,13 +129,16 @@ GameObject:
   m_Component:
   - component: {fileID: 158702851}
   - component: {fileID: 158702850}
+  - component: {fileID: 158702858}
+  - component: {fileID: 158702859}
   - component: {fileID: 158702852}
   - component: {fileID: 158702853}
   - component: {fileID: 158702855}
   - component: {fileID: 158702854}
   - component: {fileID: 158702856}
-  - component: {fileID: 158702858}
-  - component: {fileID: 158702859}
+  - component: {fileID: 158702862}
+  - component: {fileID: 158702861}
+  - component: {fileID: 158702860}
   m_Layer: 0
   m_Name: B_Tiger
   m_TagString: Untagged
@@ -211,7 +214,7 @@ Transform:
   m_GameObject: {fileID: 158702849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.456, y: 0.498, z: 0}
+  m_LocalPosition: {x: -3.98, y: 0.498, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -242,9 +245,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 592f3a27fde98d140801b7f420c639a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::B_TigerFSM
-  stateExecutor: {fileID: 0}
-  H_playerContext: {fileID: 0}
-  T_playerContext: {fileID: 0}
+  stateExecutor: {fileID: 158702862}
+  patternExecutor: {fileID: 158702861}
 --- !u!114 &158702854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::B_TigerUtilityAI
   patterns:
-  - {fileID: 11400000, guid: c1060161bfa9ff548a064a9ff7e8ac13, type: 2}
+  - {fileID: 11400000, guid: d5b2f97174d1aff42bb2ab32276e715e, type: 2}
   hPlayerContext: {fileID: 0}
   tPlayerContext: {fileID: 0}
 --- !u!114 &158702856
@@ -365,6 +367,54 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.0686688, y: 2.6545215}
   m_EdgeRadius: 0
+--- !u!95 &158702860
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a42a7852b112da4408f93967a8a7db77, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &158702861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb4c798840bb684caae617d9885b242, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BT_PatternExecutor
+  backwardJumpDir: {x: 1.5, y: 0.7}
+  backWardJumpPower: 15
+--- !u!114 &158702862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce7189bfe8593964a8f82749286eccd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StateExecutor
 --- !u!1 &1657560701
 GameObject:
   m_ObjectHideFlags: 0

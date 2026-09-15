@@ -14,6 +14,9 @@ public class BT_AttackState : IBossState
             return;
         }
 
+        fsm.Animator.SetInteger("PatternNum", currentPattern.patternNum);
+        fsm.Animator.SetTrigger("Attack");
+        
         fsm.PatternExecutor.Execute(currentPattern);
     }
 

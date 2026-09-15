@@ -9,10 +9,8 @@ public class B_TigerFSM : MonoBehaviour
     private B_TigerController tigerController;
     private BT_TargetDetector targetDetector;
     private B_TigerUtilityAI tigerUtilityAI;
+    private Animator animator;
 
-
-    [SerializeField] private PlayerContext H_playerContext;
-    [SerializeField] private PlayerContext T_playerContext;
 
     [Header("State")]
     private IBossState idleState;
@@ -32,6 +30,7 @@ public class B_TigerFSM : MonoBehaviour
     public bool IsTargetDetected => targetDetector.IsTargetDetected;
     public B_TigerUtilityAI TigerUtilityAI => tigerUtilityAI;
     public BT_PatternExecutor PatternExecutor => patternExecutor;
+    public Animator Animator => animator;
 
     void Start()
     {
@@ -40,6 +39,7 @@ public class B_TigerFSM : MonoBehaviour
         tigerController = GetComponent<B_TigerController>();
         targetDetector = GetComponent<BT_TargetDetector>();
         tigerUtilityAI = GetComponent<B_TigerUtilityAI>();
+        animator = GetComponent<Animator>();
 
         idleState = new BT_IdleState();
         attackState = new BT_AttackState();
