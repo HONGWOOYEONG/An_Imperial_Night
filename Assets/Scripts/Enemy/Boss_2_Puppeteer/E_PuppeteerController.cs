@@ -179,9 +179,7 @@ public class E_PuppeteerController : MonoBehaviour
         }
         currentState = _state; //현재 state를 넣어줌
         currentState.Enter(this); //현재 상태의 Enter 실행
-
-        
-          
+    
     }
 
     public void SetState(IPuppeteerState state) //쿨타임 시작

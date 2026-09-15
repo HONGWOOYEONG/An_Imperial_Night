@@ -5,11 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
-  - Floor
   - RangedDealer
   - Enemy_Puppeteer
   - Enemy
   - MeleeDealer
+  - CloseRangeDealer
   layers:
   - Default
   - TransparentFX
