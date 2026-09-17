@@ -5,12 +5,10 @@ public class Boss_MoveState : Boss_Statebase
 {
     public Boss_MoveState(Boss_Controller boss, string animParamName) : base(boss, animParamName) { }
 
-    public override void Tick()
+    // 바라보는 방향으로만 걷는다. 멈추는 것은 Boss_Statebase의 기본 FixedTick이 맡으므로
+    // 이 상태를 벗어나면 따로 멈추는 호출이 필요 없다.
+    public override void FixedTick()
     {
-        // 바라보는 방향으로만 걷는다. MoveTick을 부르지 않는 상태는 그 자체로 멈춘 것이라
-        // 따로 멈추는 호출이 필요 없다.
-        boss.Moter.MoveTick();
-
-        boss.AI.Decide();
+        boss.Moter.Move_FixedTick();
     }
 }

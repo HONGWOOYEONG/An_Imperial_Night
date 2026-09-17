@@ -1,5 +1,6 @@
 /// 작성자 : 유희일
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -15,13 +16,13 @@ public class Boss_Context
     private const float NoTargetDistance = float.MaxValue;
     public const int NoPattern = -1;
     private readonly Transform bossTransform;
-    private readonly Dictionary<string, float> patternLastUsedTime = new Dictionary<string, float>();
+    private readonly Dictionary<int, float> patternLastUsedTime = new Dictionary<int, float>();
 
     // 플레이어는 1~2명이다. 한 명만 들고 판단하면 2인 플레이에서
     // 뒤에서 때리는 쪽을 영원히 무시하게 된다.
     private readonly PlayerContext[] targets = new PlayerContext[2];
 
-    public int NextPatternIndex { get; private set; } = NoPattern;
+    public int PatternID { get; private set; } = NoPattern;
     public int Phase { get; private set; }
 
     public Vector2 BossPosition => bossTransform.position;
@@ -77,7 +78,7 @@ public class Boss_Context
             PlayerContext target = CurrentTarget;
             return !HasTarget 
                 ? NoTargetDistance 
-                : Vector2.Distance(BossPosition, target.getPosition());
+                : Vector2.Distance(BossPosition, target.gameObject.transform.position);
         }
     }
 
@@ -97,25 +98,25 @@ public class Boss_Context
         Phase = phase;
     }
 
-    public void SetNextPattern(int patternIndex)
+    public void SetPatternID(int patternID)
     {
-        NextPatternIndex = patternIndex;
+        PatternID = patternID;
     }
 
     /// <summary>
     /// 패턴을 실제로 시작한 시점에 호출
     /// </summary>
-    public void Record_PatternUsed(string patternId)
+    public void Record_PatternUsed(int patternId)
     {
-        if (string.IsNullOrEmpty(patternId)) return;
+        if (patternId == NoPattern) return;
 
         patternLastUsedTime[patternId] = Time.time;
     }
 
     // 수치는 패턴 데이터를 들고 있는 Boss_AI가 넘긴다. 여기는 기록만 한다.
-    public bool IsOnCooldown(string patternId, float cooldown)
+    public bool IsOnCooldown(int patternId, float cooldown)
     {
-        if (string.IsNullOrEmpty(patternId)) return false;
+        if (patternId == NoPattern) return false;
 
         if (!patternLastUsedTime.TryGetValue(patternId, out float lastUsedTime)) return false;
 

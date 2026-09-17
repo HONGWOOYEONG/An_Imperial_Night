@@ -15,12 +15,16 @@ public class Boss_FSM
 {
     public IState Current { get; private set; }
 
-    public Action<string> OnCurrentState;
+    // 구독자가 한 명도 없으면 이 필드는 null이다. event로 두면 밖에서 새 대입(=)을 못 하고
+    // += 로만 붙을 수 있어, 나중에 구독자가 늘어도 먼저 붙은 쪽이 조용히 날아가지 않는다.
+    public event Action<string> OnCurrentState;
     public Boss_IdleState Idle { get; private set; }
     public Boss_MoveState Move { get; private set; }
     public Boss_GroggyState Groggy { get; private set; }
     public Boss_DeadState Dead { get; private set; }
-    public PS_a1 a1 { get;private set; }
+    public BossPS_a1 A1 { get;private set; }
+    public BossPS_a2 A2 { get;private set; }
+    public BossPS_a3 A3 { get;private set; }
 
     public Boss_FSM(Boss_Controller boss)
     {
@@ -29,7 +33,9 @@ public class Boss_FSM
         Groggy = new Boss_GroggyState(boss, "groggy");
         Dead = new Boss_DeadState(boss, "dead");
 
-        a1 = new PS_a1(boss, "a1");
+        A1 = new BossPS_a1(boss, "a1");
+        A2 = new BossPS_a2(boss, "a2");
+        A3 = new BossPS_a3(boss, "a3");
     }
 
     public void ChangeState(IState next)
@@ -46,10 +52,13 @@ public class Boss_FSM
         Current?.Exit();
         Current = next;
         Current.Enter();
-
-        OnCurrentState.Invoke(Current.Name);
+        Debug.Log("현재 상태 : " + Current.Name);
+        OnCurrentState?.Invoke(Current.Name);
     }
 
     // 보스의 갱신 주기는 Boss_Controller의 Update 하나로 통일한다.
     public void Tick() => Current?.Tick();
+
+    // 물리 갱신도 Boss_Controller의 FixedUpdate 하나로 통일한다.
+    public void FixedTick() => Current?.FixedTick();
 }

@@ -6,14 +6,14 @@ using UnityEngine;
 /// 패턴을 고르는 것은 Boss_AI, 실행하는 것은 Boss_AttackState다.
 /// </summary>
 [CreateAssetMenu(fileName = "Boss_Pattern", menuName = "Boss/Boss_1/Pattern")]
+
+
 public class Boss_PatternSO : ScriptableObject
 {
     [Header("식별")]
-    [Tooltip("쿨다운을 기록하는 딕셔너리 키. 비어 있거나 겹치면 쿨다운이 엉뚱한 패턴과 공유된다.")]
-    [SerializeField] private string id;
-
-    [Tooltip("Attack 파라메터로 진입한 뒤 어떤 패턴 애니메이션을 재생할지 고르는 인덱스.")]
-    [SerializeField] private int animIndex;
+    [Tooltip("이 패턴의 유일한 번호. 쿨다운 키, Boss_AI의 상태 연결 switch, 애니메이터 patternId 조건이 " +
+             "전부 이 값 하나만 본다. 다른 패턴과 겹치면 쿨다운이 함께 잠기고 엉뚱한 상태가 실행된다.")]
+    [SerializeField, Min(0)] private int id = 1;
 
     [Header("선택 조건")]
     [Tooltip("이 패턴을 쓴 뒤 다시 쓸 수 있을 때까지의 시간.")]
@@ -37,8 +37,7 @@ public class Boss_PatternSO : ScriptableObject
     [SerializeField] private float stunTime;
     [SerializeField] private DamageType damageType = DamageType.LightAttack;
 
-    public string Id => id;
-    public int AnimIndex => animIndex;
+    public int Id => id;
 
     public float Cooldown => cooldown;
     public float BaseWeight => baseWeight;

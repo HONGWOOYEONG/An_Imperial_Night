@@ -15,6 +15,6 @@ public class Boss_GroggyState : Boss_Statebase
     // 지속 시간과 해제 판단은 Boss_AI가 가진다. 여기서는 판단을 요청만 한다.
     public override void Tick()
     {
-        boss.AI.Decide();
+        
     }
 }

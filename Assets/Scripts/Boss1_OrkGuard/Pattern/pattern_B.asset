@@ -10,17 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9aa6d4d72fb6cb4da18d454a30b3d6e, type: 3}
-  m_Name: Boss_Pattern Sample
+  m_Name: pattern_B
   m_EditorClassIdentifier: Assembly-CSharp::Boss_PatternSO
-  id: 01
-  animIndex: 0
+  id: 2
   cooldown: 3
   baseWeight: 1
-  minDistance: 0
-  maxDistance: 5
+  minDistance: 10
+  maxDistance: 50
   preferredDistance: 2
-  moveDistance: 10
-  moveHeight: 0
   hpDamage: 10
   postureDamage: 10
   driveDamage: 0

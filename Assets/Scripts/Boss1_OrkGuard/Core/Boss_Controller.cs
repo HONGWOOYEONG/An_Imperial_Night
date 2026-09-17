@@ -1,5 +1,6 @@
 /// 작성자 : 유희일
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +15,8 @@ public class Boss_Controller : MonoBehaviour
 {
     [Header("참조")]
     [SerializeField] private Animator anim;
+    [SerializeField] private TextMeshPro stateText;
+
 
     [Header("타깃")]
     [SerializeField] private PlayerContext firstPlayer;
@@ -53,14 +56,17 @@ public class Boss_Controller : MonoBehaviour
         FSM     = new Boss_FSM(this);
     }
 
+    // 구독은 Awake 다음인 OnEnable에서 한다. FSM을 Awake에서 만들므로 여기서는 반드시 존재한다.
     private void OnEnable()
     {
         Connect_HealthEvent();
+        Connect_StateEvent();
     }
 
     private void OnDisable()
     {
         Cancel_HealthEvent();
+        Cancel_StateEvent();
     }
 
     private void Start()
@@ -74,6 +80,14 @@ public class Boss_Controller : MonoBehaviour
     {
         health.Tick();
         FSM.Tick();
+        AI.Tick();
+    }
+
+    // 이동과 돌진은 물리 스텝에서만 돈다. Update에서 rb를 밀면 벽 판정이
+    // 프레임레이트에 따라 달라져서 같은 돌진이 어떤 날은 벽을 뚫는다.
+    private void FixedUpdate()
+    {
+        FSM.FixedTick();
     }
 
     /// <summary>
@@ -96,6 +110,13 @@ public class Boss_Controller : MonoBehaviour
     {
         FSM.ChangeState(FSM.Dead);
     }
+    // 디버그용 표시라 안 물려 있는 씬이 많다. 가드가 없으면 상태가 바뀔 때마다 NRE로 죽는다.
+    private void Handle_StateText(string curState)
+    {
+        if (stateText == null) return;
+
+        stateText.text = curState;
+    }
 #region 이벤트
 
     private void Connect_HealthEvent()
@@ -109,13 +130,18 @@ public class Boss_Controller : MonoBehaviour
         health.OnDead -= Handle_Dead;
     }
 
+    // 델리게이트에는 괄호 없는 메서드 이름만 넘긴다. Handle_StateText() 처럼 괄호를 붙이면
+    // "지금 호출해서 그 반환값을 구독한다"는 뜻이 되고, 반환형이 void라 컴파일이 안 된다.
     private void Connect_StateEvent()
     {
-        // FSM.OnCurrentState +=
+        FSM.OnCurrentState += Handle_StateText;
     }
+
+    // 붙인 것과 띄는 것은 반드시 같은 메서드여야 한다. 이름이 다르면 해제가 조용히 실패해
+    // 재활성화할 때마다 구독이 쌓이고 한 번 전환에 핸들러가 여러 번 돌게 된다.
     private void Cancel_StateEvent()
     {
-        // FSM.OnCurrentState -=
+        FSM.OnCurrentState -= Handle_StateText;
     }
 
 #endregion

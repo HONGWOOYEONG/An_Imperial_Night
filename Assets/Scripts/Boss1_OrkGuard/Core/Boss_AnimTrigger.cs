@@ -43,16 +43,7 @@ public class Boss_AnimTrigger : MonoBehaviour
         attackCollider.enabled = false;
     }
 
-    /// <summary>
-    /// 패턴 애니메이션의 마지막 프레임에 건다. 이걸 받아야 Boss_AttackState가 다음 판단으로 넘어간다.
-    /// 걸어두지 않으면 보스가 공격 상태에서 빠져나오지 못한다.
-    /// </summary>
-    public void AE_PatternEnd()
-    {
-        if (boss == null) return;
-
-        boss.OnPatternEnd();
-    }
+   
 
     public void AE_Vfx(string key)
     {

@@ -17,8 +17,8 @@ public abstract class Boss_Statebase : IState
     protected readonly Boss_Controller boss;
     protected readonly Animator anim;
     private readonly int animHash;
-    public float endIntervalTime = 0f;
-    private float timer = 0f;
+    protected float endIntervalTime = 0f;
+    protected float timer = 0f;
     private readonly string animName;
 
     public string Name => animName;
@@ -45,6 +45,15 @@ public abstract class Boss_Statebase : IState
         bool isAnimOnecLoop = anim.GetCurrentAnimatorStateInfo(0).normalizedTime>=1f;
         if (isAnimOnecLoop)
             timer += Time.deltaTime;
+    }
+
+    /// <summary>
+    /// 기본값은 '가로로 움직이지 않는다'. 움직이는 상태만 재정의한다.
+    /// 속도 기반으로 바뀌면서 멈추는 호출을 빠뜨리면 상태가 끝나도 계속 미끄러진다.
+    /// </summary>
+    public virtual void FixedTick()
+    {
+        boss.Moter.Stop_Horizontal();
     }
 
     /// 주의: 파생에서 재정의할 때 base.Exit()를 빠뜨리면 파라메터가 켜진 채로 남아
