@@ -12,13 +12,8 @@ using UnityEngine;
 /// </summary>
 public class Boss_Context
 {
-    // 타깃이 없을 때의 거리. 거리 조건이 붙은 패턴이 전부 후보에서 빠지도록 큰 값을 돌려준다.
-    // 0을 돌려주면 근접 패턴이 허공에 나간다.
     private const float NoTargetDistance = float.MaxValue;
-
-    // 고른 패턴이 없을 때의 인덱스.
     public const int NoPattern = -1;
-
     private readonly Transform bossTransform;
     private readonly Dictionary<string, float> patternLastUsedTime = new Dictionary<string, float>();
 

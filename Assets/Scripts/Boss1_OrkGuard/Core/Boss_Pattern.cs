@@ -29,13 +29,6 @@ public class Boss_PatternSO : ScriptableObject
     [Tooltip("가장 높은 점수를 받는 거리. min~max 사이에 두지 않으면 이 패턴의 점수가 항상 낮게 나온다.")]
     [SerializeField, Min(0f)] private float preferredDistance = 2f;
 
-    [Header("이동")]
-    [Tooltip("패턴 동안 앞으로 나아가는 거리. 0이면 제자리 패턴이다.")]
-    [SerializeField] private float moveDistance;
-
-    [Tooltip("포물선의 높이. 0이면 바닥을 따라 미끄러진다.")]
-    [SerializeField, Min(0f)] private float moveHeight;
-
     [Header("공격력")]
     [SerializeField] private float hpDamage = 10f;
     [SerializeField] private float postureDamage = 10f;
@@ -53,9 +46,6 @@ public class Boss_PatternSO : ScriptableObject
     public float MaxDistance => maxDistance;
     public float PreferredDistance => preferredDistance;
 
-    public float MoveDistance => moveDistance;
-    public float MoveHeight => moveHeight;
-
     public float HpDamage => hpDamage;
     public float PostureDamage => postureDamage;
     public float DriveDamage => driveDamage;
@@ -64,7 +54,7 @@ public class Boss_PatternSO : ScriptableObject
     public DamageType DamageType => damageType;
 
     // 재생 시간은 여기 적지 않는다. SSM에서 뽑히는 클립이 패턴마다 다르므로,
-    // Boss_AttackState가 실제 재생 길이를 재서 이동 속도를 계산한다.
+    // Boss_AttackState가 실제 재생 길이를 재서 상태를 끝낸다.
 
     /// <summary>
     /// 이 패턴이 플레이어에게 넘길 피해 정보. 방향은 보스가 바라보는 쪽이므로 런타임에 받는다.

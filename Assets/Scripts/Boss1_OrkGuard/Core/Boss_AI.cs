@@ -4,7 +4,6 @@ using UnityEngine;
 
 /// <summary>
 /// 대기·이동·공격 중 무엇을 할지 정하고 상태를 바꾼다. 패턴 리스트를 소유하는 유일한 지점이다.
-/// MonoBehaviour가 아니다. Boss_Controller가 생성해서 들고 있는다.
 ///
 /// 여기 두지 않는 것
 /// - 그로기·사망 전환 : Boss_Health의 이벤트를 Boss_Controller가 받아서 바꾼다.
@@ -62,14 +61,20 @@ public class Boss_AI
     /// </summary>
     public void Decide()
     {
-        // 그로기 중에는 다른 판단을 하지 않는다. 끝났는지만 본다.
-        // decideInterval 게이트보다 먼저 두어야 그로기 해제가 그 간격만큼 밀리지 않는다.
+
+        // 0. 그로기
         if (boss.FSM.Current == boss.FSM.Groggy)
         {
             if (Time.time < groggyEndTime) return;
 
-            // 밸런스를 되돌리고 나간다. 0인 채로 나가면 다음 피격에 곧바로 다시 그로기다.
+            // 밸런스를 되돌리고 나간다.
             boss.Health.Init_Balance();
+            boss.FSM.ChangeState(boss.FSM.Idle);
+            return;
+        }
+        // 타깃이 없으면 판단할 근거가 없다. 거리 조건이 전부 무의미해지므로 대기로 돌린다.
+        if (!context.HasTarget)
+        {
             boss.FSM.ChangeState(boss.FSM.Idle);
             return;
         }
@@ -78,12 +83,7 @@ public class Boss_AI
 
         nextDecideTime = Time.time + decideInterval;
 
-        // 타깃이 없으면 판단할 근거가 없다. 거리 조건이 전부 무의미해지므로 대기로 돌린다.
-        if (!context.HasTarget)
-        {
-            boss.FSM.ChangeState(boss.FSM.Idle);
-            return;
-        }
+        
 
         int index = Select_PatternIndex();
 
@@ -122,7 +122,6 @@ public class Boss_AI
             if (pick <= 0f) return i;
         }
 
-        // 부동소수 오차로 마지막까지 떨어지지 않는 경우가 있다. 그때는 마지막 후보를 준다.
         return patterns.Count - 1;
     }
 

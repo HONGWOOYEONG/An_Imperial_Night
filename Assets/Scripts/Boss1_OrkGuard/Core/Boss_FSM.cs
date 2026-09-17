@@ -1,4 +1,5 @@
 /// 작성자 : 유희일
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -14,22 +15,21 @@ public class Boss_FSM
 {
     public IState Current { get; private set; }
 
-    // 상태는 전환할 때마다 new 하지 않고 생성 시점에 한 번만 만들어 재사용한다.
-    // 매번 new 하면 상태가 들고 있는 타이머와 패턴 인덱스가 "저절로 초기화되는 것"에 의존하게 되고,
-    // 전환이 잦은 보스에서는 GC가 계속 돈다. 초기화는 각 상태의 Enter에서 명시적으로 한다.
+    public Action<string> OnCurrentState;
     public Boss_IdleState Idle { get; private set; }
     public Boss_MoveState Move { get; private set; }
-    public Boss_AttackState Attack { get; private set; }
     public Boss_GroggyState Groggy { get; private set; }
     public Boss_DeadState Dead { get; private set; }
+    public PS_a1 a1 { get;private set; }
 
-    public Boss_FSM(Boss_Controller boss, Animator anim)
+    public Boss_FSM(Boss_Controller boss)
     {
-        Idle = new Boss_IdleState(boss, anim);
-        Move = new Boss_MoveState(boss, anim);
-        Attack = new Boss_AttackState(boss, anim);
-        Groggy = new Boss_GroggyState(boss, anim);
-        Dead = new Boss_DeadState(boss, anim);
+        Idle = new Boss_IdleState(boss, "idle");
+        Move = new Boss_MoveState(boss, "move");
+        Groggy = new Boss_GroggyState(boss, "groggy");
+        Dead = new Boss_DeadState(boss, "dead");
+
+        a1 = new PS_a1(boss, "a1");
     }
 
     public void ChangeState(IState next)
@@ -46,9 +46,10 @@ public class Boss_FSM
         Current?.Exit();
         Current = next;
         Current.Enter();
+
+        OnCurrentState.Invoke(Current.Name);
     }
 
     // 보스의 갱신 주기는 Boss_Controller의 Update 하나로 통일한다.
-    // 물리 이동은 Boss_Moter가 자기 FixedUpdate에서 처리하므로 여기에 FixedTick은 두지 않는다.
     public void Tick() => Current?.Tick();
 }

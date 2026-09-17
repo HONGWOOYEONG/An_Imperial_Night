@@ -3,14 +3,12 @@ using UnityEngine;
 
 public class Boss_DeadState : Boss_Statebase
 {
-    public Boss_DeadState(Boss_Controller boss, Animator anim) : base(boss, anim, "dead") { }
+    public Boss_DeadState(Boss_Controller boss, string animParamName) : base(boss, animParamName) { }
 
     public override void Enter()
     {
         base.Enter();
 
-        boss.Moter.CancelKinematicMove();
-        boss.Moter.Stop();
     }
 
     // 사망 뒤에는 아무 판단도 하지 않는다. Tick을 비워 두는 것이 그 선언이다.

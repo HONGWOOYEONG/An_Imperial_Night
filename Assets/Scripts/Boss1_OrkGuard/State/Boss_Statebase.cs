@@ -16,14 +16,18 @@ public abstract class Boss_Statebase : IState
 {
     protected readonly Boss_Controller boss;
     protected readonly Animator anim;
-
-    // 문자열로 SetBool을 부르면 호출할 때마다 해싱한다. 생성 시점에 한 번만 변환해서 들고 있는다.
     private readonly int animHash;
+    public float endIntervalTime = 0f;
+    private float timer = 0f;
+    private readonly string animName;
 
-    protected Boss_Statebase(Boss_Controller boss, Animator anim, string animParamName)
+    public string Name => animName;
+
+    protected Boss_Statebase(Boss_Controller boss, string animParamName)
     {
         this.boss = boss;
-        this.anim = anim;
+        anim = boss.Anim;
+        animName = animParamName;
         animHash = Animator.StringToHash(animParamName);
     }
 
@@ -31,14 +35,23 @@ public abstract class Boss_Statebase : IState
     public virtual void Enter()
     {
         anim.SetBool(animHash, true);
+        timer = 0f;
     } 
-
-    public virtual void Tick() { }
+    /// <summary>
+    /// 마지막 프레임에서 멈추는 인터벌 시간 존재. 패턴간 부드러운 전환을 위해 삽입.
+    /// </summary>
+    public virtual void Tick()
+    {
+        bool isAnimOnecLoop = anim.GetCurrentAnimatorStateInfo(0).normalizedTime>=1f;
+        if (isAnimOnecLoop)
+            timer += Time.deltaTime;
+    }
 
     /// 주의: 파생에서 재정의할 때 base.Exit()를 빠뜨리면 파라메터가 켜진 채로 남아
     /// 다음 상태로 넘어가도 이전 애니메이션이 계속 재생된다.
     public virtual void Exit() 
     {
         anim.SetBool(animHash, false);
+        timer = 0f;
     }
 }
