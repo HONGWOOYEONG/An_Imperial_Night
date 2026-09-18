@@ -16,8 +16,9 @@ public class BT_AttackState : IBossState
 
         fsm.Animator.SetInteger("PatternNum", currentPattern.patternNum);
         fsm.Animator.SetTrigger("Attack");
-        
-        fsm.PatternExecutor.Execute(currentPattern);
+
+        PlayerContext target =  fsm.TigerUtilityAI.GetCurrentTarget();
+        fsm.PatternExecutor.Execute(currentPattern, target);
     }
 
     public void Update(B_TigerFSM fsm)

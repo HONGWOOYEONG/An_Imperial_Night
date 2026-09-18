@@ -21,7 +21,7 @@ public class BT_PatternExecutor : MonoBehaviour
         }
     }
 
-    public void Execute(BossPatternData pattern)
+    public void Execute(BossPatternData pattern, PlayerContext target)
     {
         if (pattern == null)
         {
@@ -37,7 +37,7 @@ public class BT_PatternExecutor : MonoBehaviour
         currentPatternRunner = patternRunner;
         IsRunning = true;
 
-        currentPatternRunner.Begin(this, pattern);
+        currentPatternRunner.Begin(this, pattern, target);
     }
 
     public void Stop()
@@ -51,8 +51,6 @@ public class BT_PatternExecutor : MonoBehaviour
 
     public void OnPatternAnimationEvent(string eventName)
     {
-        Debug.Log($"Pattern animation event received: {eventName}");
-
         if (!IsRunning)
         {
             return;

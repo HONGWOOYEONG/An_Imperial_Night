@@ -6,7 +6,7 @@ public abstract class BT_Pattern : MonoBehaviour
 
     public abstract string PatternId { get; }
 
-    public virtual void Begin(BT_PatternExecutor patternExecutor, BossPatternData patternData)
+    public virtual void Begin(BT_PatternExecutor patternExecutor, BossPatternData patternData, PlayerContext target)
     {
         executor = patternExecutor;
     }
@@ -15,10 +15,11 @@ public abstract class BT_Pattern : MonoBehaviour
 
     public virtual void Stop()
     {
+        
     }
 
     protected void Complete()
     {
-        executor.CompleteCurrentPattern(this);
+        executor?.CompleteCurrentPattern(this);
     }
 }

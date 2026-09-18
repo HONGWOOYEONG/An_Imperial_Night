@@ -7,9 +7,9 @@ public class BT_PatternA : BT_Pattern
 
     public override string PatternId => "PatternA";
 
-    public override void Begin(BT_PatternExecutor patternExecutor, BossPatternData patternData)
+    public override void Begin(BT_PatternExecutor patternExecutor, BossPatternData patternData, PlayerContext target)
     {
-        base.Begin(patternExecutor, patternData);
+        base.Begin(patternExecutor, patternData, target);
         runningCoroutine = StartCoroutine(RunPattern());
     }
 

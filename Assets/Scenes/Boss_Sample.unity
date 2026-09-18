@@ -141,6 +141,7 @@ GameObject:
   - component: {fileID: 158702861}
   - component: {fileID: 158702863}
   - component: {fileID: 158702864}
+  - component: {fileID: 158702865}
   m_Layer: 0
   m_Name: B_Tiger
   m_TagString: Untagged
@@ -216,7 +217,7 @@ Transform:
   m_GameObject: {fileID: 158702849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.98, y: 0.498, z: 0}
+  m_LocalPosition: {x: 4.08, y: 0.498, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -450,6 +451,21 @@ MonoBehaviour:
   - 10
   minGhostFlightTime: 1
   maxGhostFlightTime: 1.5
+--- !u!114 &158702865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c44bffe405c7fdf40b5ede30e5809acf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BT_PatternC
+  jumpForce: 8
+  rushSpeed: 20
+  arrivalDistance: 0.1
 --- !u!1 &992286590
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,7 +491,7 @@ Transform:
   m_GameObject: {fileID: 992286590}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.86, z: 0}
+  m_LocalPosition: {x: -0.12, y: 2.85, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

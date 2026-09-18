@@ -12,9 +12,16 @@ public class B_TigerUtilityAI : MonoBehaviour
     [SerializeField] private PlayerContext hPlayerContext;
     [SerializeField] private PlayerContext tPlayerContext;
 
+    private PlayerContext currentTarget;
+
     private void Awake()
     {
         bTigerContext = GetComponent<B_TigerContext>();
+    }
+
+    public PlayerContext GetCurrentTarget()
+    {
+        return currentTarget;
     }
 
     private PlayerContext GetTarget(BossPatternData pattern)
@@ -24,14 +31,16 @@ public class B_TigerUtilityAI : MonoBehaviour
             "H" => hPlayerContext,
             "T" => tPlayerContext,
             "Nearest" => GetNearestTarget(),
+            "Farthest" => GetFarthestTarget(),
             _ => null
         };
     }
 
     public BossPatternData SelectPattern()
     {
-        if (bTigerContext == null || hPlayerContext == null || tPlayerContext == null)
+        if (bTigerContext == null || patterns == null || patterns.Count == 0)
         {
+            currentTarget = null;
             return null;
         }
 
@@ -47,6 +56,7 @@ public class B_TigerUtilityAI : MonoBehaviour
 
         if (totalWeight <= 0f)
         {
+            currentTarget = null;
             return null;
         }
 
@@ -58,10 +68,13 @@ public class B_TigerUtilityAI : MonoBehaviour
 
             if (randomValue <= 0f)
             {
-                return patterns[i];
+                BossPatternData selectedPattern = patterns[i];
+                currentTarget = GetTarget(selectedPattern);
+                return selectedPattern;
             }
         }
 
+        currentTarget = null;
         return null;
     }
 
@@ -77,8 +90,13 @@ public class B_TigerUtilityAI : MonoBehaviour
             return 0f;
         }
 
-        PlayerContext currentTarget = GetTarget(pattern);
-        float currentDistance = GetTargetDistance(currentTarget);
+        PlayerContext target = GetTarget(pattern);
+        if (target == null)
+        {
+            return 0f;
+        }
+
+        float currentDistance = GetTargetDistance(target);
         if (currentDistance < pattern.minDistance || currentDistance > pattern.maxDistance)
         {
             return 0f;
@@ -124,8 +142,21 @@ public class B_TigerUtilityAI : MonoBehaviour
         return hDistance <= tDistance ? hPlayerContext : tPlayerContext;
     }
 
+    private PlayerContext GetFarthestTarget()
+    {
+        if (hPlayerContext == null) return tPlayerContext;
+        if (tPlayerContext == null) return hPlayerContext;
+
+        float hDistance = (hPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
+
+        float tDistance = (tPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
+
+        return hDistance >= tDistance ? hPlayerContext : tPlayerContext;
+    }
+
     public PlayerContext GetTraceTarget()
     {
         return GetNearestTarget();
     }
+
 }

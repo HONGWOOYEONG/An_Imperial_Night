@@ -11,6 +11,7 @@ public class BT_PatternB : BT_Pattern
     private const string StopWalkEvent = "StopWalk";
     private const string CompleteEvent = "Complete";
 
+    [Header("Pattern B Settings")]
     [SerializeField] private float backWardJumpPower = 5f;
     [SerializeField] private GameObject ghostPrefab;
     [SerializeField] private Transform ghostPoint;
@@ -29,15 +30,16 @@ public class BT_PatternB : BT_Pattern
         controller = GetComponent<B_TigerController>();
     }
 
-    public override void Begin(BT_PatternExecutor patternExecutor, BossPatternData patternData)
+    public override void Begin(BT_PatternExecutor patternExecutor, BossPatternData patternData, PlayerContext target)
     {
-        base.Begin(patternExecutor, patternData);
-        rb = controller.Rb;
-        originalGravity = rb.gravityScale;
+        base.Begin(patternExecutor, patternData, target);
+        EnsureRuntimeReferences();
     }
 
     public override void OnAnimationEvent(string eventName)
     {
+        EnsureRuntimeReferences();
+
         switch (eventName)
         {
             case JumpToBackwardEvent:
@@ -65,6 +67,22 @@ public class BT_PatternB : BT_Pattern
                 Complete();
                 break;
         }
+    }
+
+    private void EnsureRuntimeReferences()
+    {
+        if (controller == null)
+        {
+            controller = GetComponent<B_TigerController>();
+        }
+
+        if (rb != null)
+        {
+            return;
+        }
+
+        rb = controller.Rb;
+        originalGravity = rb.gravityScale;
     }
 
     private void JumpToBackward()
