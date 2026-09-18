@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 158702850}
   - component: {fileID: 158702858}
   - component: {fileID: 158702859}
+  - component: {fileID: 158702860}
   - component: {fileID: 158702852}
   - component: {fileID: 158702853}
   - component: {fileID: 158702855}
@@ -138,7 +139,8 @@ GameObject:
   - component: {fileID: 158702856}
   - component: {fileID: 158702862}
   - component: {fileID: 158702861}
-  - component: {fileID: 158702860}
+  - component: {fileID: 158702863}
+  - component: {fileID: 158702864}
   m_Layer: 0
   m_Name: B_Tiger
   m_TagString: Untagged
@@ -195,7 +197,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 64d8626febc55a14f89be2060ea10daa, type: 3}
+  m_Sprite: {fileID: -9215695882678078492, guid: 805a09120cc02054bbc20bec66694161, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -219,6 +221,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1879811623}
+  - {fileID: 992286591}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &158702852
@@ -278,6 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::B_TigerUtilityAI
   patterns:
   - {fileID: 11400000, guid: d5b2f97174d1aff42bb2ab32276e715e, type: 2}
+  - {fileID: 11400000, guid: 9eff885a0d19bf149bfeabe35645e313, type: 2}
   hPlayerContext: {fileID: 0}
   tPlayerContext: {fileID: 0}
 --- !u!114 &158702856
@@ -320,7 +324,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &158702859
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -359,7 +363,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 3.6363637, y: 2.8181818}
+    oldSize: {x: 3.4242425, y: 2.6060605}
     newSize: {x: 4, y: 3.1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -401,8 +405,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb4c798840bb684caae617d9885b242, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BT_PatternExecutor
-  backwardJumpDir: {x: 1.5, y: 0.7}
-  backWardJumpPower: 15
 --- !u!114 &158702862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,6 +417,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7189bfe8593964a8f82749286eccd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StateExecutor
+--- !u!114 &158702863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f943c0794384fd1ab547f1f6e108c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BT_PatternA
+--- !u!114 &158702864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158702849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ea48df8b40f4c5688902076ed4586c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BT_PatternB
+  backWardJumpPower: 15
+  ghostPrefab: {fileID: 5418039189273161733, guid: 0965d7392e58e9f4197ccbd368cc5754, type: 3}
+  ghostPoint: {fileID: 992286591}
+  ghostLandingDistances:
+  - 2
+  - 6
+  - 10
+  minGhostFlightTime: 1
+  maxGhostFlightTime: 1.5
+--- !u!1 &992286590
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 992286591}
+  m_Layer: 0
+  m_Name: GhostPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &992286591
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992286590}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.86, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 158702851}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1657560701
 GameObject:
   m_ObjectHideFlags: 0

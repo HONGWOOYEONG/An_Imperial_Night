@@ -90,7 +90,7 @@ public class B_TigerUtilityAI : MonoBehaviour
 
     private bool IsOnCooldown(BossPatternData pattern)
     {
-        float lastUsedTime = bTigerContext.GetPattern(pattern.patternId);
+        float lastUsedTime = bTigerContext.GetLastPatternTime(pattern.patternId);
         return lastUsedTime + pattern.skillCooldown >= Time.time;
     }
 

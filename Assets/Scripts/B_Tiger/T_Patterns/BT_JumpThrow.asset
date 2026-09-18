@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9d089550909fdb94abaa9657a1a742c0, type: 3}
-  m_Name: BT_SmokeInhale
+  m_Name: BT_JumpThrow
   m_EditorClassIdentifier: Assembly-CSharp::BossPatternData
-  patternId: PatternA
-  patternNum: 0
-  skillCooldown: 12
+  patternId: PatternB
+  patternNum: 1
+  skillCooldown: 15
   baseWeight: 3
   minDistance: 2
-  maxDistance: 15
-  preferredDistance: 10
+  maxDistance: 10
+  preferredDistance: 6
   target: Nearest
-  HPDamage: 20
+  HPDamage: 30
   postureDamage: 10
   damageType: SpecialAttack
   driveDamage: 10
-  knockbackPower: 2
-  stunTime: 2
+  knockbackPower: 5
+  stunTime: 0.5

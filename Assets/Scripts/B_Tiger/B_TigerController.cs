@@ -19,6 +19,7 @@ public class B_TigerController : MonoBehaviour
     private bool isGroggy;
     public bool IsGroggy => isGroggy;
     public Rigidbody2D Rb => rb;
+    public B_TigerFSM FSM => tigerFSM;
 
     private void Awake()
     {
@@ -75,7 +76,7 @@ public class B_TigerController : MonoBehaviour
 
     public void EndGroggy()
     {
-        currentPosture = maxPosture/2;
+        currentPosture = maxPosture / 2;
         isGroggy = false;
     }
 }

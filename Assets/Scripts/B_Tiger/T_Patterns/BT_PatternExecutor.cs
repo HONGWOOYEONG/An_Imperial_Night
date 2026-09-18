@@ -1,94 +1,77 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BT_PatternExecutor : MonoBehaviour
 {
-    private B_TigerController tigerController;
-    
-    private Coroutine runningCoroutine;
-    private BossPatternData currentPattern;
+    private B_TigerContext context;
+    private readonly Dictionary<string, BT_Pattern> patternRunners = new Dictionary<string, BT_Pattern>();
+
+    private BossPatternData currentPatternData;
+    private BT_Pattern currentPatternRunner;
     public bool IsRunning { get; private set; }
 
-    [SerializeField] private float backWardJumpPower = 5f;
-    private float originalGravity;
-    private Rigidbody2D rb;
-    
 
     private void Awake()
     {
-        tigerController = GetComponent<B_TigerController>();
-        originalGravity = tigerController.Rb.gravityScale;
-        rb = tigerController.Rb;
-    }
-    public void Execute(BossPatternData pattern) 
-    {
-        if(pattern == null) return;
-        currentPattern = pattern;
+        context = GetComponent<B_TigerContext>();
 
-        switch (pattern.patternId)
+        foreach (BT_Pattern patternRunner in GetComponents<BT_Pattern>())
         {
-            case "PatternA":
-                runningCoroutine = StartCoroutine(startPatternA());
-                break;
-            case "PatternB":
-                
-                break;
-            case "PatternC":
-                break;
-            case "PatternD":
-                break;
-            case "PatternE":
-                break;
+            patternRunners[patternRunner.PatternId] = patternRunner;
         }
+    }
+
+    public void Execute(BossPatternData pattern)
+    {
+        if (pattern == null)
+        {
+            return;
+        }
+
+        if (!patternRunners.TryGetValue(pattern.patternId, out BT_Pattern patternRunner))
+        {
+            return;
+        }
+
+        currentPatternData = pattern;
+        currentPatternRunner = patternRunner;
+        IsRunning = true;
+
+        currentPatternRunner.Begin(this, pattern);
     }
 
     public void Stop()
     {
+        currentPatternRunner?.Stop();
 
-    }
-
-    IEnumerator startPatternA()
-    {
-        IsRunning = true;
-        yield return new WaitForSeconds(1f);
-
+        currentPatternRunner = null;
+        currentPatternData = null;
         IsRunning = false;
     }
 
-   
-    public void JumpToBackward()
+    public void OnPatternAnimationEvent(string eventName)
     {
-        tigerController.Rb.AddForce(new Vector2(-tigerController.FacingDirection * 1.5f, 0.7f) * backWardJumpPower, ForceMode2D.Impulse);
+        Debug.Log($"Pattern animation event received: {eventName}");
+
+        if (!IsRunning)
+        {
+            return;
+        }
+
+        currentPatternRunner?.OnAnimationEvent(eventName);
     }
 
-    public void Freeze()
+    public void CompleteCurrentPattern(BT_Pattern completedPattern)
     {
-        tigerController.Rb.gravityScale /= 3;
-        tigerController.Rb.linearVelocity /= 6;
-    }
+        if (!IsRunning || completedPattern != currentPatternRunner)
+        {
+            return;
+        }
 
-    public void IncreaseGravity()
-    {
-        tigerController.Rb.gravityScale = originalGravity * 2;
-    }
+        context.UpdateLastPattern(currentPatternData.patternId, Time.time);
 
-    public void ClearStatus()
-    {
-        tigerController.Rb.gravityScale = originalGravity;
-    }
-
-    public void WalkToForeward()
-    {
-        rb.linearVelocity = new Vector2(tigerController.FacingDirection * 2, rb.linearVelocity.y);
-    }
-
-    public void StopWalk()
-    {
-        tigerController.Stop();
-    }
-
-    public void ThrowGhost()
-    {
-        
+        currentPatternRunner = null;
+        currentPatternData = null;
+        IsRunning = false;
     }
 }

@@ -6,9 +6,7 @@ public class BossPatternData : ScriptableObject
     public string patternId;
     public int patternNum;
     //public AnimationClip anim;
-    //���� �ִϸ��̼� �̺�Ʈ ����ϱ� ���� �ۼ�
     public float skillCooldown;
-    [Min(0f)] public float executionTime = 1f;
     public float baseWeight;
     public float minDistance;
     public float maxDistance;

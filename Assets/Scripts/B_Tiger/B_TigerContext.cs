@@ -44,7 +44,7 @@ public class B_TigerContext : MonoBehaviour
         patternDict[patternID] = lastUsedTime;
     }
 
-    public float GetPattern(string patternID)
+    public float GetLastPatternTime(string patternID)
     {
         if (string.IsNullOrEmpty(patternID))
         {
