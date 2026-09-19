@@ -7,5 +7,6 @@ public class Boss_IdleState : Boss_Statebase
 
     public override void Tick()
     {
+        boss.AI.Pattern_Decide();
     }
 }

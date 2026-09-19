@@ -11,8 +11,8 @@ using UnityEngine;
 public class Boss_PatternSO : ScriptableObject
 {
     [Header("식별")]
-    [Tooltip("이 패턴의 유일한 번호. 쿨다운 키, Boss_AI의 상태 연결 switch, 애니메이터 patternId 조건이 " +
-             "전부 이 값 하나만 본다. 다른 패턴과 겹치면 쿨다운이 함께 잠기고 엉뚱한 상태가 실행된다.")]
+    [Tooltip("이 패턴의 유일한 번호. 쿨다운 키와 Boss_AI의 상태 연결 switch가 전부 이 값 하나만 본다. " +
+             "다른 패턴과 겹치면 쿨다운이 함께 잠기고 엉뚱한 상태가 실행된다.")]
     [SerializeField, Min(0)] private int id = 1;
 
     [Header("선택 조건")]

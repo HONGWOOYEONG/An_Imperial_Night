@@ -113,7 +113,15 @@ public class Boss_Moter : MonoBehaviour
     {
         rb.position = point;
     }
+    [ContextMenu("텔포")]
+    public void Test_Teleport()=> Teleport(Vector3.zero);
 
+
+    public void HandleFlip()
+    {
+        if( (boss.Context.BossPosition.x - boss.Context.TargetPosition.x) * facing > 0 )
+            Flip();
+    }
     public void Flip()
     {
         anim.transform.Rotate(0,180,0);

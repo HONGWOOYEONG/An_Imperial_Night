@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: pattern_B
   m_EditorClassIdentifier: Assembly-CSharp::Boss_PatternSO
   id: 2
-  cooldown: 3
+  cooldown: 10
   baseWeight: 1
   minDistance: 10
-  maxDistance: 50
-  preferredDistance: 2
+  maxDistance: 30
+  preferredDistance: 20
   hpDamage: 10
   postureDamage: 10
   driveDamage: 0

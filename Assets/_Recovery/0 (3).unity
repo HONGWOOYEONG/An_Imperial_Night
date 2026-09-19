@@ -217,7 +217,7 @@ Transform:
   m_GameObject: {fileID: 167685264}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23.6, y: -7.3, z: 0}
+  m_LocalPosition: {x: 6.8, y: -5.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170c4bcc23720fb4bb4f77bad3096241, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss_AnimTrigger
-  boss: {fileID: 969515874}
+  boss: {fileID: 0}
   attackCollider: {fileID: 0}
 --- !u!95 &566950676
 Animator:
@@ -344,7 +344,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -7401218802933154240, guid: 8e732a8b1c0f4f346ac34e5e6275db4d, type: 3}
+  m_Sprite: {fileID: -2429859523690096173, guid: f4cf82c3403ceea478da5670f44d6de7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -366,6 +366,7 @@ GameObject:
   - component: {fileID: 596521470}
   - component: {fileID: 596521469}
   - component: {fileID: 596521471}
+  - component: {fileID: 596521472}
   m_Layer: 0
   m_Name: Col_Body
   m_TagString: Untagged
@@ -493,6 +494,33 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 5}
   m_EdgeRadius: 0
+--- !u!50 &596521472
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596521467}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &792188942
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,8 +825,7 @@ MonoBehaviour:
   secondPlayer: {fileID: 0}
   patterns:
   - {fileID: 11400000, guid: 9c82d0b80dd0f514ebf9b2a9d598c9f9, type: 2}
-  - {fileID: 11400000, guid: f99faf6997294b74da3a224b8cfe7782, type: 2}
-  decideInterval: 2
+  decideInterval: 0.2
   groggyDuration: 3
 --- !u!50 &969515875
 Rigidbody2D:

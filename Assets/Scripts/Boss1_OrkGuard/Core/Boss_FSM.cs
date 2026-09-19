@@ -15,38 +15,28 @@ public class Boss_FSM
 {
     public IState Current { get; private set; }
 
-    // 구독자가 한 명도 없으면 이 필드는 null이다. event로 두면 밖에서 새 대입(=)을 못 하고
-    // += 로만 붙을 수 있어, 나중에 구독자가 늘어도 먼저 붙은 쪽이 조용히 날아가지 않는다.
     public event Action<string> OnCurrentState;
     public Boss_IdleState Idle { get; private set; }
     public Boss_MoveState Move { get; private set; }
-    public Boss_GroggyState Groggy { get; private set; }
     public Boss_DeadState Dead { get; private set; }
-    public BossPS_a1 A1 { get;private set; }
-    public BossPS_a2 A2 { get;private set; }
-    public BossPS_a3 A3 { get;private set; }
+    public Boss_GroggyState Groggy { get; private set; }
+
+    public Boss_PatternState Pattern { get; private set; }
 
     public Boss_FSM(Boss_Controller boss)
     {
         Idle = new Boss_IdleState(boss, "idle");
         Move = new Boss_MoveState(boss, "move");
-        Groggy = new Boss_GroggyState(boss, "groggy");
         Dead = new Boss_DeadState(boss, "dead");
+        Groggy = new Boss_GroggyState(boss, "grogy");
 
-        A1 = new BossPS_a1(boss, "a1");
-        A2 = new BossPS_a2(boss, "a2");
-        A3 = new BossPS_a3(boss, "a3");
+        Pattern = new Boss_PatternState(boss);
     }
 
     public void ChangeState(IState next)
     {
-        // 구성 실수로 null이 와도 현재 상태를 유지한다. 여기서 Current를 비우면
-        // 그 프레임부터 Tick이 통째로 멈춰 보스가 가만히 서 있는 버그가 된다.
         if (next == null) return;
 
-        // 같은 상태로의 재진입은 막는다. Enter가 두 번 돌면 애니메이션 파라메터가 다시 세팅되어
-        // 재생 중이던 동작이 처음으로 되감긴다. 공격을 연달아 잇는 것은 Boss_AttackState가
-        // 내부에서 다음 패턴 인덱스로 넘기는 방식으로 처리하고, 상태 전환으로 잇지 않는다.
         if (next == Current) return;
 
         Current?.Exit();
@@ -56,9 +46,6 @@ public class Boss_FSM
         OnCurrentState?.Invoke(Current.Name);
     }
 
-    // 보스의 갱신 주기는 Boss_Controller의 Update 하나로 통일한다.
     public void Tick() => Current?.Tick();
-
-    // 물리 갱신도 Boss_Controller의 FixedUpdate 하나로 통일한다.
     public void FixedTick() => Current?.FixedTick();
 }

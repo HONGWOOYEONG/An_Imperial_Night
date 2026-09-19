@@ -43,6 +43,19 @@ public class Boss_AnimTrigger : MonoBehaviour
         attackCollider.enabled = false;
     }
 
+
+    public void AE_Teleport()
+    {
+        Vector2 tpPoint = boss.Context.TargetPosition + (Vector2.right * 5f);
+        boss.Moter.Teleport(tpPoint);
+    }
+
+    public void AE_Pattern_End() => boss.AI.Pattern_End();
+
+
+
+
+
    
 
     public void AE_Vfx(string key)
