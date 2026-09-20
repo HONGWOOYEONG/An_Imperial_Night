@@ -298,7 +298,7 @@ Transform:
   m_GameObject: {fileID: 158702849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.08, y: 0.498, z: 0}
+  m_LocalPosition: {x: 11.54, y: 0.498, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -513,27 +513,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BT_PatternA
   n1: 5
-  inhaleTime: 1
-  recoveryTime: 0.5
-  ghostLancerPrefab: {fileID: 0}
+  useAnimationEvents: 0
+  spearHitboxDuration: 0.3
+  daggerHitboxDuration: 0.35
+  smokeExplosionDelay: 0.3
+  explosionHitboxDuration: 0.4
+  ghostLancer: {fileID: 0}
   ghostSpawnPoint: {fileID: 0}
-  spearPrefab: {fileID: 0}
-  daggerHitboxPrefab: {fileID: 0}
+  ghostAnimator: {fileID: 0}
+  attackTargetPoint: {fileID: 0}
+  spearHitbox: {fileID: 0}
+  daggerHitbox: {fileID: 0}
   n2: 10
-  trackingSpeed: 6
-  spearSpeed: 15
-  spearDelay: 0.3
-  turnTime: 0.6
-  daggerDelay: 0.3
+  ghostTrackingSpeed: 6
   daggerRushSpeed: 18
-  smokeCloudPrefab: {fileID: 0}
+  rushArrivalDistance: 0.1
+  ghostMovingBool: IsMoving
+  spearAttackTrigger: SpearAttack
+  daggerRushTrigger: DaggerRush
+  smokeCloud: {fileID: 0}
   smokeSpawnPoint: {fileID: 0}
-  smokeExplosionPrefab: {fileID: 0}
-  smokeSpeed: 8
+  smokeAnimator: {fileID: 0}
+  explosionHitbox: {fileID: 0}
+  smokeMoveSpeed: 8
   backwardForce: 5
-  backwardTime: 0.35
-  ignitionDelay: 0.6
-  explosionTime: 0.3
+  smokeMovingBool: IsMoving
+  smokeExplosionTrigger: Explosion
 --- !u!114 &158702864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,7 +572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c44bffe405c7fdf40b5ede30e5809acf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BT_PatternC
-  jumpForce: 8
+  jumpForce: 10
   rushSpeed: 20
   arrivalDistance: 0.1
 --- !u!1 &232815872

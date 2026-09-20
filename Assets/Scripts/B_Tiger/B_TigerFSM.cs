@@ -57,6 +57,8 @@ public class B_TigerFSM : MonoBehaviour
         {
             return;
         }
+
+        if(nextState == currentBossState) return;
         currentBossState?.Exit(this);
         currentBossState = nextState;
         currentBossState.Enter(this);

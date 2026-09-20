@@ -12,7 +12,7 @@ public class BT_PatternB : BT_Pattern
     private const string CompleteEvent = "Complete";
 
     [Header("Pattern B Settings")]
-    [SerializeField] private float backWardJumpPower = 5f;
+    [SerializeField] private float backWardJumpPower = 15f;
     [SerializeField] private GameObject ghostPrefab;
     [SerializeField] private Transform ghostPoint;
     [SerializeField] private float[] ghostLandingDistances = { 0f, 10f, 20f };
@@ -87,7 +87,7 @@ public class BT_PatternB : BT_Pattern
 
     private void JumpToBackward()
     {
-        rb.AddForce(new Vector2(-controller.FacingDirection * 1.5f, 0.7f) * backWardJumpPower, ForceMode2D.Impulse);
+        rb.AddForce(new Vector2(-controller.FacingDirection * 1.3f, 0.8f) * backWardJumpPower, ForceMode2D.Impulse);
     }
 
     private void Freeze()
