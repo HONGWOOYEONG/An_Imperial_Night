@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Crow : MonoBehaviour
 {   
+    [Header("Attack")]
+    [SerializeField] private DamageInfo damage = new DamageInfo();
+
     [Header("Movement")]
     [SerializeField] private float startSpeed = 5f;
     [SerializeField] private float finalSpeed = 40f;
@@ -12,10 +15,11 @@ public class Crow : MonoBehaviour
     [Header("Idle")]
     [SerializeField] private Transform centerPoint;
     [SerializeField] private float idleTime = 3f;
+
     private float timer = 0;
 
-    public Transform testTarget;
-    public Transform testCenter;
+    // public Transform testTarget;
+    // public Transform testCenter;
 
     float moveSpeed = 0;
     float chaseTime;
@@ -45,8 +49,8 @@ public class Crow : MonoBehaviour
             IdleMove_Tick();
     }
     // 까마귀를 생성할 때 호출할 세팅
-    [ContextMenu("test setCrow")]
-    public void Test_SetCrow() => SetCrow(testTarget,testCenter);
+    // [ContextMenu("test setCrow")]
+    // public void Test_SetCrow() => SetCrow(testTarget,testCenter);
     public void SetCrow(Transform target,Transform centerPoint)
     {
         this.target = target;
@@ -83,6 +87,10 @@ public class Crow : MonoBehaviour
         if(other.CompareTag("Enemy")) return;
         
         Debug.Log($"충돌대상 : {other.name}");
+
+        var receiver = other.GetComponent<IDamageReceiver>();
+        receiver?.ReceiveAttack(damage);
+
         Destroy(gameObject);
     }
 }
