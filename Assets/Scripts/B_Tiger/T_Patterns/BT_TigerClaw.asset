@@ -17,8 +17,8 @@ MonoBehaviour:
   skillCooldown: 3
   baseWeight: 1
   minDistance: 0
-  maxDistance: 10
-  preferredDistance: 5
+  maxDistance: 20
+  preferredDistance: 10
   target: Farthest
   HPDamage: 10
   postureDamage: 10

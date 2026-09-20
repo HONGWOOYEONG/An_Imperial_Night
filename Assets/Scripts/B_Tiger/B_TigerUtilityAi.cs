@@ -130,26 +130,37 @@ public class B_TigerUtilityAI : MonoBehaviour
         return 1f - (distanceFromPreferred / range);
     }
 
-    private PlayerContext GetNearestTarget()
+    // 패턴 내부에서도 현재 가장 가까운 대상을 다시 선택할 수 있도록 공개합니다.
+    public PlayerContext GetNearestTarget()
+    {
+        return GetNearestTarget(transform.position);
+    }
+
+    // 귀신창병처럼 보스가 아닌 위치를 기준으로 가까운 대상을 찾을 때 사용합니다.
+    public PlayerContext GetNearestTarget(Vector2 origin)
     {
         if (hPlayerContext == null) return tPlayerContext;
         if (tPlayerContext == null) return hPlayerContext;
 
-        float hDistance =(hPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
-
-        float tDistance =(tPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
+        float hDistance = (hPlayerContext.getPosition() - origin).sqrMagnitude;
+        float tDistance = (tPlayerContext.getPosition() - origin).sqrMagnitude;
 
         return hDistance <= tDistance ? hPlayerContext : tPlayerContext;
     }
 
-    private PlayerContext GetFarthestTarget()
+    // 패턴 내부에서도 현재 가장 먼 대상을 다시 선택할 수 있도록 공개합니다.
+    public PlayerContext GetFarthestTarget()
+    {
+        return GetFarthestTarget(transform.position);
+    }
+
+    public PlayerContext GetFarthestTarget(Vector2 origin)
     {
         if (hPlayerContext == null) return tPlayerContext;
         if (tPlayerContext == null) return hPlayerContext;
 
-        float hDistance = (hPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
-
-        float tDistance = (tPlayerContext.getPosition() - (Vector2)transform.position).sqrMagnitude;
+        float hDistance = (hPlayerContext.getPosition() - origin).sqrMagnitude;
+        float tDistance = (tPlayerContext.getPosition() - origin).sqrMagnitude;
 
         return hDistance >= tDistance ? hPlayerContext : tPlayerContext;
     }

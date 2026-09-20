@@ -10,6 +10,7 @@ TagManager:
   - Enemy_Puppeteer
   - Enemy
   - MeleeDealer
+  - CloseRangeDealer
   layers:
   - Default
   - TransparentFX
@@ -37,7 +38,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Player
   - 
   - 
   - 
