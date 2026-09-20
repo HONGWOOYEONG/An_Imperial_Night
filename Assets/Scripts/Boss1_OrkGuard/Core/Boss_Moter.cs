@@ -13,7 +13,7 @@ using UnityEngine;
 public class Boss_Moter : MonoBehaviour
 {
     [Header("이동")]
-    [SerializeField, Min(0f)] private float moveSpeed = 3f;
+    [SerializeField, Min(0f)] private const float moveSpeed = 4f;
 
     [Header("돌진")]
     [Tooltip("진행도(0~1)를 이동한 비율로 바꾸는 곡선. 초반이 가파르고 끝이 평평할수록 튀어나갔다가 목적지에서 미끄러지듯 멈춘다.")]
@@ -51,9 +51,9 @@ public class Boss_Moter : MonoBehaviour
     }
 
     // Boss_MoveState.FixedTick에서 호출.
-    public void Move_FixedTick()
+    public void Move_FixedTick(float speedMul = 1f)
     {
-        Set_VelocityX(facing * moveSpeed);
+        Set_VelocityX(facing * moveSpeed * speedMul);
     }
 
     /// <summary>

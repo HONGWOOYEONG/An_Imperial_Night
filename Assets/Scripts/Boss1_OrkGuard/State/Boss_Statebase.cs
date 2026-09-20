@@ -7,7 +7,7 @@ public abstract class Boss_Statebase : IState
     protected readonly Animator anim;
 
     private int animHash;
-    private string animName;
+    protected string animName;
     protected float endIntervalTime = 0f;
     protected float timer = 0f;
 

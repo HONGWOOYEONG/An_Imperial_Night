@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class PlayerContext : MonoBehaviour
 {
-    private Transform thisTransform;
+    public Transform trans;
     private Vector3 currentPosition;
     private bool doTransPosition;
 
     private void Awake()
     {
-        thisTransform = GetComponent<Transform>();
+        trans = GetComponent<Transform>();
         
     }
 
     private void Update()
     {
-        currentPosition = transform.position;
+        currentPosition = base.transform.position;
     }
 
     public Vector3 getPosition()

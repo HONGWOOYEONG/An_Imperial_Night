@@ -14,6 +14,8 @@ public class Boss_AnimTrigger : MonoBehaviour
     [Tooltip("Col_Attack. 애니메이션 클립에서 enabled 커브로 켜고 끌 수 있으면 그쪽이 우선이고, 여기는 클립으로 처리 못 하는 경우에만 쓴다.")]
     [SerializeField] private Collider2D attackCollider;
 
+    private Coroutine Summon_Crow;
+
     private void Awake()
     {
         if (boss == null)
@@ -52,7 +54,16 @@ public class Boss_AnimTrigger : MonoBehaviour
 
     public void AE_Pattern_End() => boss.AI.Pattern_End();
 
+// D_까마귀 소환
+    public void AE_SummonCrow()
+    {
+        Debug.Log("AE_까마귀 소환.");
+        if(Summon_Crow != null)
+            StopCoroutine(Summon_Crow);
 
+        Summon_Crow = StartCoroutine(boss.Spawn_CrowCo());
+    }
+    // 속도 조절은 패턴 스테이트에서 Switch문으로 설정.
 
 
 

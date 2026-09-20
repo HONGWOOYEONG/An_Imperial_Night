@@ -1,6 +1,9 @@
 /// 작성자 : 유희일
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -13,6 +16,7 @@ using UnityEngine;
 /// </summary>
 public class Boss_Controller : MonoBehaviour
 {
+    private static WaitForSeconds _waitForSeconds0_2 = new(0.2f);
     [Header("참조")]
     [SerializeField] private Animator anim;
     [SerializeField] private TextMeshPro stateText;
@@ -24,6 +28,10 @@ public class Boss_Controller : MonoBehaviour
 
     [Header("패턴")]
     [SerializeField] private List<Boss_PatternSO> patterns;
+    [SerializeField] private GameObject crow_obj;
+    [SerializeField] private List<Transform> spawnPoints;
+
+
 
     [SerializeField, Min(0f)] private float decideInterval = 0.2f;
 
@@ -146,6 +154,24 @@ public class Boss_Controller : MonoBehaviour
 
 #endregion
 
-
+#region 스킬
+    // 
+[ContextMenu("test crow")]
+public void Test_Spawn_CrowCo() => StartCoroutine( Spawn_CrowCo());
+    public IEnumerator Spawn_CrowCo()
+    {
+        foreach (var point in spawnPoints)
+        {
+            StartCoroutine(Spawn_Crow(point));
+            yield return _waitForSeconds0_2;
+        }
+    }
+    private IEnumerator Spawn_Crow(Transform spawnPoint)
+    {
+        var crow = Instantiate(crow_obj,spawnPoint.position,quaternion.identity);
+        crow.GetComponent<Crow>().SetCrow(target: Context.CurrentTarget.trans, centerPoint: spawnPoint);
+        yield return null;
+    }
+#endregion
 
 }
