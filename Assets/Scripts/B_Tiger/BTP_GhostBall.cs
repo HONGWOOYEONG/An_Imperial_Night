@@ -19,6 +19,7 @@ public class BTP_GhostBall : MonoBehaviour
         animator = GetComponent<Animator>();
         ballCollider = GetComponent<Collider2D>();
         timer = 0f;
+        isGrounded = false;
     }
 
     public void ThrowToLandingPoint(float landingX, float flightTime)

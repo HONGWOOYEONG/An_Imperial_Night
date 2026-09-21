@@ -552,7 +552,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BT_PatternB
   backWardJumpPower: 15
-  ghostPrefab: {fileID: 5418039189273161733, guid: 0965d7392e58e9f4197ccbd368cc5754, type: 3}
+  ghostPrefab: {fileID: 3395873285425857654, guid: d82278c428ca5c04b935506ad528e5e3, type: 3}
   ghostPoint: {fileID: 992286591}
   ghostLandingDistances:
   - 2
