@@ -192,7 +192,7 @@ public class T_Controller : MonoBehaviour
     //드라이브 게이지 감소 함수
     public void DecreaseDriveGauge(float amount)
     {
-        driveGauge = (driveGauge - amount) <= 0 ? 0 : (driveGauge - amount); //드라이브게이지 감소
+        driveGauge = Mathf.Clamp(driveGauge - amount, 0, dg_max);
         if(regenCoroutine != null) //실행 중인 코루틴이 있다면 
         {
             StopCoroutine(regenCoroutine); //멈추게 함

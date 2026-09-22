@@ -9,7 +9,7 @@ public class OBJ_LightAttack : MonoBehaviour
     private float damage;
     private Vector2 moveDirection;
     private GameObject t_player;
-    private T_Defence defence;
+    private T_DriveGauge t_DriveGauge;
     void Start()
     {
         Destroy(gameObject, 2f);
@@ -33,7 +33,7 @@ public class OBJ_LightAttack : MonoBehaviour
     {
         this.damage = damage;
         moveDirection = targetDir.normalized;
-        defence = player.GetComponent<T_Defence>();
+        t_DriveGauge = player.GetComponent<T_DriveGauge>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -42,9 +42,9 @@ public class OBJ_LightAttack : MonoBehaviour
         {
             //적 공격 코드
 
-            if (defence != null)
+            if (t_DriveGauge != null)
             {
-                defence.HealthSomeOfDriveGauge(healthDG); //약공시 얻는 드라이브 게이지
+                t_DriveGauge.HealthSomeOfDriveGauge(healthDG); //약공시 얻는 드라이브 게이지
             }
             Debug.Log("적 맞음");
             Destroy(gameObject);
