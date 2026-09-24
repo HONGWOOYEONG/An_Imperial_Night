@@ -4,32 +4,32 @@ using UnityEngine;
 //모든 상태가 Idle을 거쳐감
 public class P_IdleState : IPuppeteerState
 {
-    E_PuppeteerAction action;
     float BASE_FPS = 60f;
 
     float frontDelay = 3f; //Idle진입 후 판단 대기시간
     [Header("가중치")]
 
-    int[] maxHeight = new int[] { 0, 0, 0, 0, 0, 0, 20 }; //최대 가중치
+    int[] maxHeight = new int[] { 20, 30, 40, 10, 15, 20, 30 }; //최대 가중치
     int[] height = new int[] { 0, 0, 0, 0, 0, 0 ,0 }; //실제 가중치
 
-   IPuppeteerState[] states = new IPuppeteerState[] {
-    new P_PatternA_State(),
-    new P_PatternB_State(),
-    new P_PatternC_State(),
-    new P_PatternD_State(),
-    new P_PatternE_State(),
-    new P_PatternF_State(),
-    new P_PatternG_State()
-    };
+    IPuppeteerState[] states;
 
 
     public void Enter(E_PuppeteerController controller)
     {
         Debug.Log("Idle 상태 시작");
         //초기화
-        action = new E_PuppeteerAction();
         controller.chooseState = null;
+        states = new IPuppeteerState[] {
+            controller.states["A"],
+            controller.states["B"],
+            controller.states["C"],
+            controller.states["D"],
+            controller.states["E"],
+            controller.states["F"],
+            controller.states["G"]
+        };
+
         controller.StartCoroutine(Idle(controller));
     }
 
@@ -71,14 +71,18 @@ public class P_IdleState : IPuppeteerState
         }
 
         // 가중치 결정 함수들을 실행 시켜서 각각 가중치 결정
-        for (int i=0; i < controller.cooldowns.Count; i++)
+        for (int i=0; i < states.Length; i++)
         {
-            //만약 cooldowns안에 states[i]라는 타입이 있다면 가중치를 0으로 결정
-            if (controller.cooldowns.TryGetValue(states[i].GetType(), out float endTime))
+            //만약 cooldowns안에 states[i]가 있다면 가중치를 0으로 결정
+            if (controller.cooldowns.TryGetValue(states[i], out float endTime))
             {
-                if(Time.time < endTime) //아직 쿨타임이 돌지 않았음
+                if (Time.time < endTime) //아직 쿨타임이 돌지 않았음
                 {
                     height[i] = 0;
+                }
+                else
+                {
+                    height[i] = maxHeight[i];
                 }
             }
         }
@@ -129,8 +133,8 @@ public class P_IdleState : IPuppeteerState
 
         for(int i=0; i<height.Length; i++)
         {
-            cumulative += height[i];
-            if(RandNum < cumulative)
+            cumulative += height[i]; 
+            if (RandNum < cumulative)//수가 현재 누적 구간 안에 포함되면 해당 상태 선택 후 종료
             {
                 controller.chooseState = states[i];
                 break;

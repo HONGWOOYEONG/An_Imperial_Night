@@ -7,20 +7,19 @@ public class E_PuppeteerAction : MonoBehaviour
 
     [Header("패턴 C")]
     Vector2 targetPos_C;
-    public bool isThrowSpiderWeb = true;
     private float buttPosXOffset = 5f;
     private float speedButt = 10f;
     private float buttDuration = 0.5f;// 머리박치기 유지시간
 
     //일반 공격(평타)
     public IEnumerator NormalAttack(E_PuppeteerController controller , float attackHoldTime) 
-    //(controller, 공격 판점 유지 시간)
+    //(controller, 공격 판정 유지 시간)
     {
         Debug.Log("일반 공격");
         controller.isAttaking_A = true;
-        controller.HitBox_A.SetActive(true); //히트박스 킴
+        controller.HitBoxNormalAttack.SetActive(true); //히트박스 킴
         yield return new WaitForSeconds(attackHoldTime / controller.BASE_FPS); //판정 유지 시간
-        controller.HitBox_A.SetActive(false); //히트박스 끔
+        controller.HitBoxNormalAttack.SetActive(false); //히트박스 끔
         controller.isAttaking_A = false;
     }
     //돌진
@@ -113,9 +112,6 @@ public class E_PuppeteerAction : MonoBehaviour
         {
             spider.endPos = targetPos;
         }
-        
-        isThrowSpiderWeb = false;
-
     }
 
 

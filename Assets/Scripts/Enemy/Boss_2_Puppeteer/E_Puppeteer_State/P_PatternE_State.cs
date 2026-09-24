@@ -18,14 +18,10 @@ public class P_PatternE_State : IPuppeteerState
     public void Enter(E_PuppeteerController controller)
     {
         Debug.Log("PatternE 상태 시작");
-
         randAtkNum = Random.Range(1, 4);
         Debug.Log("랜덤한 공격 횟수 : " + randAtkNum);
         controller.StartCoroutine(StartNormalAttack(controller));
-        //if (controller.targetPlayer != null)
-        //{
-        //    target = controller.targetPlayer;
-        //}
+
     }
 
     public void Exit(E_PuppeteerController controller)
@@ -43,22 +39,6 @@ public class P_PatternE_State : IPuppeteerState
             controller.LookAtLocation(controller.targetPlayer.transform.position.x);
         }
 
-        //if (!target) { return; }
-
-        //Vector2 targetPos = target.transform.position;
-        //Vector2 myPos = controller.transform.position;
-        //if (!controller.isInTargetPlayer)
-        //{
-        //    Debug.Log( target.name + "에게 이동 중");   
-        //    controller.transform.position = Vector2.MoveTowards(myPos, targetPos, moveSpeed * Time.deltaTime);
-        //} 
-
-        ////공격 실행
-        //if (!isAttack && controller.isInTargetPlayer)
-        //{
-        //    isAttack = true;
-        //    controller.StartCoroutine(StartAttack(controller));
-        //}
     }
     IEnumerator StartNormalAttack(E_PuppeteerController controller)
     {

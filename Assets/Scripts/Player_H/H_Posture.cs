@@ -9,6 +9,7 @@ public class H_Posture : MonoBehaviour
     private H_Defence hDef;
     private PlayerMovement playerMovement;
 
+
     public const float BASE_FPS = 60;
 
     private bool isGroggy = false;
@@ -26,7 +27,7 @@ public class H_Posture : MonoBehaviour
     [Header("Parry")]
     [SerializeField] private float parryOnDrive = 70.0f;
 
-    private T_Defence tDef;
+    private T_DriveGauge tDriveGauge;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,6 +36,12 @@ public class H_Posture : MonoBehaviour
         playerHealth = GetComponent<PlayerHealth>();
         playerMovement = GetComponent<PlayerMovement>();
         hDef = GetComponent<H_Defence>();
+        GameObject TPlayer = GameObject.FindGameObjectWithTag("RangedDealer");
+        if (TPlayer != null)
+        {
+            tDriveGauge = TPlayer.GetComponent<T_DriveGauge>();
+        }
+       
     }
 
     // Update is called once per frame
@@ -56,8 +63,9 @@ public class H_Posture : MonoBehaviour
             if (hDef.IsParrying)
             {
                 Debug.Log("패링 성공");
-                tDef.driveGauge += parryOnDrive;
-                if (tDef.driveGauge > tDef.dg_max) tDef.driveGauge = tDef.dg_max;
+                tDriveGauge.driveGauge += parryOnDrive;
+                tDriveGauge.HealthSomeOfDriveGauge(parryOnDrive);
+                if (tDriveGauge.driveGauge > tDriveGauge.dg_max) tDriveGauge.driveGauge = tDriveGauge.dg_max;
                 return;
             }
 

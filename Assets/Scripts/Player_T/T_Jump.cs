@@ -63,20 +63,18 @@ public class T_Jump : MonoBehaviour
             startTime = Time.time;
         }
         else { // 뗐을 때
-            if (!isGrounded) return;
             movement.SetJumping(false);
             duration = Time.time - startTime;
           //  Debug.Log("현재 시간 - 시작 시간 = " + duration);
-            if(duration < 0.1f) //기본 점프
+            if(duration < 0.5f) //기본 점프
             {
-                //Debug.Log("기본 점프");
+                Debug.Log("기본 점프");
                 BasicJump();
             }
             else //차지 점프
             {
-                //Debug.Log("차지 점프");
-                duration = duration > maxTime ? maxTime : duration; 
-                Charging();
+                Debug.Log("차지 점프");
+                ChargingJump();
             }
         }
     }
@@ -87,7 +85,7 @@ public class T_Jump : MonoBehaviour
         rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
     }
 
-    private void Charging()
+    private void ChargingJump()
     {
       
        while(duration > 0f)
@@ -95,7 +93,7 @@ public class T_Jump : MonoBehaviour
             duration -= nextTime;
             currentCharge += addCharge;
         }
-        float Ratio = currentCharge / maxCharge;
+        float Ratio = Mathf.Clamp(duration / maxTime, 0f, 1f);
         float Mult = Mathf.Lerp(1f, 2f, Ratio);
        // Debug.Log(Mult * jumpPower);
         rb.AddForce(Vector2.up * (jumpPower * Mult), ForceMode2D.Impulse);

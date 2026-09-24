@@ -1,21 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-
-//���� ��Ÿ� ���� ������ Ÿ����
-//���� �����ؼ� �÷��̾�� ���� ����� ���� ����
-//���� ĳ������ �þ� �̳��� �ִٸ� ���� why? ĳ���Ͱ� ���� ���� �� �� �ֱ� ������
-//��Ÿ� ���� ���� ���ٸ� ĳ������ �ٶ󺸴� �� �κ����� ����
 
 public class RangeCombo
 {
-    public float lastClickedTime; //���������� Ŭ���� ���� �ð�
-    public int currentCount = 0; //���� �迭 �ε���
-    public float[] damage = { 100, 20, 20, 20, 200 }; //������ �迭
-    public float[] frontDelay = { 15, 4, 4, 4, 15 }; //��������
-    public float backDelay = 5f; //�ĵ�����
+    public float lastClickedTime; 
+    public int currentCount = 0; 
+    public float[] damage = { 100, 20, 20, 20, 200 }; 
+    public float[] frontDelay = { 15, 4, 4, 4, 15 }; 
+    public float backDelay = 5f;
 }
 
 
@@ -23,50 +16,49 @@ public class T_Attack : MonoBehaviour
 {
     float BASE_FPS = 60f;
     public bool isRight = true;
-    Rigidbody2D rb;
-    PlayerMovement movement;
-    T_Defence defence;
-    T_Jump jump;
-    [SerializeField] Transform createPos; //������ �����Ǵ� position , �÷��̾ �θ�� �� transform�� �־������
-
+    Rigidbody2D rb = null;
+    PlayerMovement movement = null;
+    T_DriveGauge t_DriveGauge = null;
+    T_Jump jump = null;
+    [SerializeField] Transform createPos = null;
     [Header("��� or ����")]
-    [SerializeField] float triggerTime = 65f; //������� �������� Ȯ���ϴ� �ð�
+    [SerializeField] float triggerTime = 65f; 
     [SerializeField] float triggerTimer = 0f;
     private bool isInputKey = false;
    
 
-    [Header("���")]
-    [SerializeField] float w_attackrange = 20f;//��� ��Ÿ�
-    [SerializeField] float w_attacktime = 0.5f;//�ĵ����̰� ������ �� �� �� �� �̳��� �����ؾ� ���� �������� �Ѿ
-    [SerializeField] float w_viewAngle = 85f;//��� Ÿ���� Ž�� ����
-    [SerializeField] GameObject w_obj; //��� ������ 
-    private Collider2D w_nearTarget; //���� ����� ���� ������� ����
-    private float w_shortest = float.MaxValue; //���� ª�� �Ÿ��� ���� ã������ �Ÿ� ����� ���� �ִ� ����
-    private bool w_isInsideEnemy = false; //���� ���� ��Ÿ� ���� �ֳ�?
-    private float w_nextComboRange = 0.5f; //�޺� ���� ����
+    [Header("약공")]
+    [SerializeField] float w_attackrange = 20f;
+    [SerializeField] float w_attacktime = 0.5f;
+    [SerializeField] float w_viewAngle = 85f;
+    [SerializeField] GameObject w_obj; 
+    private Collider2D w_nearTarget; 
+    private float w_shortest = float.MaxValue; 
+    private bool w_isInsideEnemy = false;
+    private float w_nextComboRange = 0.5f;
     private float w_comboExpireTime = 0f;
 
-    [Header("����")]
-    [SerializeField] float s_frontDelay = 5f; //����
-    [SerializeField] float s_backDelay = 3f; //�ĵ� 
-    [SerializeField] GameObject s_obj; //���� ������
+    [Header("강공")]
+    [SerializeField] float s_frontDelay = 90f; 
+    [SerializeField] float s_backDelay = 0.8f; 
+    [SerializeField] GameObject s_obj;
 
-    [Header("Ư��")]
-    [SerializeField] float sp_drvieDecrease = 100f; //Ư�� ����̺� ����
-    [SerializeField] float sp_stayCount = 1f; //Ư�� ���� �ð�
-    [SerializeField] float sp_frontDelay = 45f; //����
-    [SerializeField] float sp_backDelay = 2f; //�ĵ�
-    [SerializeField] float sp_atkRange = 5f; //Ư�� ��Ÿ�
+    [Header("특공")]
+    [SerializeField] float sp_drvieDecrease = 100f; 
+    [SerializeField] float sp_stayCount = 1f;
+    [SerializeField] float sp_frontDelay = 45f;
+    [SerializeField] float sp_backDelay = 2f; 
+    [SerializeField] float sp_atkRange = 5f;
     private float sp_timer = 0f;
-    [SerializeField]private float sp_rayTime = 3f; //Ư�� ������ ���� �ð�
-    public bool sp_isAttaking = false; //Ư�� ���� ���� �� �÷��̾ �������� ���ϰ� üũ
-    private bool sp_hasAttacked = false; //������ �ð� ���� ���� �ѹ��� �°� �ϱ�����
+    [SerializeField]private float sp_rayTime = 3f; 
+    public bool sp_isAttaking = false;
+    private bool sp_hasAttacked = false;
     RangeCombo combo;
     void Start()
     {
         combo = new RangeCombo();
         movement = GetComponent<PlayerMovement>();
-        defence = GetComponent<T_Defence>();
+        t_DriveGauge = GetComponent<T_DriveGauge>();
         jump = GetComponent<T_Jump>();
         rb = GetComponent<Rigidbody2D>();
 
@@ -82,9 +74,9 @@ public class T_Attack : MonoBehaviour
         }
     }
   
-    public void OnLightAttack(InputValue value) //���
+    public void OnLightAttack(InputValue value) 
     {
-        if (value.isPressed) //Ű �Է��� �޾��� �� �ѹ� ������ ��
+        if (value.isPressed)
         {
             triggerTimer = 0f;
             isInputKey = true;
@@ -95,11 +87,11 @@ public class T_Attack : MonoBehaviour
             isInputKey = false;
             if(triggerTimer <= triggerTime)
             {
-                LightAttack();
+                LightAttack(); //짧게 누르면 약공
             }
             else
             {
-                HeavyAttack();
+                HeavyAttack(); //길게누르면 강공
             }
            
         }
@@ -108,75 +100,64 @@ public class T_Attack : MonoBehaviour
     {
         w_nearTarget = null;
         w_isInsideEnemy = false;
-        if (Time.time > w_comboExpireTime) //�޺� �ð� ���� Ű�� ������ ������
+        if (Time.time > w_comboExpireTime) 
         {
-            combo.currentCount = 0; //�ʱ�ȭ
+            combo.currentCount = 0;
         }
 
-        FindToNearTarget(); //�� ����
-        int attackIndex = combo.currentCount; //���� �ε���
-        if (w_isInsideEnemy && w_nearTarget != null) //���� ���� ��Ÿ�, �þ� �̳��� �ִٸ�
+        FindToNearTarget(); 
+        int attackIndex = combo.currentCount;
+        if (w_isInsideEnemy && w_nearTarget != null) 
         {
             StartCoroutine(StartLightAttack(attackIndex, w_nearTarget.gameObject.transform.position));
         }
-        else //���� ���� ��Ÿ�, �þ� ���� ���ٸ�
+        else 
         {
-            //�÷��̾ ���� ������ vector2.right���� vector2.left���� ����ϰ� 
-            //�� ��ġ�� *10�� position�� ���ؼ� ���ڰ����� �Ѱ���
-
             Vector2 lookDir = Vector2.right * movement.FacingDirection;
-            Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); //��ġ
+            Vector2 forwardPos = (Vector2)createPos.position + (lookDir * 10f); 
 
             StartCoroutine(StartLightAttack(attackIndex, forwardPos));
         }
-        Debug.Log("���� �޺� �ε��� = "+attackIndex);
         combo.currentCount = (combo.currentCount + 1) % 5;
-        w_comboExpireTime = Time.time + w_nextComboRange; //���� ���� �������� w_attacktime
+        w_comboExpireTime = Time.time + w_nextComboRange; 
     }
 
-    //����ü ������ ����ü���� ���� �Ѱ��ֱ�
-    private IEnumerator StartLightAttack(int index ,Vector2 targetPos) // targetPos = ��ġ ���� �Ѱ������
+ 
+    private IEnumerator StartLightAttack(int index ,Vector2 targetPos) 
     {
-        yield return new WaitForSeconds(combo.frontDelay[index] /BASE_FPS); //�� ������
+        yield return new WaitForSeconds(combo.frontDelay[index] /BASE_FPS); 
 
-        Vector2 newPos = createPos.position; //������� �����Ǵ� ��ġ
-        GameObject obj_lightatk = Instantiate(w_obj, newPos, Quaternion.identity); //����ü ����
-        OBJ_LightAttack atkInit = obj_lightatk.GetComponent<OBJ_LightAttack>(); //����ü�� ��ũ��Ʈ ��������
+        Vector2 newPos = createPos.position; 
+        GameObject obj_lightatk = InstantiateObject(w_obj, newPos); 
+        OBJ_LightAttack atkInit = obj_lightatk.GetComponent<OBJ_LightAttack>(); 
         if (atkInit != null)
         {
-            //���� ��ġ�� �����ͼ� ���ư����� ������ ��������
-            Vector2 Pos = (targetPos - newPos).normalized; //����
-            atkInit.Initialize(combo.damage[index], Pos, this.gameObject); //����ü ����, ������ ����(��ġ) ����
+            Vector2 Pos = (targetPos - newPos).normalized; 
+            atkInit.Initialize(combo.damage[index], Pos, this.gameObject); 
         }
 
-        yield return new WaitForSeconds(combo.backDelay/BASE_FPS); //�� ������
+        yield return new WaitForSeconds(combo.backDelay/BASE_FPS); 
     }
 
 
-    //overlap�� ��Ÿ� ���� �ִ� �� �߿� ���� ����� ���� ã��
     private void FindToNearTarget()
     {
-        w_shortest = float.MaxValue; //Ž�� �Ҷ����� �ʱ�ȭ
+        w_shortest = float.MaxValue; 
 
         Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, w_attackrange);
         foreach (Collider2D target in targets)
         {
             if (target.CompareTag("Enemy"))
             {
-                Vector2 targetPos = target.transform.position; //��ġ
-                Vector2 playerPos = transform.position; //��ġ
+                Vector2 targetPos = target.transform.position; 
+                Vector2 playerPos = transform.position; 
 
-
-                Vector2 dir = (targetPos - playerPos).normalized; //����
-                Vector2 myForward = transform.right; //����
-                float angle = Vector2.Angle(myForward, dir); //����
-                //�þ� �̳��� ����
+                Vector2 dir = (targetPos - playerPos).normalized; 
+                Vector2 myForward = transform.right; 
+                float angle = Vector2.Angle(myForward, dir); //바라보는 시야각도
                 if (angle <= w_viewAngle )
-                {
-                    Debug.Log("�� �߰�" + playerPos);
-                    //�÷��̾�� ���� �Ÿ��� ��
+                {                   
                     float distance = Vector2.Distance(playerPos, targetPos);
-                    //���� ª���� ��
                     if (distance < w_shortest)
                     {
                         w_shortest = distance;
@@ -185,49 +166,47 @@ public class T_Attack : MonoBehaviour
                 }
             }
         }
-        if (w_nearTarget != null )//Ÿ���� null�� �ƴϰ� ���� �Ÿ��� ���� ��Ÿ����� �۴ٸ�
-        {
-            w_isInsideEnemy = true;
-        }
 
         if (w_nearTarget != null)
         {
-            Debug.Log($"���� Ÿ�� �߰�: {w_nearTarget.name}, �Ÿ�: {w_shortest}, ��Ÿ��� ����: {w_isInsideEnemy}");
         }
-        else //���� ã�� ���ϸ� ������ �ʱ�ȭ
+        else 
         {
-            Debug.Log($"���� Ÿ�� �߰�: ����, �Ÿ�: {w_shortest}, ��Ÿ��� ����: {w_isInsideEnemy}");
             w_nearTarget = null;
-            w_isInsideEnemy = false;
         }
     }
 
 
 
-    public void HeavyAttack()//����
+    public void HeavyAttack()
     {
-              // knockback(3f);
-            StartCoroutine(StrongAttack());        
+        StartCoroutine(StrongAttack());
     }
 
     private IEnumerator StrongAttack()
     {
         yield return new WaitForSeconds(s_frontDelay/BASE_FPS);
-        Vector2 newPos = createPos.position;
-        GameObject obj_heavyAttack = Instantiate(s_obj, newPos, Quaternion.identity);
+
+        Vector2 newPos = createPos.position; //오브젝트 생성 위치
+        Vector2 attackerPos = transform.position; // 공격자 위치
+        Vector2 knockbackDir = -((newPos - attackerPos).normalized); //넉백 방향
+
+        GameObject obj_heavyAttack = InstantiateObject(s_obj, newPos);
         OBJ_HeavyAttack heavyAttack = obj_heavyAttack.GetComponent<OBJ_HeavyAttack>();
-        heavyAttack.Initialize(this.gameObject);
+        heavyAttack.Initialize(knockbackDir);
+        movement.KnockBack(knockbackDir);
+
         yield return new WaitForSeconds(s_backDelay/BASE_FPS);
     }
 
-    public void OnAbility(InputValue value) //Ư��
+    public void OnAbility(InputValue value)
     {
-        bool isbunout = defence.GetIsbunout();
-        float currentDriveGauge = defence.GetCurrentDriveGauge();
+        bool isbunout = t_DriveGauge.isBunOut;
+        float currentDriveGauge = t_DriveGauge.driveGauge;
         if (value.isPressed && !isbunout && currentDriveGauge > sp_drvieDecrease && !sp_isAttaking)
         {
             Debug.Log("Ư�� ����");
-            defence.DecreaseDriveGauge(sp_drvieDecrease); //����̺� ������ ����
+            t_DriveGauge.DecreaseDriveGauge(sp_drvieDecrease); 
             StartCoroutine(SpecialAttack());
         }
     }
@@ -236,62 +215,51 @@ public class T_Attack : MonoBehaviour
     {
         sp_isAttaking = true;
         float normalrgavity = rb.gravityScale;
-        if (movement != null) //��ũ��Ʈ�� ��� ����
+        if (movement != null) 
         {
-            movement.enabled = false;
+            movement.enabled = false;  // 이동 및 점프 제어 비활성화
         }
-        rb.linearVelocity = Vector2.zero; //�̵� ���ϰ� ��
-        if (jump.isJumping) //���� ���̶��
+        rb.linearVelocity = Vector2.zero; 
+        if (jump.isJumping) 
         {
             rb.gravityScale = 0f;
         }
 
         Vector2 crtPos = (createPos.position);
-        yield return new WaitForSeconds(sp_frontDelay / BASE_FPS); //�� ������ ���ȿ��� �ִϸ��̼� �ƹ��͵� �ȳ���
+        yield return new WaitForSeconds(sp_frontDelay / BASE_FPS); 
 
         sp_timer = 0f;
-        float keepRayTime = sp_rayTime / BASE_FPS; //���� ���� �ð�
+        float keepRayTime = sp_rayTime / BASE_FPS; 
          while(sp_timer < keepRayTime) 
         {
-            //�������� �߻�Ǵ� �ð� �ȿ� ���� �ѹ��� �����ϱ� ���ؼ�
                sp_timer += Time.deltaTime;
-                RaycastHit2D hit = Physics2D.Raycast(crtPos, Vector2.right, sp_atkRange); //crtPos���� Vector2.right����, sp_atkRange��Ÿ�
-                Debug.DrawRay(crtPos, Vector2.right * sp_atkRange,Color.yellow,keepRayTime ); //����
+                RaycastHit2D hit = Physics2D.Raycast(crtPos, Vector2.right, sp_atkRange);
+                Debug.DrawRay(crtPos, Vector2.right * sp_atkRange,Color.yellow,keepRayTime );
                 if (hit.collider != null)
                 {
-                    if (hit.collider.CompareTag("Enemy") && !sp_hasAttacked) //���� ������Ʈ�� ���̰� ������ ���ߴٸ�
+                    if (hit.collider.CompareTag("Enemy") && !sp_hasAttacked) 
                     {
                         Debug.Log(hit.collider.name);
-                        //����
+                       
                        sp_hasAttacked = true;
                     }
                 }
                 yield return null;
             }
         sp_hasAttacked = false;
-        yield return new WaitForSeconds(sp_backDelay/BASE_FPS); //�� ��
+        yield return new WaitForSeconds(sp_backDelay/BASE_FPS); 
         if (movement != null) 
         {
-            movement.enabled = true;
+            movement.enabled = true; //원래 상태 복구
         }
         rb.gravityScale = normalrgavity;
         sp_isAttaking = false;
         
     }
     
-    private void knockback(float amount) //�˹�
+    private GameObject InstantiateObject(GameObject obj, Vector2 createPos)
     {
-        //�������� ���� ������
-        if (movement.FacingDirection==1)
-        {
-
-            rb.AddForce(Vector2.left * amount, ForceMode2D.Impulse);
-        }
-        else  //������ ���� ������ 
-        {
-            rb.AddForce(Vector2.right * amount, ForceMode2D.Impulse);
-        }
-       
+        return Instantiate(obj, createPos, Quaternion.identity);
     }
 
     private void OnDrawGizmosSelected()
