@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum DamageType
@@ -6,7 +7,6 @@ public enum DamageType
     HeavyAttack,
     SpecialAttack
 }
-
 public struct DamageInfo
 {
     public float damage;
@@ -14,8 +14,8 @@ public struct DamageInfo
     public float knockbackPower;
     public float stunTime;
     public DamageType damageType;
-    public float postureDamage; // ±ÙÁ¢ Ä³¸¯ÅÍ ¹æ¾î ½Ã Ã¼°£ Áõ°¡·®
-    public float driveDamage;   // ¿ø°Å¸® Ä³¸¯ÅÍ ¹æ¾î ½Ã µå¶óÀÌºê °¨¼Ò·®
+    public float postureDamage; // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public float driveDamage;   // ï¿½ï¿½ï¿½Å¸ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½Ò·ï¿½
 }
 
 public interface IDamageReceiver
