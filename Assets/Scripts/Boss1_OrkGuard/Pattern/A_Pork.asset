@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9aa6d4d72fb6cb4da18d454a30b3d6e, type: 3}
-  m_Name: D_SummonCrow
+  m_Name: A_Pork
   m_EditorClassIdentifier: Assembly-CSharp::Boss_PatternSO
-  id: 4
-  cooldown: 30
-  baseWeight: 1000
+  id: 1
+  cooldown: 5
+  baseWeight: 1
   minDistance: 0
-  maxDistance: 50
-  preferredDistance: 10
-  hpDamage: 0
-  postureDamage: 0
+  maxDistance: 10
+  preferredDistance: 8
+  hpDamage: 10
+  postureDamage: 10
   driveDamage: 0
   knockbackPower: 0
   stunTime: 0

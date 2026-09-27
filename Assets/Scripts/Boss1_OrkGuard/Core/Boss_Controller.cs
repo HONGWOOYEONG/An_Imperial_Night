@@ -42,17 +42,23 @@ public class Boss_Controller : MonoBehaviour
     public Boss_Context Context { get; private set; }
     public Boss_AI AI { get; private set; }
 
+
     public Animator Anim        => anim;
     public Boss_Health Health   => health;
     public Boss_Moter Moter     => moter;
+    public Boss_AttackManager Attack   => attack;
+
 
     private Boss_Health health;
     private Boss_Moter moter;
+    private Boss_AttackManager attack;
+
 
     private void Awake()
     {
-        health      = GetComponent<Boss_Health>();
-        moter       = GetComponent<Boss_Moter>();
+        health  = GetComponent<Boss_Health>();
+        moter   = GetComponent<Boss_Moter>();
+        attack  = GetComponentInChildren<Boss_AttackManager>();
 
         if (anim == null)
         {

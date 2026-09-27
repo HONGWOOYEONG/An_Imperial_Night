@@ -92,9 +92,9 @@ public class Boss_AI
         }
 
         currentPattern = Select_Pattern();
-        // 공격 클래스에 값을 넘김.
 
-
+        // 공격 클래스에 값을 넘김
+        boss.Attack.SetPatternToAttack(currentPattern);
 
         // 전부 쿨타임이거나 사거리 밖이다. 걸어 들어가서 다시 판단한다.
         if (currentPattern == null)

@@ -25,7 +25,6 @@ public class Boss_PatternState : Boss_Statebase
             case 3: animName = "C:TPSweep"; break;          // 완
             case 4: animName = "D:SummonCrow"; break;       // 진행
             case 5: animName = "E:FireBreath"; break;       // 
-            // case 6: animName = "F:Sting&Sweep"; break;
             default:animName = "None"; break;
         }
     }
