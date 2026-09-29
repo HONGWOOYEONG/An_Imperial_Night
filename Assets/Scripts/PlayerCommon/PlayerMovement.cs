@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
         jumpSpeed = moveSpeed / 2f;
         defenceSpeed = moveSpeed / 2f;
 
-        isMoving = true;
+        SetActiveMovingTrue();
     }
 
     private void FixedUpdate()
@@ -231,13 +231,18 @@ public class PlayerMovement : MonoBehaviour
             );
     }
     
-    public void KnockBack(Vector2 dir) //방향을 매개변수로 가져와서 그 방향으로 넉백
+    public void KnockBack(Vector2 dir , float power) //방향을 매개변수로 가져와서 그 방향으로 넉백
     {
         //targetPos까지 플레이어가 넉백해야함
-        float KnockBackPower = 7f;
         isMoving = false;
         rb.linearVelocity = Vector2.zero;
-        rb.AddForce(dir * KnockBackPower, ForceMode2D.Impulse);
+        rb.AddForce(dir * power, ForceMode2D.Impulse);
+    }
+
+    //--넉백할 때 isMoveing = false였건걸 true로 전환 할 때 사용할 함수--
+    public void SetActiveMovingTrue()
+    {
+        isMoving = true;
     }
 
     public float SlowMove(float percent) //플레이어가 느려지는 함수

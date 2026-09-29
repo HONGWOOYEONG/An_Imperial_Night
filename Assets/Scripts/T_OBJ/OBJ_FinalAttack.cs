@@ -1,29 +1,32 @@
-using UnityEditor.U2D.Sprites;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class OBJ_LightAttack : MonoBehaviour
+public class OBJ_FinalAttack : MonoBehaviour
 {
-    [SerializeField]float speed = 15f;
-    [SerializeField] float healthDG = 10f;
+    [SerializeField] float speed = 9f;
+    [SerializeField] float healthDG = 15f;
     private T_Attack ownerAttack;
-    private DamageInfo damageInfo = new DamageInfo()
-    {
-        damage = 0,
-        damageDir = Vector2.zero,
-        stunTime = 0,
-        damageType = DamageType.LightAttack,
-        driveDamage = 0
-    };
+    private DamageInfo damageInfo;
+    private float timer;
+    private float movementTime = 1f;
+    private bool isMoving = false;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Destroy(gameObject, 0.8f);
+        Destroy(gameObject, 2f);
     }
 
+    // Update is called once per frame
     void Update()
     {
+        timer += Time.deltaTime;
         OBJ_Move();
+        if(timer >= movementTime && !isMoving)
+        {
+            ownerAttack.movement.SetActiveMovingTrue();
+            isMoving = true;
+        }
     }
-
     void OBJ_Move()
     {
         if (damageInfo.damageDir == Vector2.zero)
@@ -44,12 +47,11 @@ public class OBJ_LightAttack : MonoBehaviour
         if (collision.collider.CompareTag("Enemy"))
         {
             //적 공격 코드
-            IDamageReceiver receiver = collision.collider.GetComponent<IDamageReceiver>();
-            //DamageReceivar 코드가 완료되면 작성
+            //--마력의 흔적--
 
             //--적중 시 T_Attack의 OnAttackHit의 드라이브게이지 회복 코드를 가져와서 회복을 하게 만듬--
             ownerAttack?.OnAttackHit(healthDG);
-            Debug.Log("normalAttack 적 맞음");
+            Debug.Log("finalAttack 적 맞음");
             Destroy(gameObject);
         }
     }

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class T_Defence : MonoBehaviour, IDamageReceiver
+public class T_Defence : MonoBehaviour
 {
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;

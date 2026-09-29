@@ -25,25 +25,6 @@ public class Puppeteer_NormalAttack : MonoBehaviour
         {
             return;
         }
-        IDamageReceiver receiver = collision.GetComponent<IDamageReceiver>();
-        if (receiver != null)
-        {
-            int index = e_Puppeteer.currentCount;
-
-            //몬스터 -> 타격 대상
-            Vector2 hitDir = (collision.transform.position - transform.position).normalized;
-
-            DamageInfo damageInfo = new DamageInfo
-            {
-                damage = damage[index],
-                damageDir = hitDir,
-                knockbackPower = 0,
-                stunTime = 0,
-                // DamageType damageType, 
-                postureDamage = addGroggy[index],
-                driveDamage = decreaseDrive[index]
-            };
-            receiver.ReceiveAttack(damageInfo);
-        }
+       
     }
 }

@@ -10,6 +10,7 @@ public class SpiderWeb : MonoBehaviour
     [SerializeField] public Vector2 endPos; //끝
     private float addY = 1f;
     private float moveSpeed = 16f;
+    private float knockbackPower = 7f;
     void Start()
     {
         controller = GameObject.FindWithTag("Enemy_Puppeteer").GetComponent<E_PuppeteerController>();
@@ -55,8 +56,8 @@ public class SpiderWeb : MonoBehaviour
                 Vector2 targetPos = other.transform.position;
                 float dirX = (targetPos.x - myPos.x) > 0 ? 1 : -1;
                 Vector2 dirToTarget = new Vector2(dirX, 0f);
-                playerMovement.KnockBack(dirToTarget); //넉백
-                playerMovement.isMoving = true; //넉백이 다 된 후 다시 움직일 수 있게 해줌
+                playerMovement.KnockBack(dirToTarget, knockbackPower); //넉백
+                playerMovement.SetActiveMovingTrue(); //넉백이 다 된 후 다시 움직일 수 있게 해줌
                 Debug.Log(playerMovement.isMoving);
                
                 instantiatePos = new Vector2(endPos.x, endPos.y + addY);

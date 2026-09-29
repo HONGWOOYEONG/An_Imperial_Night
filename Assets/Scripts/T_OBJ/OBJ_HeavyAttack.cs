@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class OBJ_HeavyAttack : MonoBehaviour
 {
+    PlayerMovement movement;
     T_DriveGauge t_DriveGauge;
     BoxCollider2D boxCollider = null;
  
@@ -13,6 +14,8 @@ public class OBJ_HeavyAttack : MonoBehaviour
     private float groggyDamage = 10; //기본 groggy 데미지
     private float time = 2.8f; //적중 시간
     private float timer = 0; //적중 시간 체크 
+    private float movementTime = 1.5f; //넉백하고나서 움직일 수 있도록 시간체크하는 변수
+    private bool isMoveing = false;
 
     [Header("늘어나는 오브젝트")]
     private Vector2 direction = Vector2.zero;
@@ -23,6 +26,7 @@ public class OBJ_HeavyAttack : MonoBehaviour
     void Start()
     {
         GameObject tPlayer = GameObject.FindGameObjectWithTag("RangedDealer");
+        movement = tPlayer.GetComponent<PlayerMovement>();
         t_DriveGauge = tPlayer.GetComponent<T_DriveGauge>();
         boxCollider = GetComponent<BoxCollider2D>();
         Destroy(this.gameObject, destroyTime);
@@ -33,6 +37,12 @@ public class OBJ_HeavyAttack : MonoBehaviour
     {
         timer += Time.deltaTime;
         ExpandOnKnockback();
+
+        if(timer >= movementTime && !isMoveing)
+        {
+            movement.SetActiveMovingTrue();
+            isMoveing = true;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -64,18 +74,14 @@ public class OBJ_HeavyAttack : MonoBehaviour
         
         float growAmount = growSpeed * Time.deltaTime;
 
-        //collider, localscale 늘리기
+        //--collider, localscale 늘리기--
         Vector3 scale = transform.localScale;
         scale.x += growAmount;
         transform.localScale = scale;
-        // 한쪽 끝이 고정되도록 위치 보정
-        transform.position += new Vector3(
-            direction.x * growAmount * 0.5f,
-            0f,
-            0f
-        );
+        //--한쪽 끝이 고정되도록 위치 보정--
+        transform.position += new Vector3(direction.x * growAmount * 0.5f, 0f, 0f);
 
-        //offset보정 
+        //--offset보정-- 
         Vector2 offset = boxCollider.offset;
         offset.x += growAmount * 0.5f * direction.x;       
         boxCollider.offset = offset;
