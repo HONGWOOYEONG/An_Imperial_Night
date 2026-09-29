@@ -20,8 +20,8 @@ public class PlayerController : MonoBehaviour
     // 공격·방어 등의 입력 허용 여부와 일반 이동 허용 여부를 구분합니다.
     public bool CanAct => isActiveAndEnabled && !IsControlLocked;
     public bool CanMove => CanAct && FSM.ActionState != PlayerState.Dashing;
-    public bool CanJump => CanAct && FSM.ActionState == PlayerState.Normal && movement.IsGrounded;
-    public bool CanDash => CanAct && FSM.ActionState == PlayerState.Normal && movement.IsGrounded;
+    public bool CanJump => CanAct && FSM.ActionState == PlayerState.Idle && movement.IsGrounded;
+    public bool CanDash => CanAct && FSM.ActionState == PlayerState.Idle && movement.IsGrounded;
     public event Action<PlayerState> OnStateChanged;
     public event Action ActionsCancelled;
 
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!IsControlLocked && FSM.ActionState == PlayerState.Normal)
+        if (!IsControlLocked && FSM.ActionState == PlayerState.Idle)
             FSM.RefreshState();
     }
 

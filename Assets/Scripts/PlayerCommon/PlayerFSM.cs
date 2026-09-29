@@ -4,7 +4,6 @@ using System.Collections.Generic;
 // 이동 상태와 행동 상태, 행동을 막는 상태를 한 곳에서 조회하기 위한 값입니다.
 public enum PlayerState
 {
-    Normal,
     Idle,
     Move,
     Jump,
@@ -23,11 +22,11 @@ public sealed class PlayerFSM
 {
     private readonly HashSet<string> controlLocks = new HashSet<string>();
     private readonly PlayerMovement movement;
-    private PlayerState actionState = PlayerState.Normal;
+    private PlayerState actionState = PlayerState.Idle;
 
     public PlayerFSM(PlayerMovement movement) => this.movement = movement;
 
-    public PlayerState CurrentState { get; private set; } = PlayerState.Normal;
+    public PlayerState CurrentState { get; private set; } = PlayerState.Idle;
     public PlayerState ActionState => actionState;
     public int ControlLockCount => controlLocks.Count;
     public bool IsControlLocked => controlLocks.Count > 0;
@@ -37,7 +36,7 @@ public sealed class PlayerFSM
     {
         // 한 번에 하나의 행동만 실행합니다. 같은 행동의 재요청은 콤보 등에 사용할 수 있습니다.
         if (IsControlLocked || !IsActionState(state)) return false;
-        if (actionState != PlayerState.Normal && actionState != state) return false;
+        if (actionState != PlayerState.Idle && actionState != state) return false;
         actionState = state;
         RefreshState();
         return true;
@@ -51,7 +50,7 @@ public sealed class PlayerFSM
 
     public void ResetAction()
     {
-        actionState = PlayerState.Normal;
+        actionState = PlayerState.Idle;
         RefreshState();
     }
 
@@ -59,7 +58,7 @@ public sealed class PlayerFSM
     {
         // 경직과 그로기가 겹쳐도 각 원인이 따로 해제되도록 저장합니다.
         if (string.IsNullOrEmpty(source) || !controlLocks.Add(source)) return false;
-        if (controlLocks.Count == 1) actionState = PlayerState.Normal;
+        if (controlLocks.Count == 1) actionState = PlayerState.Idle;
         RefreshState();
         return true;
     }
@@ -78,8 +77,8 @@ public sealed class PlayerFSM
         if (controlLocks.Contains("Dead")) nextState = PlayerState.Dead;
         else if (controlLocks.Contains("Groggy")) nextState = PlayerState.Groggy;
         else if (IsControlLocked) nextState = PlayerState.Stunned;
-        else if (actionState != PlayerState.Normal) nextState = actionState;
-        else if (movement == null) nextState = PlayerState.Normal;
+        else if (actionState != PlayerState.Idle) nextState = actionState;
+        else if (movement == null) nextState = PlayerState.Idle;
         else if (!movement.IsGrounded)
             nextState = movement.Velocity.y > 0.01f ? PlayerState.Jump : PlayerState.Fall;
         else nextState = movement.HasMoveInput ? PlayerState.Move : PlayerState.Idle;
