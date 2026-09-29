@@ -1,5 +1,5 @@
+ï»¿using System.Collections.Generic;
 using UnityEngine;
-
 
 public class SpiderWebSwamp : MonoBehaviour
 {
@@ -7,6 +7,7 @@ public class SpiderWebSwamp : MonoBehaviour
     private float timer;
     private float time = 0.3f;
     private PlayerMovement playerMovement;
+    private readonly HashSet<PlayerMovement> affectedPlayers = new HashSet<PlayerMovement>();
     private GameObject spawnedPillar;
     private Vector2 pillarPos;
     private bool isPillarSpawned = false;
@@ -15,55 +16,66 @@ public class SpiderWebSwamp : MonoBehaviour
     {
         timer = 0;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
-        controller = GameObject.FindWithTag("Enemy_Puppeteer").GetComponent<E_PuppeteerController>();
+        GameObject enemy = GameObject.FindWithTag("Enemy_Puppeteer");
+        if (enemy != null) controller = enemy.GetComponent<E_PuppeteerController>();
         Destroy(gameObject, 5f);
     }
 
-    // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= time && !isPillarSpawned) //0.3ÃÊ µÚ¿¡ ±âµÕ »ı¼º, ÇÑ ¹ø »ı¼º
+        if (timer >= time && !isPillarSpawned)
         {
             isPillarSpawned = true;
-
             if (controller != null && controller.spiderwebPillar != null)
             {
-                Debug.Log("°Å¹ÌÁÙ ±âµÕ »ı¼º");
                 pillarPos = new Vector2(transform.position.x, controller.transform.position.y);
-                spawnedPillar = Instantiate(controller.spiderwebPillar, pillarPos, Quaternion.identity); //transform.positionÀ» ¼öÁ¤
+                spawnedPillar = Instantiate(controller.spiderwebPillar, pillarPos, Quaternion.identity);
             }
         }
-        
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "RangedDealer" || other.gameObject.tag == "MeleeDealer")
-        {
-            Debug.Log("spiderWebSwamp" + other.tag + " ¸íÁß");
-            playerMovement = other.gameObject.GetComponent<PlayerMovement>();
-            playerMovement.isSlowMoving = true;
-            playerMovement.percent = 0.8f;
-        }
+        // ì´ ì¥íŒì„ ê°ì† ì›ì¸ìœ¼ë¡œ ë“±ë¡í•©ë‹ˆë‹¤. ë‹¤ë¥¸ ì¥íŒì˜ ê°ì†ì€ ìœ ì§€ë©ë‹ˆë‹¤.
+        if (!other.CompareTag("RangedDealer") && !other.CompareTag("MeleeDealer")) return;
+        playerMovement = other.GetComponentInParent<PlayerMovement>();
+        if (playerMovement == null) return;
+        affectedPlayers.Add(playerMovement);
+        playerMovement.SetSlowMove(this, 0.8f);
     }
-    private void OnDestroy() //°Å¹ÌÁÙ ±âµÕ °°ÀÌ »èÁ¦
+
+    private void OnTriggerExit2D(Collider2D other)
     {
+        PlayerMovement leavingPlayer = other.GetComponentInParent<PlayerMovement>();
+        if (leavingPlayer == null || !affectedPlayers.Remove(leavingPlayer)) return;
+        leavingPlayer.ClearSlowMove(this);
+    }
+
+    private void OnDisable()
+    {
+        SetSlowMoveVar();
+    }
+
+    private void OnDestroy()
+    {
+        SetSlowMoveVar();
         if (spawnedPillar != null)
         {
-            SetSlowMoveVar();
-            controller.isPatternEnded_F = true;
+            if (controller != null) controller.isPatternEnded_F = true;
             Destroy(spawnedPillar);
         }
     }
 
-    private void SetSlowMoveVar() //´À·ÁÁü °ü·Ã º¯¼ö ÃÊ±âÈ­ 
+    private void SetSlowMoveVar()
     {
-        if(playerMovement != null)
-        {
-            playerMovement.isSlowMoving = false ;
-        }
+        // í‡´ì¥í•˜ê±°ë‚˜ ì¥íŒì´ ì‚¬ë¼ì§ˆ ë•Œ ì´ ì¥íŒì´ ë“±ë¡í•œ íš¨ê³¼ë§Œ í•´ì œí•©ë‹ˆë‹¤.
+        foreach (PlayerMovement affectedPlayer in affectedPlayers)
+            if (affectedPlayer != null) affectedPlayer.ClearSlowMove(this);
+        affectedPlayers.Clear();
+        playerMovement = null;
     }
 }

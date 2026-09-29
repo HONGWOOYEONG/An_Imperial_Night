@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
@@ -18,10 +18,11 @@ public class T_Attack : MonoBehaviour
     public bool isRight = true;
     Rigidbody2D rb = null;
     PlayerMovement movement = null;
+    private PlayerController playerController;
     T_DriveGauge t_DriveGauge = null;
     T_Jump jump = null;
     [SerializeField] Transform createPos = null;
-    [Header("��� or ����")]
+    [Header("약공/강공 입력 구분")]
     [SerializeField] float triggerTime = 65f; 
     [SerializeField] float triggerTimer = 0f;
     private bool isInputKey = false;
@@ -40,7 +41,8 @@ public class T_Attack : MonoBehaviour
 
     [Header("강공")]
     [SerializeField] float s_frontDelay = 90f; 
-    [SerializeField] float s_backDelay = 0.8f; 
+    [SerializeField] float s_backDelay = 0.8f;
+    [SerializeField] private float heavyAttackRecoilPower = 7f;
     [SerializeField] GameObject s_obj;
 
     [Header("특공")]
@@ -53,11 +55,14 @@ public class T_Attack : MonoBehaviour
     [SerializeField]private float sp_rayTime = 3f; 
     public bool sp_isAttaking = false;
     private bool sp_hasAttacked = false;
+    // 동시에 진행 중인 공격 수를 기록해 마지막 공격이 끝날 때 FSM 상태를 해제한다.
+    private int activeAttackCount;
     RangeCombo combo;
     void Start()
     {
         combo = new RangeCombo();
         movement = GetComponent<PlayerMovement>();
+        playerController = GetComponent<PlayerController>();
         t_DriveGauge = GetComponent<T_DriveGauge>();
         jump = GetComponent<T_Jump>();
         rb = GetComponent<Rigidbody2D>();
@@ -74,17 +79,27 @@ public class T_Attack : MonoBehaviour
         }
     }
   
+    private void OnEnable()
+    {
+        playerController = GetComponent<PlayerController>();
+        if (playerController == null) return;
+        playerController.ActionsCancelled += CancelAttack;
+    }
+
     public void OnLightAttack(InputValue value) 
     {
+        if (!isActiveAndEnabled) return;
         if (value.isPressed)
         {
+            if (playerController != null && !playerController.CanAct) return;
             triggerTimer = 0f;
             isInputKey = true;
         }
         else
         {
-            Debug.Log("���� triggerTimer = " + triggerTimer);
+            Debug.Log("공격 입력 시간 triggerTimer = " + triggerTimer);
             isInputKey = false;
+            if (playerController != null && !playerController.CanAct) return;
             if(triggerTimer <= triggerTime)
             {
                 LightAttack(); //짧게 누르면 약공
@@ -98,6 +113,7 @@ public class T_Attack : MonoBehaviour
     }
     private void LightAttack()
     {
+        if (playerController != null && !playerController.TryStartAction(PlayerState.Attacking)) return;
         w_nearTarget = null;
         w_isInsideEnemy = false;
         if (Time.time > w_comboExpireTime) 
@@ -106,6 +122,7 @@ public class T_Attack : MonoBehaviour
         }
 
         FindToNearTarget(); 
+        activeAttackCount++;
         int attackIndex = combo.currentCount;
         if (w_isInsideEnemy && w_nearTarget != null) 
         {
@@ -136,7 +153,8 @@ public class T_Attack : MonoBehaviour
             atkInit.Initialize(combo.damage[index], Pos, this.gameObject); 
         }
 
-        yield return new WaitForSeconds(combo.backDelay/BASE_FPS); 
+        yield return new WaitForSeconds(combo.backDelay/BASE_FPS);
+        FinishAttack();
     }
 
 
@@ -169,6 +187,7 @@ public class T_Attack : MonoBehaviour
 
         if (w_nearTarget != null)
         {
+            w_isInsideEnemy = true;
         }
         else 
         {
@@ -180,6 +199,8 @@ public class T_Attack : MonoBehaviour
 
     public void HeavyAttack()
     {
+        if (playerController != null && !playerController.TryStartAction(PlayerState.Attacking)) return;
+        activeAttackCount++;
         StartCoroutine(StrongAttack());
     }
 
@@ -194,18 +215,21 @@ public class T_Attack : MonoBehaviour
         GameObject obj_heavyAttack = InstantiateObject(s_obj, newPos);
         OBJ_HeavyAttack heavyAttack = obj_heavyAttack.GetComponent<OBJ_HeavyAttack>();
         heavyAttack.Initialize(knockbackDir);
-        movement.KnockBack(knockbackDir);
+        movement.KnockBack(knockbackDir, heavyAttackRecoilPower);
 
         yield return new WaitForSeconds(s_backDelay/BASE_FPS);
+        FinishAttack();
     }
 
     public void OnAbility(InputValue value)
     {
+        if (!isActiveAndEnabled) return;
         bool isbunout = t_DriveGauge.isBunOut;
         float currentDriveGauge = t_DriveGauge.driveGauge;
         if (value.isPressed && !isbunout && currentDriveGauge > sp_drvieDecrease && !sp_isAttaking)
         {
-            Debug.Log("Ư�� ����");
+            Debug.Log("특수 공격 시작");
+            if (playerController != null && !playerController.TryStartAction(PlayerState.Ability)) return;
             t_DriveGauge.DecreaseDriveGauge(sp_drvieDecrease); 
             StartCoroutine(SpecialAttack());
         }
@@ -214,15 +238,15 @@ public class T_Attack : MonoBehaviour
     private IEnumerator SpecialAttack()
     {
         sp_isAttaking = true;
-        float normalrgavity = rb.gravityScale;
+        float normalrgavity = movement.GravityScale;
         if (movement != null) 
         {
-            movement.enabled = false;  // 이동 및 점프 제어 비활성화
+            movement.AddMovementLock(this);  // 이동 및 점프 제어 비활성화
         }
-        rb.linearVelocity = Vector2.zero; 
+        movement.SetVelocity(Vector2.zero);
         if (jump.isJumping) 
         {
-            rb.gravityScale = 0f;
+            movement.SetGravityScale(0f);
         }
 
         Vector2 crtPos = (createPos.position);
@@ -250,16 +274,50 @@ public class T_Attack : MonoBehaviour
         yield return new WaitForSeconds(sp_backDelay/BASE_FPS); 
         if (movement != null) 
         {
-            movement.enabled = true; //원래 상태 복구
+            movement.ReleaseMovementLock(this); //원래 상태 복구
         }
-        rb.gravityScale = normalrgavity;
+        movement.SetGravityScale(normalrgavity);
         sp_isAttaking = false;
+        playerController?.EndAction(PlayerState.Ability);
         
     }
     
+    private void FinishAttack()
+    {
+        // 남은 공격이 없을 때만 컨트롤러에 공격 종료를 알린다.
+        activeAttackCount = Mathf.Max(0, activeAttackCount - 1);
+        if (activeAttackCount == 0) playerController?.EndAction(PlayerState.Attacking);
+    }
+
+    public void CancelAttack()
+    {
+        // 공격이 중단되면 코루틴, 이동 제한, 공격 상태를 함께 정리한다.
+        StopAllCoroutines();
+        activeAttackCount = 0;
+        isInputKey = false;
+        sp_isAttaking = false;
+        sp_hasAttacked = false;
+        if (movement != null)
+        {
+            movement.ReleaseMovementLock(this);
+            movement.RestoreGravity();
+        }
+        playerController?.EndAction(PlayerState.Attacking);
+        playerController?.EndAction(PlayerState.Ability);
+    }
+
     private GameObject InstantiateObject(GameObject obj, Vector2 createPos)
     {
         return Instantiate(obj, createPos, Quaternion.identity);
+    }
+
+    private void OnDisable()
+    {
+        if (playerController != null)
+        {
+            playerController.ActionsCancelled -= CancelAttack;
+        }
+        CancelAttack();
     }
 
     private void OnDrawGizmosSelected()
@@ -267,5 +325,6 @@ public class T_Attack : MonoBehaviour
         Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
         Gizmos.DrawWireSphere(transform.position, w_attackrange);
     }
+
 
 }

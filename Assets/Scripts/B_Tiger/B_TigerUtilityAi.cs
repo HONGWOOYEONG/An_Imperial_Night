@@ -21,11 +21,14 @@ public class B_TigerUtilityAI : MonoBehaviour
 
     public PlayerContext GetCurrentTarget()
     {
-        return currentTarget;
+        return GetMarkedTarget(transform.position) ?? currentTarget;
     }
 
     private PlayerContext GetTarget(BossPatternData pattern)
     {
+        PlayerContext markedTarget = GetMarkedTarget(transform.position);
+        if (markedTarget != null) return markedTarget;
+
         return pattern.target switch
         {
             "H" => hPlayerContext,
@@ -137,6 +140,8 @@ public class B_TigerUtilityAI : MonoBehaviour
 
     public PlayerContext GetNearestTarget(Vector2 origin)
     {
+        PlayerContext markedTarget = GetMarkedTarget(origin);
+        if (markedTarget != null) return markedTarget;
         if (hPlayerContext == null) return tPlayerContext;
         if (tPlayerContext == null) return hPlayerContext;
 
@@ -153,6 +158,8 @@ public class B_TigerUtilityAI : MonoBehaviour
 
     public PlayerContext GetFarthestTarget(Vector2 origin)
     {
+        PlayerContext markedTarget = GetMarkedTarget(origin);
+        if (markedTarget != null) return markedTarget;
         if (hPlayerContext == null) return tPlayerContext;
         if (tPlayerContext == null) return hPlayerContext;
 
@@ -165,6 +172,18 @@ public class B_TigerUtilityAI : MonoBehaviour
     public PlayerContext GetTraceTarget()
     {
         return GetNearestTarget();
+    }
+
+    private PlayerContext GetMarkedTarget(Vector2 origin)
+    {
+        bool hMarked = hPlayerContext != null && hPlayerContext.IsMarked;
+        bool tMarked = tPlayerContext != null && tPlayerContext.IsMarked;
+        if (!hMarked) return tMarked ? tPlayerContext : null;
+        if (!tMarked) return hPlayerContext;
+
+        float hDistance = (hPlayerContext.getPosition() - origin).sqrMagnitude;
+        float tDistance = (tPlayerContext.getPosition() - origin).sqrMagnitude;
+        return hDistance <= tDistance ? hPlayerContext : tPlayerContext;
     }
 
 }

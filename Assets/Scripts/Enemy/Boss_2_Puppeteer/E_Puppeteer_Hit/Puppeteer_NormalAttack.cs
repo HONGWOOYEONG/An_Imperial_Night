@@ -39,7 +39,7 @@ public class Puppeteer_NormalAttack : MonoBehaviour
                 damageDir = hitDir,
                 knockbackPower = 0,
                 stunTime = 0,
-                // DamageType damageType, 
+                damageType = DamageType.BossNormalAttack,
                 postureDamage = addGroggy[index],
                 driveDamage = decreaseDrive[index]
             };

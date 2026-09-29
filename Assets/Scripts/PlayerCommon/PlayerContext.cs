@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerContext : MonoBehaviour
@@ -6,16 +6,41 @@ public class PlayerContext : MonoBehaviour
     public Transform trans;
     private Vector3 currentPosition;
     private bool doTransPosition;
+    private Coroutine markCoroutine;
+    public bool IsMarked { get; private set; }
+
+    public void ApplyMark(float duration)
+    {
+        if (markCoroutine != null) StopCoroutine(markCoroutine);
+        IsMarked = duration > 0f;
+        markCoroutine = IsMarked ? StartCoroutine(ExpireMark(duration)) : null;
+    }
+
+    private IEnumerator ExpireMark(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        IsMarked = false;
+        markCoroutine = null;
+    }
+
+    public void ClearMark()
+    {
+        if (markCoroutine != null) StopCoroutine(markCoroutine);
+        markCoroutine = null;
+        IsMarked = false;
+    }
+
+    private void OnDisable() => ClearMark();
 
     private void Awake()
     {
         trans = GetComponent<Transform>();
-        
+        currentPosition = trans.position;
     }
 
     private void Update()
     {
-        currentPosition = base.transform.position;
+        currentPosition = trans.position;
     }
 
     public Vector2 getPosition()
@@ -25,6 +50,7 @@ public class PlayerContext : MonoBehaviour
 
     public void setTransPosition()
     {
+        currentPosition = trans.position;
         doTransPosition = true;
     }
 

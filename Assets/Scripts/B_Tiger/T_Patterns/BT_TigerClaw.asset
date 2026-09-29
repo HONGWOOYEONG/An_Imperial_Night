@@ -22,7 +22,7 @@ MonoBehaviour:
   target: Farthest
   HPDamage: 10
   postureDamage: 10
-  damageType: SpecialAttack
+  damageType: 2
   driveDamage: 10
   knockbackPower: 1
   stunTime: 0.4

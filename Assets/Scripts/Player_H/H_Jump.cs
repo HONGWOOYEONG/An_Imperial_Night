@@ -7,42 +7,28 @@ public class H_Jump : MonoBehaviour
 {
     [SerializeField] private float jumpPower;
 
-    private Rigidbody2D rb;
-    private bool isGrounded;
+    private PlayerMovement movement;
+    private PlayerController playerController;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        movement = GetComponent<PlayerMovement>();
+        playerController = GetComponent<PlayerController>();
     }
 
     public void OnJump(InputValue value)
     {
+        if (!isActiveAndEnabled) return;
         if (!value.isPressed)
             return;
 
-        if (!isGrounded)
-            return;
+        // 접지 판정은 H/T 점프가 따로 계산하지 않고 PlayerMovement에서 읽습니다.
+        if (!movement.IsGrounded) return;
+        if (playerController != null && !playerController.CanJump) return;
 
 
-        isGrounded = false;
-
-        rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+        movement.Jump(jumpPower);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
-    }
 
 }

@@ -22,7 +22,7 @@ MonoBehaviour:
   target: Nearest
   HPDamage: 20
   postureDamage: 10
-  damageType: SpecialAttack
+  damageType: 2
   driveDamage: 10
   knockbackPower: 2
   stunTime: 2

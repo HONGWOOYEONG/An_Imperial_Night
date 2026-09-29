@@ -589,6 +589,7 @@ GameObject:
   - component: {fileID: 504684431}
   - component: {fileID: 504684430}
   - component: {fileID: 504684429}
+  - component: {fileID: 2100000000}
   m_Layer: 0
   m_Name: Player_H
   m_TagString: MeleeDealer
@@ -1767,6 +1768,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 504684441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504684428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

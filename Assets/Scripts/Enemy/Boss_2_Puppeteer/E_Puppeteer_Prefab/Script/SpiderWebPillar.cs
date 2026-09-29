@@ -8,6 +8,7 @@ public class SpiderWebPillar : MonoBehaviour
     [Header("knockBack")]
     private PlayerMovement playerMovement;
     private bool isKnockBackActive = false; //넉백 인정 감지 변수
+    [SerializeField] private float knockBackPower = 7f;
     private float knockBackTime = 0.5f; //넉백 인정 시간
     private float knockBackTimer = 0;
 
@@ -49,7 +50,7 @@ public class SpiderWebPillar : MonoBehaviour
                         Vector2 targetPos = other.transform.position;
                         float dirX = (targetPos.x - myPos.x) > 0 ? 1 : -1;
                         Vector2 dirToTarget = new Vector2(dirX, 0f);
-                        playerMovement.KnockBack(dirToTarget);
+                        playerMovement.KnockBack(dirToTarget, knockBackPower);
                     }
                     //거미줄 벽 생성시점에, 캐릭터가 거미줄 벽 위에 있으면 양 옆으로 밀려납니다.
                 }

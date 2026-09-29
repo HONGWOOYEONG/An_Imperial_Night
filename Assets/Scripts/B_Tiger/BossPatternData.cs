@@ -14,7 +14,7 @@ public class BossPatternData : ScriptableObject
     public string target;
     public float HPDamage;
     public float postureDamage;
-    public string damageType;
+    public DamageType damageType = DamageType.BossNormalAttack;
     public float driveDamage;
     public float knockbackPower;
     public float stunTime;

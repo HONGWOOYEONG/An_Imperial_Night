@@ -1,119 +1,109 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class T_Defence : MonoBehaviour, IDamageReceiver
+public class T_Defence : MonoBehaviour
 {
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
     private T_DriveGauge t_DriveGauge;
+    private PlayerController playerController;
     public const float BASE_FPS = 60f;
 
-
-    [Header("¹æ¾î")]
-    [SerializeField] float d_driveDecease = 0; //¹æ¾î ½Ã °¨¼ÒÇÏ´Â µå¶óÀÌºê °ÔÀÌÁö
-    [SerializeField] float d_startDelay = 2f; //¹æ¾î ½ÃÀÛ µô·¹ÀÌ
-    [SerializeField] float d_endDelay = 2f; //¹æ¾î ÇØÁ¦ µô·¹ÀÌ
+    [Header("ë°©ì–´")]
+    [SerializeField] float d_driveDecease = 0;
+    [SerializeField] float d_startDelay = 2f;
+    [SerializeField] float d_endDelay = 2f;
     private Coroutine defenceCoroutine = null;
-    
 
-    public bool isDefencing = false; //Áö±Ý ¹æ¾î Å°¸¦ ´­·¶³ª?
-    //isHoldingDefence°¡ trueÀÏ ¶§ ÀûÀÌ °ø°ÝÀ» ÇÏ¸é ¹æ¾î ¼º°ø
-    private bool isHoldingDefence = false; //¹æ¾î¸¦ ¼º°ø Çß³ª?
-
-
-    
+    public bool isDefencing = false;
+    private bool isHoldingDefence = false;
 
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerHealth = GetComponent<PlayerHealth>();
         t_DriveGauge = GetComponent<T_DriveGauge>();
-    }
-  
-    // Update is called once per frame
-    void Update()
-    {
-       
+        playerController = GetComponent<PlayerController>();
     }
 
-    //--¹æ¾îÅ° ÀÔ·Â ÇÔ¼ö--
-    public void OnDefence(InputValue value) 
+    private void OnEnable()
     {
+        playerController = GetComponent<PlayerController>();
+        if (playerController == null) return;
+        playerController.ActionsCancelled += ForceStopDefense;
+    }
+
+    public void OnDefence(InputValue value)
+    {
+        if (!isActiveAndEnabled) return;
         if (value.isPressed)
         {
+            if (t_DriveGauge.isBunOut || defenceCoroutine != null) return;
+            if (playerController != null && !playerController.TryStartAction(PlayerState.Defending)) return;
             isDefencing = true;
-            if (!t_DriveGauge.isBunOut && defenceCoroutine == null)
-            {
-                defenceCoroutine = StartCoroutine(Defence());//defense ÄÚ·çÆ¾ ½ÃÀÛ
-            }
+            defenceCoroutine = StartCoroutine(Defence());
         }
-        else //¹æ¾îÅ°¸¦ ÀÔ·ÂÀ» ¾ÈÇÏ°í ÀÖÀ» ¶§
-        {  
-            if (defenceCoroutine != null)
-            {
-                StopCoroutine(defenceCoroutine);
-                defenceCoroutine = null;
-            }
-            isDefencing = false;
-            isHoldingDefence = false;
-
-            playerMovement.SetDefending(false);
-        }
+        else ForceStopDefense();
     }
-    //--¹æ¾î ½ÃÀÛ--
+
     IEnumerator Defence()
     {
-        Debug.Log("¹æ¾î ½ÃÀÛ");
-        yield return new WaitForSeconds(FrameToSeconds(d_startDelay));//¹æ¾î ½ÃÀÛ µô·¹ÀÌ
+        yield return new WaitForSeconds(FrameToSeconds(d_startDelay));
+        if (!isDefencing) yield break;
         isHoldingDefence = true;
-        Debug.Log("¹æ¾î Áß");
-        if (playerMovement != null) playerMovement.SetDefending(true); //¹æ¾î true¾Ë¶÷
-        yield return new WaitForSeconds(d_endDelay);//¹æ¾î ÇØÁ¦ µô·¹ÀÌ
+        playerMovement.SetDefending(true);
+        defenceCoroutine = null;
     }
 
-    //--Àû¿¡°Ô¼­ ¹Þ¾Æ¿Â damageInfo Á¤º¸¸¦ ³Ñ°ÜÁÖ´Â ÇÔ¼ö--
+    // ê¸°ì¡´ ì§ì ‘ í˜¸ì¶œì€ ìœ ì§€í•˜ë˜, ì‹¤ì œ í”¼ê²© ì§„ìž…ì ì¸ PlayerHealthë¡œ ì „ë‹¬í•©ë‹ˆë‹¤.
     public void ReceiveAttack(DamageInfo damageInfo)
     {
-        if (isHoldingDefence)
-        {
-            GuardSuccess(damageInfo);
-        }
-        else
-        {
-            GuardFail(damageInfo);
-        }
+        playerHealth?.ReceiveAttack(damageInfo);
     }
-    //--¹æ¾î ¼º°ø ÇÔ¼ö--
+
+    public bool TryDefend(DamageInfo damageInfo)
+    {
+        // ë°©ì–´ê°€ ì„±ë¦½í•˜ë©´ Healthê°€ HP í”¼í•´ë¥¼ ì ìš©í•˜ì§€ ì•Šë„ë¡ trueë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
+        if (!isHoldingDefence || damageInfo.damageType == DamageType.UnblockableAttack) return false;
+        GuardSuccess(damageInfo);
+        return true;
+    }
+
     public void GuardSuccess(DamageInfo damageInfo)
     {
-            Debug.Log("¹æ¾î ¼º°ø");
-            t_DriveGauge.driveGauge += damageInfo.driveDamage;
+        if (damageInfo.driveDamage > 0f) t_DriveGauge.DecreaseDriveGauge(damageInfo.driveDamage);
     }
-    //--¹æ¾î ½ÇÆÐ ÇÔ¼ö--
+
     public void GuardFail(DamageInfo damageInfo)
     {
-            Debug.Log("¹æ¾î ½ÇÆÐ");
-            playerHealth.DamagedFromAtk(damageInfo);
+        ForceStopDefense();
+        playerHealth.ReceiveAttack(damageInfo);
     }
 
-
-    //--µå¶óÀÌºê °ÔÀÌÁö¸¦ ´Ù »ç¿ëÇßÀ» °æ¿ì °­Á¦ ¹æ¾î Á¾·á ÇÔ¼ö--
-    public void ForceStopDefense() 
+    public void ForceStopDefense()
     {
-        Debug.Log("¹æ¾î °­Á¦ Á¾·á");
+        // ë²ˆì•„ì›ƒÂ·í”¼ê²© ì¤‘ë‹¨Â·ë²„íŠ¼ í•´ì œ ëª¨ë‘ íŒì •ê³¼ ì´ë™ ìƒíƒœë¥¼ í•¨ê»˜ ì •ë¦¬í•©ë‹ˆë‹¤.
         if (defenceCoroutine != null)
         {
-            StopCoroutine(defenceCoroutine); //ÇöÀç ÁøÇàÁßÀÎ ¹æ¾î¸¦ Á¾·á
-            defenceCoroutine = null; //ÄÚ·çÆ¾ º¯¼ö ºñ¿öÁÜ
+            StopCoroutine(defenceCoroutine);
+            defenceCoroutine = null;
         }
+        isDefencing = false;
+        isHoldingDefence = false;
+        playerMovement?.SetDefending(false);
+        playerController?.EndAction(PlayerState.Defending);
     }
 
-
-    private float FrameToSeconds(float frame)
+    private void OnDisable()
     {
-        return frame / BASE_FPS;
+        if (playerController != null)
+        {
+            playerController.ActionsCancelled -= ForceStopDefense;
+        }
+        ForceStopDefense();
     }
 
-   
+    private float FrameToSeconds(float frame) => frame / BASE_FPS;
+
 }

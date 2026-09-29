@@ -826,6 +826,7 @@ GameObject:
   - component: {fileID: 425567009}
   - component: {fileID: 425567011}
   - component: {fileID: 425567012}
+  - component: {fileID: 2100000000}
   m_Layer: 0
   m_Name: Player_T
   m_TagString: RangedDealer
@@ -3346,6 +3347,7 @@ GameObject:
   - component: {fileID: 1351544775}
   - component: {fileID: 1351544779}
   - component: {fileID: 1351544780}
+  - component: {fileID: 2100000001}
   m_Layer: 0
   m_Name: Player_H
   m_TagString: MeleeDealer
@@ -4563,6 +4565,30 @@ PolygonCollider2D:
       - {x: 3.7255173, y: 6.016534}
       - {x: 3.4032745, y: 6.439355}
   m_UseDelaunayMesh: 0
+--- !u!114 &2100000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425567001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+--- !u!114 &2100000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1351544766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

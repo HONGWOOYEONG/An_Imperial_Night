@@ -3,10 +3,15 @@ using UnityEngine;
 
 public enum DamageType
 {
-    LightAttack,
-    HeavyAttack,
-    SpecialAttack
+    LightAttack = 0,
+    HeavyAttack = 1,
+    SpecialAttack = 2,
+    BossNormalAttack = 3,
+    UnblockableAttack = 4,
+    Bind = 5,
+    Mark = 6
 }
+[Serializable]
 public struct DamageInfo
 {
     public float damage;
@@ -14,8 +19,8 @@ public struct DamageInfo
     public float knockbackPower;
     public float stunTime;
     public DamageType damageType;
-    public float postureDamage; // ���� ĳ���� ��� �� ü�� ������
-    public float driveDamage;   // ���Ÿ� ĳ���� ��� �� ����̺� ���ҷ�
+    public float postureDamage;
+    public float driveDamage;
 }
 
 public interface IDamageReceiver
