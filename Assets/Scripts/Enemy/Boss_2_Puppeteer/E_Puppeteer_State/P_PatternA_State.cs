@@ -26,7 +26,7 @@ public class P_PatternA_State : IPuppeteerState
         startAttack = false;
         controller.currentCount = 0;
         controller.isAttaking_A = false;
-        controller.HitBox_A.SetActive(false); //히트박스 꺼줌
+        controller.HitBoxNormalAttack.SetActive(false); //히트박스 꺼줌
         Debug.Log("PatternA 상태 종료");
     }
 
@@ -57,6 +57,13 @@ public class P_PatternA_State : IPuppeteerState
         while (controller.currentCount < 5)
         {
             Debug.Log("현재 인형돌진 타수: " + controller.currentCount);
+
+            if (!controller.isInTargetPlayer) //예외 처리 코드 (위치 변환 되었을 때 위치 변환 된 타겟의 위치 까지 이동하는 코드)
+                //그리고 회월의 위치 변환 스킬이 true가 됐을 때 를 if안에 넣어야할까 고민
+            {
+                Debug.Log("타겟 범위 내에 없음");
+                yield return controller.MoveToTargetCoroutine(controller.targetPlayer);
+            }
 
             if (controller.currentCount == 4) //마지막 5타 공격 방향을 위한
             {

@@ -3,7 +3,13 @@ using UnityEngine;
 public class B_TigerFSM : MonoBehaviour
 {
     public IBossState currentBossState;
-    private StateExecutor StateExecutor;
+    public StateExecutor stateExecutor;
+    [SerializeField] private BT_PatternExecutor patternExecutor;
+    private B_TigerController tigerController;
+    private BT_TargetDetector targetDetector;
+    private B_TigerUtilityAI tigerUtilityAI;
+    private Animator animator;
+
 
     [Header("State")]
     private IBossState idleState;
@@ -12,9 +18,27 @@ public class B_TigerFSM : MonoBehaviour
     private IBossState attackState;
     private IBossState groggyState;
 
+    public IBossState IdleState => idleState;
+    public IBossState MoveState => moveState;  
+    public IBossState DeathState => deathState;
+    public IBossState AttackState => attackState;
+    public IBossState GroggyState => groggyState;
+
+    public BT_TargetDetector TargetDetector => targetDetector;
+    public B_TigerController TigerController => tigerController;
+    public bool IsTargetDetected => targetDetector.IsTargetDetected;
+    public B_TigerUtilityAI TigerUtilityAI => tigerUtilityAI;
+    public BT_PatternExecutor PatternExecutor => patternExecutor;
+    public Animator Animator => animator;
+
     void Start()
     {
-        StateExecutor = GetComponent<StateExecutor> ();
+        stateExecutor = GetComponent<StateExecutor> ();
+        patternExecutor = GetComponent<BT_PatternExecutor>();
+        tigerController = GetComponent<B_TigerController>();
+        targetDetector = GetComponent<BT_TargetDetector>();
+        tigerUtilityAI = GetComponent<B_TigerUtilityAI>();
+        animator = GetComponent<Animator>();
 
         idleState = new BT_IdleState();
         attackState = new BT_AttackState();
@@ -32,6 +56,8 @@ public class B_TigerFSM : MonoBehaviour
         {
             return;
         }
+
+        if(nextState == currentBossState) return;
         currentBossState?.Exit(this);
         currentBossState = nextState;
         currentBossState.Enter(this);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,414 +13,317 @@ public class MeleeComboAtkData
     public int hitboxIndex;
 }
 
+[RequireComponent(typeof(PlayerController))]
 public class H_Attack : MonoBehaviour
 {
     private const float BASE_FPS = 60f;
-
-    private Rigidbody2D rb;
-    private PlayerMovement movement;
-    private Animator animator;
-
-    [Header("약공 데이터")]
+    [Header("Light attacks")]
     [SerializeField] private MeleeComboAtkData[] lightAtkData;
-
-    [Header("강공 데이터")]
-    [SerializeField] private MeleeComboAtkData[] heavyAtkData;
-
-    [Header("약공 히트박스")]
     [SerializeField] private GameObject[] lightAtkHitboxes;
-
-    [Header("강공 히트박스")]
+    [Header("Heavy attacks")]
+    [SerializeField] private MeleeComboAtkData[] heavyAtkData;
     [SerializeField] private GameObject[] heavyAtkHitboxes;
-
-    [Header("약공 or 강공")]
+    [Header("Input and combo timing")]
     [SerializeField] private float triggerTime = 65f;
-    [SerializeField] private float triggerTimer = 0f;
-    private bool isInputKey = false;
-
-    [Header("약공 콤보")]
-    [SerializeField] private float lightAtkComboExpireTime = 2f;
-
-    [Header("공격 종료 후 콤보 입력 유예시간")]
-    [Tooltip("공격 모션이 끝난 뒤에도 이 시간(초) 동안은 콤보 입력을 받아준다.")]
     [SerializeField] private float comboBufferAfterAttack = 0.5f;
-
-    [Header("Animator 파라미터 이름")]
-    [Tooltip("Animator에 만들어야 하는 Bool 파라미터 이름. 이 값이 true가 되어야 각 공격 State -> Exit 전이가 발동함.")]
     [SerializeField] private string attackEndedParam = "AttackEnded";
 
-    private int attackEndedParamHash;
-
-    private float lightAtkNextTime;
-    private float heavyAtkNextTime;
-
-    private int currentComboIndex;
+    private PlayerMovement movement;
+    private PlayerController controller;
+    private Animator animator;
+    private int attackEndedHash;
+    private bool isInputKey;
+    private float triggerTimer;
+    private bool isAttacking;
+    private bool bufferedLightAttack;
+    private bool inComboGraceWindow;
+    private float comboGraceCloseTime;
     private int currentAttackIndex;
     private int currentHeavyAttackIndex;
+    private DamageType attackType;
+    private DamageInfo attackDamage;
+    private GameObject activeHitbox;
+    private readonly HashSet<Object> hitTargets = new HashSet<Object>();
+    private readonly HashSet<int> retiredAnimationStates = new HashSet<int>();
+    private bool waitingForAnimationExit;
+    private int attackAnimationState;
+    private int attackEndFrame = -1;
 
-    [Header("공격 상태")]
-    [SerializeField] private bool isAttacking;
-    [SerializeField] private bool bufferdLightAtk;
+    public MeleeComboAtkData CurrentLightAttackData => GetData(lightAtkData, currentAttackIndex);
+    public MeleeComboAtkData CurrentHeavyAttackData => GetData(heavyAtkData, currentHeavyAttackIndex);
+    private bool OwnsAttack => isActiveAndEnabled && controller != null &&
+        controller.CanAct && controller.FSM.ActionState == PlayerState.Attacking;
 
-    private bool inComboGraceWindow;   // 공격 애니메이션 종료 후 유예 구간인지
-    private float comboGraceCloseTime; // 유예 구간이 끝나는 시각
+    private static MeleeComboAtkData GetData(MeleeComboAtkData[] data, int index) =>
+        data != null && index >= 0 && index < data.Length ? data[index] : null;
 
-    public MeleeComboAtkData CurrentLightAttackData
+    private void Awake()
     {
-        get
-        {
-            if (lightAtkData == null) return null;
-            if (currentAttackIndex < 0 || currentAttackIndex >= lightAtkData.Length) return null;
-
-            return lightAtkData[currentAttackIndex];
-        }
-    }
-
-    public MeleeComboAtkData CurrentHeavyAttackData
-    {
-        get
-        {
-            if (heavyAtkData == null) return null;
-            if (currentHeavyAttackIndex < 0 || currentHeavyAttackIndex >= heavyAtkData.Length) return null;
-
-            return heavyAtkData[currentHeavyAttackIndex];
-        }
-    }
-
-    private void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
         movement = GetComponent<PlayerMovement>();
+        controller = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
-
         if (animator == null) animator = GetComponentInChildren<Animator>();
-
-        attackEndedParamHash = Animator.StringToHash(attackEndedParam);
-
-        DisableAllLightHitboxes();
-        DisableAllHeavyHitboxes();
+        attackEndedHash = Animator.StringToHash(attackEndedParam);
+        ConfigureHitboxes(lightAtkHitboxes);
+        ConfigureHitboxes(heavyAtkHitboxes);
+        CloseHitboxes();
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (isInputKey) triggerTimer += Time.deltaTime;
-
-        // 공격중도 아니고 유예구간도 아닌데 콤보 만료시간이 지났으면 콤보 인덱스 리셋
-        if (!isAttacking && !inComboGraceWindow && currentComboIndex != 0 && Time.time > lightAtkNextTime)
-        {
-            currentComboIndex = 0;
-        }
-
-        // 유예 구간(공격 끝 + comboBufferAfterAttack) 종료 체크
-        if (inComboGraceWindow && Time.time > comboGraceCloseTime)
-        {
-            inComboGraceWindow = false;
-            bufferdLightAtk = false;
-            currentComboIndex = 0;
-
-            // 유예시간 동안 콤보 입력이 안 들어왔으니, 이제 Animator한테
-            // "공격 완전히 끝났다" 신호를 줘서 Exit(Idle 등)로 넘어가게 한다.
-            if (animator != null) animator.SetBool(attackEndedParamHash, true);
-        }
-    }
-
-    private float FrameToSeconds(float frame)
-    {
-        return frame / BASE_FPS;
-    }
-
-    public void OnLightAttack(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            triggerTimer = 0f;
-            isInputKey = true;
-
-            // 공격 재생 중이거나, 공격 끝난 직후 유예구간이면 입력을 버퍼링
-            if (isAttacking || inComboGraceWindow)
-            {
-                bufferdLightAtk = true;
-                TryExecuteBufferedLightAttack();
-                return;
-            }
-            else
-            {
-                LightAttack();
-            }
-        }
-        else
-        {
-            isInputKey = false;
-
-            if (triggerTimer > FrameToSeconds(triggerTime))
-            {
-                HeavyAttack();
-            }
-        }
-    }
-
-    private void LightAttack()
-    {
-        if (lightAtkData == null || lightAtkData.Length == 0)
-        {
-            return;
-        }
-
-        if (!isAttacking && !inComboGraceWindow && Time.time > lightAtkNextTime) currentComboIndex = 0;
-        if (currentComboIndex < 0 || currentComboIndex >= lightAtkData.Length) currentComboIndex = 0;
-
-        currentAttackIndex = currentComboIndex;
-
-        isAttacking = true;
-        bufferdLightAtk = false;
-        inComboGraceWindow = false;
-
-        if (animator != null)
-        {
-            // 새 공격 시작이므로 Exit 신호는 반드시 false로 초기화
-            animator.SetBool(attackEndedParamHash, false);
-            animator.SetInteger("ComboIndex", currentAttackIndex);
-            animator.SetTrigger("LightAttack");
-        }
-
-        Debug.Log("현재 콤보 인덱스 = " + currentAttackIndex);
-
-        lightAtkNextTime = Time.time + lightAtkComboExpireTime;
-    }
-
-    public void HeavyAttack()
-    {
-        if (isAttacking) return;
-
-        if (heavyAtkData == null || heavyAtkData.Length == 0)
-        {
-            Debug.LogWarning("강공 데이터가 설정되지 않았습니다.");
-            return;
-        }
-
-        isAttacking = true;
-        bufferdLightAtk = false;
-        inComboGraceWindow = false;
-
-        currentHeavyAttackIndex = 0;
-
-        if (animator != null)
-        {
-            animator.SetBool(attackEndedParamHash, false);
-            animator.SetTrigger("HeavyAttack");
-        }
-
-        Debug.Log("강공 실행");
-    }
-
-    public void EnableLightHitbox()
-    {
-        if (lightAtkData == null) return;
-        if (currentAttackIndex < 0 || currentAttackIndex >= lightAtkData.Length) return;
-
-        DisableAllLightHitboxes();
-
-        int hitboxIndex = lightAtkData[currentAttackIndex].hitboxIndex;
-
-        if (lightAtkHitboxes == null) return;
-
-        if (hitboxIndex < 0 || hitboxIndex >= lightAtkHitboxes.Length)
-        {
-            Debug.LogWarning("약공 히트박스 인덱스가 배열 범위를 벗어났습니다: " + hitboxIndex);
-            return;
-        }
-
-        if (lightAtkHitboxes[hitboxIndex] != null) lightAtkHitboxes[hitboxIndex].SetActive(true);
-    }
-
-    public void DisableLightHitbox()
-    {
-        if (lightAtkData == null) return;
-        if (currentAttackIndex < 0 || currentAttackIndex >= lightAtkData.Length) return;
-
-        int hitboxIndex = lightAtkData[currentAttackIndex].hitboxIndex;
-
-        if (lightAtkHitboxes == null) return;
-        if (hitboxIndex < 0 || hitboxIndex >= lightAtkHitboxes.Length) return;
-
-        if (lightAtkHitboxes[hitboxIndex] != null) lightAtkHitboxes[hitboxIndex].SetActive(false);
-    }
-
-    public void EnableHeavyHitbox()
-    {
-        if (heavyAtkData == null) return;
-        if (currentHeavyAttackIndex < 0 || currentHeavyAttackIndex >= heavyAtkData.Length) return;
-
-        DisableAllHeavyHitboxes();
-
-        int hitboxIndex = heavyAtkData[currentHeavyAttackIndex].hitboxIndex;
-
-        if (heavyAtkHitboxes == null) return;
-
-        if (hitboxIndex < 0 || hitboxIndex >= heavyAtkHitboxes.Length)
-        {
-            Debug.LogWarning("강공 히트박스 인덱스가 배열 범위를 벗어났습니다: " + hitboxIndex);
-            return;
-        }
-
-        if (heavyAtkHitboxes[hitboxIndex] != null) heavyAtkHitboxes[hitboxIndex].SetActive(true);
-    }
-
-    public void DisableHeavyHitbox()
-    {
-        if (heavyAtkData == null) return;
-        if (currentHeavyAttackIndex < 0 || currentHeavyAttackIndex >= heavyAtkData.Length) return;
-
-        int hitboxIndex = heavyAtkData[currentHeavyAttackIndex].hitboxIndex;
-
-        if (heavyAtkHitboxes == null) return;
-        if (hitboxIndex < 0 || hitboxIndex >= heavyAtkHitboxes.Length) return;
-
-        if (heavyAtkHitboxes[hitboxIndex] != null) heavyAtkHitboxes[hitboxIndex].SetActive(false);
-    }
-
-    // 버퍼링된 입력이 있으면 콤보 실행을 시도한다.
-    // 아직 현재 공격 애니메이션이 재생중(isAttacking == true)이면 여기서는 실행하지 않고
-    // EndLightAttack()에서 다시 호출된다.
-    private void TryExecuteBufferedLightAttack()
-    {
-        if (!bufferdLightAtk) return;
-        if (isAttacking) return;
-
-        // 마지막 콤보(5타)까지 나간 상태라면 더 이상 이어가지 않고 무조건 Exit로 보낸다.
-        // (currentComboIndex는 다음에 나갈 콤보 인덱스를 가리키므로,
-        //  currentAttackIndex가 배열의 마지막 인덱스라는 건 방금 마지막 타를 쳤다는 뜻)
-        if (currentAttackIndex >= lightAtkData.Length - 1)
-        {
-            bufferdLightAtk = false;
-            return;
-        }
-
-        ExecuteBufferedLightAttack();
-    }
-
-    private void ExecuteBufferedLightAttack()
-    {
-        if (!bufferdLightAtk) return;
-
-        bufferdLightAtk = false;
-        inComboGraceWindow = false;
-
-        DisableAllLightHitboxes();
-
-        // 다음에 재생할 콤보 인덱스로 갱신 (예: 0 -> 1, ATK1 -> ATK2)
-        currentComboIndex++;
-        if (currentComboIndex >= lightAtkData.Length) currentComboIndex = 0;
-
-        currentAttackIndex = currentComboIndex;
-
-        isAttacking = true;
-
-        Debug.Log("Combo Trigger, ComboIndex = " + currentAttackIndex);
-
-        if (animator != null)
-        {
-            // 다음 콤보로 이어지므로 Exit 신호는 다시 false로
-            animator.SetBool(attackEndedParamHash, false);
-            // Animator Condition(ComboIndex Equals N)이 참조하는 값이므로
-            // 반드시 "다음에 재생될" 인덱스를 넣어야 한다.
-            animator.SetInteger("ComboIndex", currentAttackIndex);
-            animator.SetTrigger("Combo");
-        }
-
-        lightAtkNextTime = Time.time + lightAtkComboExpireTime;
-    }
-
-    public void AttackMove()
-    {
-        float distance = 0.5f;
-
-        rb.position += Vector2.right * movement.FacingDirection * distance;
-    }
-
-    public void AttackBackMove()
-    {
-        float distance = 0.5f;
-
-        rb.position += Vector2.left * movement.FacingDirection * distance;
-    }
-
-    // AnimationEvent로 호출됨 (공격 모션에서 타격 판정이 끝나는 시점 등에 걸어두면 됨)
-    public void EndLightAttack()
-    {
-        DisableAllLightHitboxes();
-
-        isAttacking = false;
-
-        // 마지막 콤보(5타)까지 쳤다면 더 이상 이어갈 콤보가 없으므로
-        // 유예시간 없이 바로 Exit 신호를 준다. 다음 입력은 처음(1타)부터 다시 시작.
-        if (currentAttackIndex >= lightAtkData.Length - 1)
-        {
-            bufferdLightAtk = false;
-            inComboGraceWindow = false;
-            currentComboIndex = 0;
-
-            if (animator != null) animator.SetBool(attackEndedParamHash, true);
-            return;
-        }
-
-        // 공격이 끝났다고 바로 Exit 신호를 주지 않고, 유예시간을 부여해서
-        // 그 사이에 들어오는 콤보 입력을 받아준다.
-        inComboGraceWindow = true;
-        comboGraceCloseTime = Time.time + comboBufferAfterAttack;
-
-        // 유예시간 시작 시점에 이미 버퍼링된 입력이 있으면 바로 다음 콤보로 진행
-        if (bufferdLightAtk)
-        {
-            TryExecuteBufferedLightAttack();
-        }
-
-        // 참고: 여기서 AttackEnded 파라미터를 true로 세팅하지 않는다.
-        // Update()에서 유예시간이 만료됐는데도 콤보 입력이 없을 때만 true로 세팅한다.
-    }
-
-    public void EndHeavyAttack()
-    {
-        DisableAllHeavyHitboxes();
-
-        isAttacking = false;
-        bufferdLightAtk = false;
-        inComboGraceWindow = false;
-
-        // 강공은 콤보 유예 없이 끝나면 바로 Exit 허용
-        if (animator != null) animator.SetBool(attackEndedParamHash, true);
-    }
-
-    private void DisableAllLightHitboxes()
-    {
-        if (lightAtkHitboxes == null) return;
-
-        foreach (GameObject hitbox in lightAtkHitboxes)
-        {
-            if (hitbox != null) hitbox.SetActive(false);
-        }
-    }
-
-    private void DisableAllHeavyHitboxes()
-    {
-        if (heavyAtkHitboxes == null) return;
-
-        foreach (GameObject hitbox in heavyAtkHitboxes)
-        {
-            if (hitbox != null) hitbox.SetActive(false);
-        }
+        if (controller != null) controller.ActionsCancelled += CancelAttack;
     }
 
     private void OnDisable()
     {
-        DisableAllLightHitboxes();
-        DisableAllHeavyHitboxes();
+        if (controller != null) controller.ActionsCancelled -= CancelAttack;
+        CancelAttack();
+    }
 
-        isInputKey = false;
-        isAttacking = false;
-        bufferdLightAtk = false;
+    private void Update()
+    {
+        // Do not reuse a cancelled/finished animation while its outgoing events can fire.
+        if (waitingForAnimationExit && !HasAttackAnimation())
+        {
+            waitingForAnimationExit = false;
+            retiredAnimationStates.Clear();
+        }
+        if (isInputKey) triggerTimer += Time.deltaTime;
+        if (!inComboGraceWindow) return;
+        if (!OwnsAttack) { CancelAttack(); return; }
+        if (Time.time > comboGraceCloseTime) { FinishSequence(); return; }
+        // Defer chaining until all events from the previous frame have been processed.
+        if (bufferedLightAttack && Time.frameCount > attackEndFrame)
+            TryStartLightAttack(currentAttackIndex + 1, true);
+    }
+
+    public void OnLightAttack(InputValue value)
+    {
+        if (!isActiveAndEnabled) return;
+        if (value.isPressed)
+        {
+            if (controller == null || !controller.CanAct || waitingForAnimationExit) return;
+            isInputKey = true;
+            triggerTimer = 0f;
+            if (isAttacking || inComboGraceWindow)
+            {
+                if (attackType == DamageType.LightAttack && OwnsAttack) bufferedLightAttack = true;
+                return;
+            }
+            TryStartLightAttack(0, false);
+        }
+        else
+        {
+            if (!isInputKey) return;
+            isInputKey = false;
+            if (triggerTimer > triggerTime / BASE_FPS) HeavyAttack();
+        }
+    }
+
+    private bool TryBeginAttack(DamageType type, MeleeComboAtkData data, GameObject[] hitboxes)
+    {
+        if (!isActiveAndEnabled || isAttacking || waitingForAnimationExit || data == null) return false;
+        if (animator == null || !animator.isActiveAndEnabled || animator.runtimeAnimatorController == null) return false;
+        if (hitboxes == null || data.hitboxIndex < 0 || data.hitboxIndex >= hitboxes.Length ||
+            hitboxes[data.hitboxIndex] == null || hitboxes[data.hitboxIndex] == gameObject ||
+            hitboxes[data.hitboxIndex].GetComponentInChildren<Collider2D>(true) == null)
+        {
+            Debug.LogWarning("H attack requires a valid hitbox in its Inspector array.", this);
+            return false;
+        }
+        if (controller == null || !controller.TryStartAction(PlayerState.Attacking)) return false;
+        CloseHitboxes();
+        hitTargets.Clear();
+        attackAnimationState = 0;
+        attackType = type;
+        attackDamage = new DamageInfo
+        {
+            damage = Mathf.Max(0f, data.damage),
+            postureDamage = Mathf.Max(0f, data.postureDamage),
+            knockbackPower = Mathf.Max(0f, data.knockbackPower),
+            stunTime = Mathf.Max(0f, data.stunTime),
+            damageType = type
+        };
+        isAttacking = true;
+        bufferedLightAttack = false;
         inComboGraceWindow = false;
+        animator.SetBool(attackEndedHash, false);
+        return true;
+    }
 
-        if (animator != null) animator.SetBool(attackEndedParamHash, false);
+    private void TryStartLightAttack(int index, bool combo)
+    {
+        if (combo && (!OwnsAttack || !inComboGraceWindow || Time.time > comboGraceCloseTime)) return;
+        if (!TryBeginAttack(DamageType.LightAttack, GetData(lightAtkData, index), lightAtkHitboxes)) return;
+        currentAttackIndex = index;
+        animator.SetInteger("ComboIndex", index);
+        animator.SetTrigger(combo ? "Combo" : "LightAttack");
+    }
+
+    public void HeavyAttack()
+    {
+        if (!TryBeginAttack(DamageType.HeavyAttack, GetData(heavyAtkData, 0), heavyAtkHitboxes)) return;
+        currentHeavyAttackIndex = 0;
+        animator.SetTrigger("HeavyAttack");
+    }
+
+    // AnimationEvent parameters retain existing clip function names without asset edits.
+    private bool AcceptEvent(AnimationEvent evt, DamageType? type = null)
+    {
+        if (!OwnsAttack || !isAttacking || (type.HasValue && attackType != type.Value)) return false;
+        if (evt != null && evt.isFiredByAnimator)
+        {
+            string endEvent = attackType == DamageType.LightAttack ? nameof(EndLightAttack) : nameof(EndHeavyAttack);
+            bool matchesAttack = false;
+            var clip = evt.animatorClipInfo.clip;
+            if (clip == null) return false;
+            foreach (var clipEvent in clip.events)
+                if (clipEvent.functionName == endEvent) { matchesAttack = true; break; }
+            if (!matchesAttack) return false;
+            int state = evt.animatorStateInfo.fullPathHash;
+            if (retiredAnimationStates.Contains(state)) return false;
+            if (attackAnimationState != 0 && attackAnimationState != state) return false;
+            attackAnimationState = state;
+        }
+        return true;
+    }
+
+    public void EnableLightHitbox(AnimationEvent evt = null)
+    {
+        if (!AcceptEvent(evt, DamageType.LightAttack)) return;
+        OpenHitbox(lightAtkHitboxes, CurrentLightAttackData);
+    }
+    public void EnableHeavyHitbox(AnimationEvent evt = null)
+    {
+        if (!AcceptEvent(evt, DamageType.HeavyAttack)) return;
+        OpenHitbox(heavyAtkHitboxes, CurrentHeavyAttackData);
+    }
+    public void DisableLightHitbox(AnimationEvent evt = null)
+    {
+        if (AcceptEvent(evt, DamageType.LightAttack)) CloseHitboxes();
+    }
+    public void DisableHeavyHitbox(AnimationEvent evt = null)
+    {
+        if (AcceptEvent(evt, DamageType.HeavyAttack)) CloseHitboxes();
+    }
+    public void AttackMove(AnimationEvent evt = null)
+    {
+        if (AcceptEvent(evt)) movement.MoveBy(Vector2.right * movement.FacingDirection * 0.5f);
+    }
+    public void AttackBackMove(AnimationEvent evt = null)
+    {
+        if (AcceptEvent(evt)) movement.MoveBy(Vector2.left * movement.FacingDirection * 0.5f);
+    }
+
+    public void EndLightAttack(AnimationEvent evt = null)
+    {
+        if (!AcceptEvent(evt, DamageType.LightAttack)) return;
+        RetireAnimation();
+        CloseHitboxes();
+        isAttacking = false;
+        attackEndFrame = Time.frameCount;
+        if (currentAttackIndex >= lightAtkData.Length - 1) { FinishSequence(); return; }
+        inComboGraceWindow = true;
+        comboGraceCloseTime = Time.time + Mathf.Max(0f, comboBufferAfterAttack);
+    }
+    public void EndHeavyAttack(AnimationEvent evt = null)
+    {
+        if (!AcceptEvent(evt, DamageType.HeavyAttack)) return;
+        RetireAnimation();
+        FinishSequence();
+    }
+
+    private void RetireAnimation()
+    {
+        if (attackAnimationState != 0) retiredAnimationStates.Add(attackAnimationState);
+    }
+    private void FinishSequence()
+    {
+        CloseHitboxes();
+        isAttacking = false;
+        bufferedLightAttack = false;
+        inComboGraceWindow = false;
+        waitingForAnimationExit = true;
+        if (animator != null) animator.SetBool(attackEndedHash, true);
+        controller?.EndAction(PlayerState.Attacking);
+    }
+    public void CancelAttack()
+    {
+        RetireAnimation();
+        isInputKey = false;
+        triggerTimer = 0f;
+        hitTargets.Clear();
+        if (animator != null)
+        {
+            animator.ResetTrigger("LightAttack");
+            animator.ResetTrigger("HeavyAttack");
+            animator.ResetTrigger("Combo");
+        }
+        FinishSequence();
+    }
+
+    private bool HasAttackAnimation()
+    {
+        if (animator == null || !animator.isActiveAndEnabled || animator.runtimeAnimatorController == null) return false;
+        for (int layer = 0; layer < animator.layerCount; layer++)
+        {
+            if (HasAttackClip(animator.GetCurrentAnimatorClipInfo(layer))) return true;
+            if (animator.IsInTransition(layer) && HasAttackClip(animator.GetNextAnimatorClipInfo(layer))) return true;
+        }
+        return false;
+    }
+    private static bool HasAttackClip(AnimatorClipInfo[] clips)
+    {
+        foreach (var clip in clips)
+            foreach (var evt in clip.clip.events)
+                if (evt.functionName == nameof(EndLightAttack) || evt.functionName == nameof(EndHeavyAttack)) return true;
+        return false;
+    }
+
+    private void ConfigureHitboxes(GameObject[] hitboxes)
+    {
+        if (hitboxes == null) return;
+        foreach (var hitbox in hitboxes)
+        {
+            if (hitbox == null || hitbox == gameObject) continue;
+            foreach (var collider in hitbox.GetComponentsInChildren<Collider2D>(true))
+            {
+                var relay = collider.GetComponent<H_MeleeHitbox>();
+                if (relay == null) relay = collider.gameObject.AddComponent<H_MeleeHitbox>();
+                relay.Initialize(this, hitbox);
+            }
+        }
+    }
+    private void OpenHitbox(GameObject[] hitboxes, MeleeComboAtkData data)
+    {
+        CloseHitboxes();
+        activeHitbox = hitboxes[data.hitboxIndex];
+        if (activeHitbox != null) activeHitbox.SetActive(true);
+    }
+    private void CloseHitboxes()
+    {
+        activeHitbox = null;
+        DisableHitboxes(lightAtkHitboxes);
+        DisableHitboxes(heavyAtkHitboxes);
+    }
+    private void DisableHitboxes(GameObject[] hitboxes)
+    {
+        if (hitboxes == null) return;
+        foreach (var hitbox in hitboxes)
+            if (hitbox != null && hitbox != gameObject) hitbox.SetActive(false);
+    }
+    internal void ReceiveHit(GameObject source, Collider2D other)
+    {
+        if (!OwnsAttack || !isAttacking || source == null || source != activeHitbox || !source.activeInHierarchy) return;
+        // Co-op players and this player's own colliders are not attack targets.
+        if (other.GetComponentInParent<PlayerHealth>() != null || other.transform.IsChildOf(transform)) return;
+        var receiver = other.GetComponentInParent<IDamageReceiver>();
+        if (!(receiver is Component component)) return;
+        Object identity = other.attachedRigidbody != null ? (Object)other.attachedRigidbody : component;
+        if (!hitTargets.Add(identity)) return;
+        var damage = attackDamage;
+        damage.damageDir = ((Vector2)other.bounds.center - (Vector2)transform.position).normalized;
+        if (damage.damageDir == Vector2.zero) damage.damageDir = Vector2.right * movement.FacingDirection;
+        receiver.ReceiveAttack(damage);
     }
 }

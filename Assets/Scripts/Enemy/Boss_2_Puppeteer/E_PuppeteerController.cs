@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,20 +9,22 @@ public class E_PuppeteerController : MonoBehaviour
     [SerializeField] public IPuppeteerState currentState;
     [SerializeField] public IPuppeteerState chooseState;
     [SerializeField] public Rigidbody2D rb;
+    [SerializeField] public E_PuppeteerAction action;
+    private float moveSpeed = 5f;
 
     [Header("상태")]
     public Dictionary<string, IPuppeteerState> states;
 
 
     [Header("상태 쿨타임")]
-    public Dictionary<Type,float> cooldowns = new Dictionary<Type, float>();
-    [SerializeField] float coolTime_A = 15f;
-    [SerializeField] float coolTime_B = 17f;
-    [SerializeField] float coolTime_C = 40f; //임의
-    [SerializeField] float coolTime_D = 12f;
-    [SerializeField] float coolTime_E = 13f;
-    [SerializeField] float coolTime_F = 13f; //임의
-    [SerializeField] float coolTime_G = 13f; //임의
+    public Dictionary<IPuppeteerState,float> cooldowns;
+    [SerializeField] float coolTime_A;
+    [SerializeField] float coolTime_B ;
+    [SerializeField] float coolTime_C ; //임의
+    [SerializeField] float coolTime_D;  
+    [SerializeField] float coolTime_E;
+    [SerializeField] float coolTime_F; //임의
+    [SerializeField] float coolTime_G; //임의
 
 
     [Header("체력")]
@@ -42,15 +45,18 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public Collider2D meleeDealer; //근거리 딜러
     public bool isInTargetPlayer = false;
 
+    [Header("HitBox")]
+    public GameObject HitBoxNormalAttack;
+    public GameObject HitBox_B;
+    public GameObject HitBox_AirB;
+    public GameObject hitBoxHeadButt;
 
     [Header("A")]
-    public GameObject HitBox_A;
     [HideInInspector]public bool isAttaking_A = false;
     [HideInInspector] public int currentCount = 0;
 
     [Header("B")]
-    public GameObject HitBox_B;
-    public GameObject HitBox_AirB;
+
   //  public GameObject HitBox_LandB;
     [HideInInspector] public bool isAttaking_AirB = false;
     [HideInInspector] public bool isAttaking_B = false;
@@ -59,7 +65,8 @@ public class E_PuppeteerController : MonoBehaviour
 
     [Header("C")]
     public float rangeToPlayer_C = 3f; //임의 
-    public GameObject hitBoxHeadButt;
+    public bool isThrowSpiderWeb = true;
+
 
     [Header("D")]
     [HideInInspector] public bool isFar = false; //회월이랑 태자랑 먼지 알기위한 변수
@@ -85,8 +92,20 @@ public class E_PuppeteerController : MonoBehaviour
     public float maxRange = 4f; //n2 이하 (임의)
 
 
+    private void Awake()
+    {
+        action = GetComponent<E_PuppeteerAction>();
+    }
     void Start()
     {
+        coolTime_A = 15f;
+        coolTime_B = 17f;
+        coolTime_C = 40f; //임의
+        coolTime_D = 12f;
+        coolTime_E = 13f;
+        coolTime_F = 13f; //임의
+        coolTime_G = 13f; //임의
+
         states = new Dictionary<string, IPuppeteerState>{
             { "idle", new P_IdleState() },
             { "groggy", new P_GroggyState() }, 
@@ -99,7 +118,15 @@ public class E_PuppeteerController : MonoBehaviour
             { "F", new P_PatternF_State() },
             { "G", new P_PatternG_State() }
         };
-
+        cooldowns = new Dictionary<IPuppeteerState, float> {
+            {states["A"], 0},
+            {states["B"], 0},
+            {states["C"], 0},
+            {states["D"], 0},
+            {states["E"], 0},
+            {states["F"], 0},
+            {states["G"], 0}
+        };
 
         rb = GetComponent<Rigidbody2D>();
         currentGroggy = 0f;
@@ -145,22 +172,19 @@ public class E_PuppeteerController : MonoBehaviour
         }
         if (currentState != null)
         {
-            var prevState = currentState;
+            IPuppeteerState prevState = currentState;
             currentState.Exit(this); //이전 상태의 Exit 실행
             if (!(prevState is P_IdleState) && !(prevState is P_MoveState))
                 SetState(prevState); // 이전 상태 기준으로 쿨타임 등록
         }
         currentState = _state; //현재 state를 넣어줌
         currentState.Enter(this); //현재 상태의 Enter 실행
-
-        
-          
+    
     }
 
     public void SetState(IPuppeteerState state) //쿨타임 시작
     {
-        cooldowns[state.GetType()] = Time.time + GetCooldown(state);
-        Debug.Log($"{state.GetType()} 쿨타임: {GetCooldown(state)}");
+        cooldowns[state] = Time.time + GetCooldown(state);
     }
     float GetCooldown(IPuppeteerState state)
     {
@@ -212,6 +236,16 @@ public class E_PuppeteerController : MonoBehaviour
 
     }
 
+    public IEnumerator MoveToTargetCoroutine(Collider2D target) //위치 변환했을 때 타겟의 위치가 변했을 때 타겟을 추적하기 위한 함수
+    {
+        while (!isInTargetPlayer)
+        {
+            Vector2 myPos = transform.position;
+            Vector2 targetPos = new Vector2(target.gameObject.transform.position.x, myPos.y);
+            transform.position = Vector2.MoveTowards(myPos, targetPos, moveSpeed * Time.deltaTime); //타겟 방향으로 이동
+            yield return null;
+        }
+    }
     public void LookAtLocation(float targetX)
     {
         bool isTargetRight = targetX < transform.position.x; //타겟이 오른쪽에 있으면 true 반환

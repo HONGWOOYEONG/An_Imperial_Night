@@ -19,7 +19,6 @@ public class P_PatternC_State : IPuppeteerState
     {
         Debug.Log("PatternC 상태 시작");
         controller.StartCoroutine(StartAttak(controller));
-
     }
 
     public void Exit(E_PuppeteerController controller)
@@ -37,22 +36,21 @@ public class P_PatternC_State : IPuppeteerState
         action.HeavyLariat(controller);
         yield return new WaitForSeconds(backDelayLariat/controller.BASE_FPS);
 
-
-        Debug.Log("현재 타겟 : " + controller.targetPlayer.name);
         Vector2 myPos = controller.transform.position;
         Vector2 targetPos = new Vector2(controller.targetPlayer.transform.position.x, controller.transform.position.y);
         Vector2 dirToTarget = (targetPos - myPos).normalized; //방향
         Vector2 spiderWebPos = targetPos + dirToTarget * addRange; //거미줄 위치
         action.ShootWeb(controller.spiderWeb,controller.throwFire.transform.position ,spiderWebPos);
 
-        Debug.Log(action.isThrowSpiderWeb);
-        if (!action.isThrowSpiderWeb) 
+        yield return new WaitUntil(() => !controller.isThrowSpiderWeb); //action.isThrowSpiderWeb이 false일때까지 기다리기
+
+        if (!controller.isThrowSpiderWeb) 
         {
             //거미줄 던지기가 끝나는 시점에 머리박치기 실행
             yield return new WaitForSeconds(frontDelayButt / controller.BASE_FPS);
             yield return action.HeadButt(controller);
             yield return new WaitForSeconds(backDelayButt / controller.BASE_FPS);
-        }
+        } 
        
     }
 

@@ -23,14 +23,16 @@ public class SpiderWeb : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, endPos, moveSpeed * Time.deltaTime);
         }
     }
-
+    private void OnDestroy()
+    {
+        controller.isThrowSpiderWeb = false;
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (controller.currentState is P_PatternF_State || controller.currentState is P_PatternC_State)
         {
             if (other.gameObject.tag == "Ground")
             {
-
                 Debug.Log("땅 명중");
                 instantiatePos = new Vector2(endPos.x, endPos.y + addY);
                 Instantiate(controller.spiderwebSwamp, instantiatePos, Quaternion.identity);
@@ -39,20 +41,16 @@ public class SpiderWeb : MonoBehaviour
             }
             else if (other.gameObject.tag == "RangedDealer" || other.gameObject.tag == "MeleeDealer")
             {
-                Debug.Log("spiderWeb " + other.tag + " 명중");
+                Debug.Log( other.tag + " 명중 , 포박");
 
-                Debug.Log(other.tag + " 포박");
+                playerMovement = other.GetComponentInParent<PlayerMovement>();
+                if (playerMovement == null) return;
 
+                PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
+                if (playerHealth == null) return;
+                playerHealth.ReceiveAttack(new DamageInfo { damageType = DamageType.Bind });
+                if (playerHealth.IsBound) playerMovement.KnockBackToPoint(endPos, moveSpeed);
 
-                //포박 상태 이동을 못하게만들고 거미줄 덩어리의 도착 지점까지 넉백을 시킴
-                playerMovement = other.gameObject.GetComponent<PlayerMovement>();
-                playerMovement.isMoving = false; //포박상태
-                Debug.Log(other.name + "포박");
-
-                Vector2 myPos = controller.transform.position;
-                Vector2 targetPos = new Vector2(other.gameObject.transform.position.x, controller.transform.position.y);
-                Vector2 dirToTarget = (targetPos - myPos).normalized;
-                playerMovement.KnockBack(dirToTarget); //넉백
                
                 instantiatePos = new Vector2(endPos.x, endPos.y + addY);
                 Instantiate(controller.spiderwebSwamp, instantiatePos, Quaternion.identity);

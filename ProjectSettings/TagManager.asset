@@ -5,18 +5,19 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
-  - Floor
   - RangedDealer
   - Enemy_Puppeteer
   - Enemy
   - MeleeDealer
+  - CloseRangeDealer
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - B_Tiger
   - Water
   - UI
+  - Ground
   - 
   - 
   - 
@@ -36,8 +37,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Player
   - 
   - 
   - 

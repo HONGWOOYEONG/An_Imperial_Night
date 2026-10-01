@@ -31,6 +31,7 @@ public class P_PatternG_State : IPuppeteerState
     public void Enter(E_PuppeteerController controller)
     {
         Debug.Log("패턴 G 시작");
+
         if (controller.rb != null)
         {
             rb = controller.rb;
