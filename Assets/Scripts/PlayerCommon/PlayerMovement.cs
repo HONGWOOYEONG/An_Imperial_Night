@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,6 +20,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDuration = 0.15f;
     [HideInInspector] public float percent;
 
+    [Header("Slow ratio")]
+    [SerializeField] private float jumpSlowRatio = 2f;
+    [SerializeField] private float defenceSlowRatio = 2f;
+
     private float nextDashTime;
     private float defaultGravityScale;
 
@@ -35,14 +39,14 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine dashCoroutine;
     private Coroutine knockbackCoroutine;
     // 기능별 이동 정지와 장판별 감속을 구분해 한 효과가 다른 효과를 해제하지 않게 합니다.
-    private readonly HashSet<object> movementLocks = new HashSet<object>();
-    private readonly Dictionary<object, float> slowSources = new Dictionary<object, float>();
+    private readonly HashSet<object> movementLocks = new HashSet<object>(); //이동을 막는 상태를 저장(넉백, 바인드, 부활 등)
+    private readonly Dictionary<object, float> slowSources = new Dictionary<object, float>(); //감속 효과를 저장(장판, 스킬 등)
 
     public bool HasMoveInput => Mathf.Abs(moveInput.x) > 0.01f;
 
 
-    public bool IsJumpCharging => isJumpCharging;
-    public int FacingDirection => facingDirection;
+    public bool IsJumpCharging => isJumpCharging; 
+    public int FacingDirection => facingDirection; 
     public bool IsDashing => isDashing;
 
     [Header("Jump")]
@@ -61,8 +65,8 @@ public class PlayerMovement : MonoBehaviour
 
         defaultGravityScale = rb.gravityScale;
 
-        jumpSpeed = moveSpeed / 2f;
-        defenceSpeed = moveSpeed / 2f;
+        jumpSpeed = moveSpeed / jumpSlowRatio; 
+        defenceSpeed = moveSpeed / defenceSlowRatio; 
 
         isMoving = true;
     }
@@ -109,7 +113,7 @@ public class PlayerMovement : MonoBehaviour
         {
             nextDashTime = Time.time + dashCooldown;
         }
-    }
+    } // 플레이어가 피격 등으로 인해 이동 상태가 초기화될 때 호출
 
     //public void OnJump(InputValue value)
     //{
@@ -135,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerController != null && !playerController.CanAct) return;
         playerTarget?.ToggleLockOn();
-    } //추후 인풋 매니저 설정
+    } // 앉기로 되어있지만, 사실은 토글 락? 그걸로 사용함 젤다에 보면 타겟 위치 바라보는거랑 비슷하게
 
 
     public void SetDefending(bool defending)
@@ -151,12 +155,12 @@ public class PlayerMovement : MonoBehaviour
     public void AddMovementLock(object source)
     {
         if (source != null) movementLocks.Add(source);
-    }
+    } // 외부 효과가 플레이어 이동을 막을 때 호출
 
     public void ReleaseMovementLock(object source)
     {
         if (source != null) movementLocks.Remove(source);
-    }
+    } // 외부 효과가 플레이어 이동을 막는 상태를 해제할 때 호출
 
     public void SetSlowMove(object source, float multiplier)
     {
@@ -164,22 +168,22 @@ public class PlayerMovement : MonoBehaviour
         if (source == null) return;
         slowSources[source] = Mathf.Clamp01(multiplier);
         RefreshSlowMove();
-    }
+    } // 외부 효과가 플레이어 이동 속도를 감속할 때 호출
 
     public void ClearSlowMove(object source)
     {
         if (source == null) return;
         slowSources.Remove(source);
         RefreshSlowMove();
-    }
+    } // 외부 효과가 플레이어 이동 속도를 감속하는 상태를 해제할 때 호출
 
     private void RefreshSlowMove()
     {
         isSlowMoving = slowSources.Count > 0;
         percent = 1f;
         foreach (float multiplier in slowSources.Values)
-            percent = Mathf.Min(percent, multiplier);
-    }
+            percent = Mathf.Max(percent, multiplier); // 가장 높은 배율 적용
+    } // 외부 효과가 플레이어 이동 속도를 감속하는 상태를 갱신할 때 호출
 
     public void OnDash(InputValue value)
     {
@@ -216,7 +220,7 @@ public class PlayerMovement : MonoBehaviour
         nextDashTime = Time.time + dashCooldown;
         dashCoroutine = null;
         playerController?.EndAction(PlayerState.Dashing);
-    }
+    } // 대쉬 코루틴
 
     public void Move()
     {
@@ -287,7 +291,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(dir.normalized * Mathf.Max(0f, power), ForceMode2D.Impulse);
         knockbackCoroutine = StartCoroutine(ResumeAfterKnockback());
-    }
+    } // 방향과 세기를 받아 넉백, 이거는 IDamageable에서 호출하는거라서 넉백 방향이 필요함
 
     public void KnockBackToPoint(Vector2 destination, float speed)
     {
@@ -295,7 +299,7 @@ public class PlayerMovement : MonoBehaviour
         isMoving = false;
         rb.linearVelocity = Vector2.zero;
         knockbackCoroutine = StartCoroutine(MoveToKnockbackPoint(destination, speed));
-    }
+    } // 목적지까지 이동하는 넉백, 2보스의 거미줄 패턴이 이거 사용
 
     private IEnumerator MoveToKnockbackPoint(Vector2 destination, float speed)
     {
@@ -307,7 +311,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
         yield return ResumeAfterKnockback();
-    }
+    }// 목적지까지 이동하는 넉백 코루틴
 
     private IEnumerator ResumeAfterKnockback()
     {
@@ -315,15 +319,17 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         isMoving = true;
         knockbackCoroutine = null;
-    }
+    } // 넉백 후 이동을 재개하는 코루틴
 
     // H/T 기능은 Rigidbody2D를 직접 수정하는 대신 아래 물리 동작을 요청합니다.
     public void ApplyImpulse(Vector2 impulse) => rb.AddForce(impulse, ForceMode2D.Impulse);
+
     public void Jump(float power)
     {
         isGrounded = false;
         ApplyImpulse(Vector2.up * power);
     }
+
     public void SetVelocity(Vector2 velocity) => rb.linearVelocity = velocity;
     public void SetGravityScale(float gravityScale) => rb.gravityScale = gravityScale;
     public void RestoreGravity() => rb.gravityScale = defaultGravityScale;

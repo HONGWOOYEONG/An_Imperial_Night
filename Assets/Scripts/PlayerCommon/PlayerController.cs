@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// 플레이어마다 하나씩 붙는 조정자입니다. 상태 판단은 PlayerFSM, 물리 조작은 PlayerMovement가 맡습니다.
 [RequireComponent(typeof(PlayerHealth), typeof(PlayerMovement))]
 public class PlayerController : MonoBehaviour
 {
@@ -75,7 +74,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(duration);
         stunCoroutine = null;
         ReleaseControlLock("Stun");
-    }
+    }// 경직 상태를 유지하는 동안 입력을 차단하고, 시간이 지나면 해제
 
     public void BeginGroggy() => AddControlLock("Groggy");
     public void EndGroggy() => ReleaseControlLock("Groggy");
@@ -94,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
         AddControlLock("Bind");
         bindCoroutine = StartCoroutine(BindFor(duration));
-    }
+    } // 연속 속박 시 이전 타이머를 취소하고 시간을 다시 카운트
 
     private IEnumerator BindFor(float duration)
     {
@@ -102,7 +101,7 @@ public class PlayerController : MonoBehaviour
         bindCoroutine = null;
         IsBound = false;
         ReleaseControlLock("Bind");
-    }
+    }// 속박 상태를 유지하는 동안 입력을 차단하고, 시간이 지나면 해제
 
     public void ClearBind()
     {
@@ -110,7 +109,7 @@ public class PlayerController : MonoBehaviour
         bindCoroutine = null;
         IsBound = false;
         ReleaseControlLock("Bind");
-    }
+    }// 속박 상태를 해제
 
     public void OnPlayerDeath()
     {
@@ -122,22 +121,22 @@ public class PlayerController : MonoBehaviour
         FSM.ReleaseControlLock("Stun");
         AddControlLock("Dead");
         ClearBind();
-    }
+    }// 플레이어가 사망하면 경직 상태를 해제하고, 사망 제한을 걸며, 속박 상태를 해제
 
     public void OnPlayerRevive()
     {
         ClearBind();
         CancelActions();
         ReleaseControlLock("Dead");
-    }
+    } // 플레이어가 부활하면 속박 상태를 해제하고, 진행 중인 행동을 취소하며, 사망 제한을 해제
 
     private void CancelActions()
     {
-        // 각 기능이 자기 코루틴·히트박스·방어 판정을 정리하도록 요청합니다.
+        // 각 기능이 자기 코루틴·히트박스·방어 판정을 정리하도록 요청
         movement?.ResetControlState();
         ActionsCancelled?.Invoke();
         FSM.ResetAction();
-    }
+    }// 진행 중인 행동을 취소하고, 이동 상태를 초기화하며, 관련 이벤트를 호출
 
     private void OnDisable()
     {
@@ -153,7 +152,7 @@ public class PlayerController : MonoBehaviour
         GetComponent<H_Posture>()?.ResetPosture();
         FSM.ReleaseControlLock("Stun");
         playerInput?.DeactivateInput();
-    }
+    }// Disable 시 진행 중인 경직·속박 코루틴을 중단하고, 속박 상태를 해제하며, 진행 중인 행동을 취소하고, 입력을 비활성화
 
     private void OnEnable()
     {

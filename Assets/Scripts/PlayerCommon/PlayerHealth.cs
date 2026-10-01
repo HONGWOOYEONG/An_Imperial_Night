@@ -17,25 +17,26 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
     private T_DriveGauge tDriveGauge;
     private H_Abillity hAbility;
     private PlayerContext playerContext;
-    private const float BindDuration = 3f;
-    private const float MarkDuration = 10f;
+    [Header("CC기 시간")]
+    [SerializeField] private const float BindDuration = 3f;
+    [SerializeField] private const float MarkDuration = 10f;
 
     [Header("Health")]
     [SerializeField] private float maxHP = 1000;
     [SerializeField] private PlayerType playerType;
-    [SerializeField, Min(0f)] private float reviveTime = 2f;
+    [SerializeField, Min(0f)] private float reviveTime = 2f; // 부활 보호 시간. 0이면 부활 보호 없음
     private float currentHP;
     private bool isDead = false;
     private Coroutine reviveCoroutine;
 
-    public PlayerType PlayerType => playerType;
+    public PlayerType PlayerType => playerType; // H인지 T인지 확인하는 용도
     public bool IsDead => isDead;
     public bool IsRevive { get; private set; }
     public float ReviveTime => reviveTime;
     public float CurrentHP => currentHP;
     public float MaxHP => maxHP;
-    public bool IsBound => playerController != null && playerController.IsBound;
-    public bool IsMarked => playerContext != null && playerContext.IsMarked;
+    public bool IsBound => playerController != null && playerController.IsBound; // 현재 플레이어가 묶여있는지 확인
+    public bool IsMarked => playerContext != null && playerContext.IsMarked; // 현재 플레이어가 낙인 상태인지 확인
 
     private void Awake()
     {
@@ -98,7 +99,7 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
     public void Death()
     {
         if (isDead) return;
-        // 남은 자세/그로기를 정리한 뒤 FSM을 사망 상태로 전환합니다.
+        // 남은 체간/그로기를 정리한 뒤 FSM을 사망 상태로 전환합니다.
         if (reviveCoroutine != null)
         {
             StopCoroutine(reviveCoroutine);
@@ -109,7 +110,7 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
         playerContext?.ClearMark();
         hPosture?.ResetPosture();
         playerController?.OnPlayerDeath();
-    }
+    } // 사망 상태로 전환하고, 남은 체간/그로기를 정리
 
     public void Revive()
     {
@@ -121,7 +122,7 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
         reviveCoroutine = IsRevive ? StartCoroutine(EndReviveProtection()) : null;
         hPosture?.ResetPosture();
         playerController?.OnPlayerRevive();
-    }
+    } // 부활 상태로 전환하고, 남은 체간/그로기를 정리. 부활 보호 시간 동안 무적 상태를 유지
 
     private IEnumerator EndReviveProtection()
     {
