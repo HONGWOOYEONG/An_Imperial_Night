@@ -27,7 +27,8 @@ public class Boss_Controller : MonoBehaviour
     [SerializeField] private PlayerContext secondPlayer;
 
     [Header("패턴")]
-    [SerializeField] private List<Boss_PatternSO> patterns;
+    [SerializeField] private List<Boss_PatternSO> patterns_R;
+    [SerializeField] private List<Boss_PatternSO> patterns_L;
     [SerializeField] private GameObject crow_obj;
     [SerializeField] private List<Transform> spawnPoints;
 
@@ -66,7 +67,7 @@ public class Boss_Controller : MonoBehaviour
         }
 
         Context = new Boss_Context(transform);
-        AI      = new Boss_AI(this, Context, patterns, decideInterval, groggyDuration);
+        AI      = new Boss_AI(this, Context, patterns_R,patterns_L, decideInterval, groggyDuration);
         FSM     = new Boss_FSM(this);
     }
 

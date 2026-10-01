@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: B_Kick
   m_EditorClassIdentifier: Assembly-CSharp::Boss_PatternSO
   id: 2
-  cooldown: 4
+  cooldown: 5
   baseWeight: 1
   minDistance: 0
   maxDistance: 12

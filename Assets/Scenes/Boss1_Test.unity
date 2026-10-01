@@ -1258,11 +1258,12 @@ MonoBehaviour:
   stateText: {fileID: 792188944}
   firstPlayer: {fileID: 167685265}
   secondPlayer: {fileID: 0}
-  patterns:
+  patterns_R:
+  - {fileID: 11400000, guid: e87978d7cacfc5345a1928f7bddec1ea, type: 2}
+  patterns_L:
   - {fileID: 11400000, guid: 9c82d0b80dd0f514ebf9b2a9d598c9f9, type: 2}
   - {fileID: 11400000, guid: 29456f121cb44ae4ea3e4f6153e29824, type: 2}
   - {fileID: 11400000, guid: b561f748897ce6d4e9db03337b847677, type: 2}
-  - {fileID: 11400000, guid: e87978d7cacfc5345a1928f7bddec1ea, type: 2}
   crow_obj: {fileID: 9104101907752902516, guid: 68008af25c9d7c942b5b21630db8a278, type: 3}
   spawnPoints:
   - {fileID: 1232135201}

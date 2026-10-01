@@ -17,7 +17,7 @@ public class Boss_AttackManager : MonoBehaviour
     {
         if (pt == null) return;
         currentPattern = pt;
-
+        
         // 리펙터링 내용:Boss_PatternSO 안에 나열된 데미지 정보를 DamageInfo로 축약.
         myDamageInfo.damage = currentPattern.HpDamage;
         myDamageInfo.driveDamage = currentPattern.DriveDamage;

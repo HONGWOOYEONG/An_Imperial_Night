@@ -9,7 +9,7 @@ public class Boss_PatternState : Boss_Statebase
 {
     private Boss_PatternSO pattern;
 
-    public Boss_PatternState(Boss_Controller boss) : base(boss, string.Empty)
+    public Boss_PatternState(Boss_Controller boss, String animName) : base(boss, animName)
     {
         
     }
@@ -38,6 +38,7 @@ public class Boss_PatternState : Boss_Statebase
             return;
         }
         
+        base.Enter();
         boss.AI.Pattern_Start();
         boss.Moter.HandleFlip();
     }
@@ -45,7 +46,7 @@ public class Boss_PatternState : Boss_Statebase
     public override void Exit()
     {
         base.Exit();
-
+        
         boss.AI.Delay_NextDecide();
     }
     
