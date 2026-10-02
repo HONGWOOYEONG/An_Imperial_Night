@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 public class H_Abillity : MonoBehaviour
 {
     private Rigidbody2D rb;
+    private PlayerMovement playerMovement;
+    private PlayerController playerController;
     private H_Defence hDef;
 
     [Header("PositionSwap")]
@@ -33,15 +35,27 @@ public class H_Abillity : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerMovement = GetComponent<PlayerMovement>();
+        playerController = GetComponent<PlayerController>();
         hDef = GetComponent<H_Defence>();
+    }
+
+    private void OnEnable()
+    {
+        playerController = GetComponent<PlayerController>();
+        if (playerController == null) return;
+        playerController.ActionsCancelled += CancelAbility;
     }
 
     public void OnAbility(InputValue value)
     {
+        if (!isActiveAndEnabled) return;
         if (!value.isPressed) return;
         if (Time.time < nextAvillityTime) return;
         if (isUsingAbility) return;
         if (target == null) return;
+        if (target.GetComponent<PlayerMovement>() == null) return;
+        if (playerController != null && !playerController.TryStartAction(PlayerState.Ability)) return;
 
         StartCoroutine(StartAvillity());
     }
@@ -59,19 +73,24 @@ public class H_Abillity : MonoBehaviour
             FrameToSeconds(avillityStartupTime)
         );
 
+        PlayerMovement targetMovement = target.GetComponent<PlayerMovement>();
         Vector2 myPosition = rb.position;
         Vector2 targetPosition = target.position;
 
-        rb.position = targetPosition;
-        target.position = myPosition;
+        // 위치 교환도 각 플레이어의 이동 컴포넌트를 통해 Rigidbody에 반영한다.
+        playerMovement.Teleport(targetPosition);
+        targetMovement.Teleport(myPosition);
+        // 순간이동 직후 컨텍스트의 위치 정보도 새 위치로 맞춘다.
+        GetComponent<PlayerContext>()?.setTransPosition();
+        target.GetComponent<PlayerContext>()?.setTransPosition();
 
-        float tempRotation = rb.rotation;
+        float tempRotation = playerMovement.Rotation;
 
-        rb.rotation = target.rotation;
-        target.rotation = tempRotation;
+        playerMovement.SetRotation(targetMovement.Rotation);
+        targetMovement.SetRotation(tempRotation);
 
-        rb.linearVelocity = Vector2.zero;
-        target.linearVelocity = Vector2.zero;
+        playerMovement.SetVelocity(Vector2.zero);
+        targetMovement.SetVelocity(Vector2.zero);
 
         isAbilityInvincible = false;
 
@@ -88,5 +107,29 @@ public class H_Abillity : MonoBehaviour
         hDef.EndAbilityDefence();
 
         isUsingAbility = false;
+        playerController?.EndAction(PlayerState.Ability);
     }
+
+    private void OnDisable()
+    {
+        if (playerController != null)
+        {
+            playerController.ActionsCancelled -= CancelAbility;
+        }
+        CancelAbility();
+    }
+
+    public void CancelAbility()
+    {
+        StopAllCoroutines();
+        isAbilityInvincible = false;
+        isUsingAbility = false;
+        if (hDef != null)
+        {
+            hDef.EndAbilityParry();
+            hDef.EndAbilityDefence();
+        }
+        playerController?.EndAction(PlayerState.Ability);
+    }
+
 }
