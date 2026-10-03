@@ -5,7 +5,8 @@ public class T_Jump : MonoBehaviour
 {
     private T_Attack attack;
     private PlayerMovement movement;
-    private Rigidbody2D rb;
+    private PlayerMovement playerMovement;
+    private PlayerController playerController;
     public bool isJumping = false;
     [Header("ChargeJump")]
 
@@ -23,11 +24,12 @@ public class T_Jump : MonoBehaviour
     [Header("Jump")]
     [SerializeField] private float jumpPower = 6f;
 
-    private bool isGrounded;
+    private bool isChargingJump;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        playerMovement = GetComponent<PlayerMovement>();
+        playerController = GetComponent<PlayerController>();
         attack = GetComponent<T_Attack>();
         movement = GetComponent<PlayerMovement>();
         //normalGravity = rb.gravityScale;
@@ -35,6 +37,7 @@ public class T_Jump : MonoBehaviour
 
     private void Update()
     {
+        isJumping = !playerMovement.IsGrounded;
         if (!attack.sp_isAttaking)
         {
             //ApplyGravity();
@@ -53,41 +56,65 @@ public class T_Jump : MonoBehaviour
     //    }
     //}
 
+    private void OnEnable()
+    {
+        playerController = GetComponent<PlayerController>();
+        if (playerController == null) return;
+        playerController.ActionsCancelled += CancelJump;
+    }
+
     public void OnJump(InputValue value)
     {
+        if (!isActiveAndEnabled) return;
         if (value.isPressed) //눌렀을 때
         {
-            if (!isGrounded) return;
+            // 착지 판정은 PlayerMovement의 공용 접지 상태를 사용한다.
+            if (!playerMovement.IsGrounded) return;
+            if (playerController != null && !playerController.CanJump) return;
             movement.SetJumping(true);
             currentCharge = 0f;
             startTime = Time.time;
+            isChargingJump = true;
         }
         else { // 뗐을 때
-            if (!isGrounded) return;
+            if (!isChargingJump) return;
+            if (playerController != null && !playerController.CanJump)
+            {
+                CancelJump();
+                return;
+            }
+            isChargingJump = false;
             movement.SetJumping(false);
             duration = Time.time - startTime;
           //  Debug.Log("현재 시간 - 시작 시간 = " + duration);
-            if(duration < 0.1f) //기본 점프
+            if(duration < 0.5f) //기본 점프
             {
-                //Debug.Log("기본 점프");
+                Debug.Log("기본 점프");
                 BasicJump();
             }
             else //차지 점프
             {
-                //Debug.Log("차지 점프");
-                duration = duration > maxTime ? maxTime : duration; 
-                Charging();
+                Debug.Log("차지 점프");
+                ChargingJump();
             }
         }
+    }
+
+    public void CancelJump()
+    {
+        // 입력이 제한되면 충전 중인 점프를 취소한다.
+        isChargingJump = false;
+        movement?.SetJumping(false);
     }
 
     private void BasicJump()
     {
         //기본 애니메이션
-        rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+        isJumping = true;
+        playerMovement.Jump(jumpPower);
     }
 
-    private void Charging()
+    private void ChargingJump()
     {
       
        while(duration > 0f)
@@ -95,30 +122,22 @@ public class T_Jump : MonoBehaviour
             duration -= nextTime;
             currentCharge += addCharge;
         }
-        float Ratio = currentCharge / maxCharge;
+        float Ratio = Mathf.Clamp((Time.time - startTime) / maxTime, 0f, 1f);
         float Mult = Mathf.Lerp(1f, 2f, Ratio);
        // Debug.Log(Mult * jumpPower);
-        rb.AddForce(Vector2.up * (jumpPower * Mult), ForceMode2D.Impulse);
+        isJumping = true;
+        playerMovement.Jump(jumpPower * Mult);
 
 
     }
 
-  
-    private void OnCollisionEnter2D(Collision2D collision) //바닥에 착지 할때
+    private void OnDisable()
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (playerController != null)
         {
-            isGrounded = true;
-            isJumping = false;
+            playerController.ActionsCancelled -= CancelJump;
         }
+        CancelJump();
     }
 
-    private void OnCollisionExit2D(Collision2D collision) //뛰어 오르기 시작할 때
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-            isJumping = true;
-        }
-    }
 }

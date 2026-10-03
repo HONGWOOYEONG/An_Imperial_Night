@@ -11,8 +11,7 @@ public class B_TigerContext : MonoBehaviour
     private Vector3 currentPosition;
 
     private Dictionary<string, float> patternDict;
-    private PlayerContext targetPlayer;
-
+    
     private void Awake()
     {
         thisTransform = GetComponent<Transform>();
@@ -22,16 +21,6 @@ public class B_TigerContext : MonoBehaviour
     private void Update()
     {
         currentPosition = thisTransform.position;
-    }
-
-    public void SetTarget(PlayerContext player)
-    {
-        targetPlayer = player;
-    }
-
-    public PlayerContext GetTarget()
-    {
-        return targetPlayer;
     }
 
     public void UpdateStatus(float hp, float posture)
@@ -55,7 +44,7 @@ public class B_TigerContext : MonoBehaviour
         patternDict[patternID] = lastUsedTime;
     }
 
-    public float GetPattern(string patternID)
+    public float GetLastPatternTime(string patternID)
     {
         if (string.IsNullOrEmpty(patternID))
         {
@@ -67,7 +56,9 @@ public class B_TigerContext : MonoBehaviour
             return value;
         }
 
-        return 0f;
+        // 사용 기록이 없는 패턴은 게임 시작 직후에도 선택될 수 있어야 합니다.
+        // 음의 무한대를 반환하면 lastUsedTime + cooldown 검사가 항상 false가 됩니다.
+        return float.NegativeInfinity;
     }
 
     public float GetHP()

@@ -1,18 +1,15 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class H_Posture : MonoBehaviour
 {
-    private PlayerInput playerInput;
     private PlayerHealth playerHealth;
     private H_Defence hDef;
     private PlayerMovement playerMovement;
+    private PlayerController playerController;
 
     public const float BASE_FPS = 60;
-
     private bool isGroggy = false;
-
     private Coroutine RegenPosture;
 
     [Header("MeleeORIGINAL")]
@@ -25,124 +22,103 @@ public class H_Posture : MonoBehaviour
 
     [Header("Parry")]
     [SerializeField] private float parryOnDrive = 70.0f;
+    private T_DriveGauge tDriveGauge;
 
-    private T_Defence tDef;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        playerInput = GetComponent<PlayerInput>();
         playerHealth = GetComponent<PlayerHealth>();
         playerMovement = GetComponent<PlayerMovement>();
+        playerController = GetComponent<PlayerController>();
         hDef = GetComponent<H_Defence>();
+        GameObject tPlayer = GameObject.FindGameObjectWithTag("RangedDealer");
+        if (tPlayer != null) tDriveGauge = tPlayer.GetComponent<T_DriveGauge>();
     }
 
-    // Update is called once per frame
-    private float FrameToSeconds(int frame)
-    {
-        return frame / BASE_FPS;
-    }
+    private float FrameToSeconds(int frame) => frame / BASE_FPS;
 
+    // 기존 직접 호출은 유지하되, 실제 피격 진입점인 PlayerHealth로 전달합니다.
     public void ReceiveAttack(DamageInfo damageInfo)
     {
-        if (playerMovement.IsDashing)
+        playerHealth?.ReceiveAttack(damageInfo);
+    }
+
+    public bool TryDefend(DamageInfo damageInfo)
+    {
+        if (playerMovement.IsDashing) return true;
+        // damageDir은 공격자에서 피격자로 향하므로 반대 방향이 공격자가 있는 쪽입니다.
+        bool fromFront = Vector2.Dot(
+            new Vector2(playerMovement.FacingDirection, 0), -damageInfo.damageDir) > 0;
+        if (!fromFront) return false;
+
+        if (hDef.IsParrying)
         {
-            Debug.Log("��ù��� ȸ��");
-            return;
+            tDriveGauge?.HealthSomeOfDriveGauge(parryOnDrive);
+            return true;
         }
 
-        if(Vector2.Dot(new Vector2(playerMovement.FacingDirection,0),damageInfo.damageDir) > 0) //�������� ���� 180 �������� �Ǵ�
+        if (hDef.IsDefending && damageInfo.damageType != DamageType.UnblockableAttack)
         {
-            if (hDef.IsParrying)
-            {
-                Debug.Log("�и� ����");
-                tDef.driveGauge += parryOnDrive;
-                if (tDef.driveGauge > tDef.dg_max) tDef.driveGauge = tDef.dg_max;
-                return;
-            }
-
-            if (hDef.IsDefending)
-            {
-                Debug.Log("��� ����");
-
-                currentPosture += damageInfo.postureDamage;
-
-                if (currentPosture >= maxPosture && !isGroggy)
-                {
-                    if (RegenPosture != null)
-                    {
-                        StopCoroutine(RegenPosture);
-                        RegenPosture = null;
-                    }
-
-                    StartCoroutine(StartGroggy());
-                }
-                else
-                {
-                    RestartRegenPosture();
-                }
-
-                return;
-            }
+            ApplyPostureDamage(damageInfo.postureDamage);
+            return true;
         }
+        return false;
+    }
 
-        playerHealth.DamagedFromAtk(damageInfo);
-        currentPosture += damageInfo.postureDamage;
+    public void ApplyPostureDamage(float amount)
+    {
+        // 방어 중 받은 피해와 일반 피격 모두 같은 자세/그로기 규칙을 사용합니다.
+        if (isGroggy || amount <= 0f) return;
+        currentPosture = Mathf.Min(maxPosture, currentPosture + amount);
+        if (currentPosture >= maxPosture)
+        {
+            if (RegenPosture != null)
+            {
+                StopCoroutine(RegenPosture);
+                RegenPosture = null;
+            }
+            StartCoroutine(StartGroggy());
+        }
+        else RestartRegenPosture();
     }
 
     private void RestartRegenPosture()
     {
-        if (RegenPosture != null)
-        {
-            StopCoroutine(RegenPosture);
-        }
-
+        if (RegenPosture != null) StopCoroutine(RegenPosture);
         RegenPosture = StartCoroutine(StartRegenPosture());
     }
 
-    IEnumerator StartRegenPosture()
+    private IEnumerator StartRegenPosture()
     {
         yield return new WaitForSeconds(FrameToSeconds(postureRegenTime));
-
         postureRegenPercent = playerHealth.CurrentHP / playerHealth.MaxHP;
-
-        while (true)
+        while (currentPosture > 0f)
         {
-            currentPosture -= postureRegenPercent * postureRegenAmount * Time.fixedDeltaTime;
-
+            currentPosture = Mathf.Max(0f,
+                currentPosture - postureRegenPercent * postureRegenAmount * Time.fixedDeltaTime);
             yield return new WaitForFixedUpdate();
-
-            if (currentPosture <= 0)
-            {
-                currentPosture = 0;
-                break;
-            }
         }
-
         RegenPosture = null;
     }
 
-    IEnumerator StartGroggy()
+    private IEnumerator StartGroggy()
     {
+        // 입력 제한은 컨트롤러에 맡기고, 자세 수치와 지속 시간만 여기서 관리합니다.
         isGroggy = true;
-
-        if (RegenPosture != null)
-        {
-            StopCoroutine(RegenPosture);
-            RegenPosture = null;
-        }
-
-        playerMovement.ResetControlState();
-
-        playerInput.DeactivateInput(); // �Է� ����
+        playerController?.BeginGroggy();
         yield return new WaitForSeconds(FrameToSeconds(postureGroggy));
-
-        isGroggy = false;
         currentPosture = 0f;
-
-        if (!playerHealth.IsDead)
-        {
-            playerInput.ActivateInput();
-        }
+        isGroggy = false;
+        playerController?.EndGroggy();
     }
+
+    public void ResetPosture()
+    {
+        StopAllCoroutines();
+        RegenPosture = null;
+        currentPosture = 0f;
+        isGroggy = false;
+        playerController?.EndGroggy();
+    }
+
+    private void OnDisable() => ResetPosture();
 }

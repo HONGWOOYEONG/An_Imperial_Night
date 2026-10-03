@@ -1,174 +1,109 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class T_Defence : MonoBehaviour, IDamageReceiver
+public class T_Defence : MonoBehaviour
 {
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
+    private T_DriveGauge t_DriveGauge;
+    private PlayerController playerController;
     public const float BASE_FPS = 60f;
 
-    [Header("µå¶óÀÌºê °ÔÀÌÁö")]
-    [SerializeField] public float driveGauge = 0f;
-    [SerializeField] public float dg_max = 1000f; //µå¶óÀÌºê °ÔÀÌÁö ÃÖ´ëÄ¡
-    [SerializeField] float dg_health = 50f; //µå¶óÀÌºê ÃÊ´ç È¸º¹·®
-    [SerializeField] float dg_delay = 3f; //µå¶óÀÌºê È¸º¹ ½ÃÀÛ Áö¿¬½Ã°£
-    private Coroutine regenCoroutine;
+    [Header("ë°©ì–´")]
+    [SerializeField] float d_driveDecease = 0;
+    [SerializeField] float d_startDelay = 2f;
+    [SerializeField] float d_endDelay = 2f;
+    private Coroutine defenceCoroutine = null;
 
-    [Header("¹æ¾î")]
-    [SerializeField] float d_driveDecease = 0; //¹æ¾î ½Ã °¨¼ÒÇÏ´Â µå¶óÀÌºê °ÔÀÌÁö
-    [SerializeField] float d_startDelay = 2f; //¹æ¾î ½ÃÀÛ µô·¹ÀÌ
-    [SerializeField] float d_endDelay = 2f; //¹æ¾î ÇØÁ¦ µô·¹ÀÌ
-    private Coroutine defenceCoroutine;
-    
-
-    public bool isDefencing = false; //Áö±İ ¹æ¾î Å°¸¦ ´­·¶³ª?
-    //isHoldingDefence°¡ trueÀÏ ¶§ ÀûÀÌ °ø°İÀ» ÇÏ¸é ¹æ¾î ¼º°ø
-    private bool isHoldingDefence = false; //¹æ¾î¸¦ ¼º°ø Çß³ª?
-
-
-    [Header("¹ø¾Æ¿ô")]
-    bool isBunOut = false; //¹ø¾Æ¿ôÀÎ°¡?
+    public bool isDefencing = false;
+    private bool isHoldingDefence = false;
 
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
-        driveGauge = dg_max;
-    }
-  
-    // Update is called once per frame
-    void Update()
-    {
-        //¹ø¾Æ¿ô true ÀüÈ¯
-        if (driveGauge <= 0 && isBunOut == false)
-        {
-            isBunOut = true;
-            ForceStopDefense();//¹ø¾Æ¿ô ½Ã °­Á¦·Î ¹æ¾î ÇìÁ¦
-        }
+        playerHealth = GetComponent<PlayerHealth>();
+        t_DriveGauge = GetComponent<T_DriveGauge>();
+        playerController = GetComponent<PlayerController>();
     }
 
-    public void ReceiveAttack(DamageInfo damageInfo)
+    private void OnEnable()
     {
-     
-        if (isHoldingDefence)
-        {
-            Debug.Log("¹æ¾î ¼º°ø");
-            driveGauge += damageInfo.driveDamage;
-         
-            return;
-        }
-
-        playerHealth.DamagedFromAtk(damageInfo);
+        playerController = GetComponent<PlayerController>();
+        if (playerController == null) return;
+        playerController.ActionsCancelled += ForceStopDefense;
     }
 
-    public void OnDefence(InputValue value) //¹æ¾îÅ° ÀÔ·Â
+    public void OnDefence(InputValue value)
     {
+        if (!isActiveAndEnabled) return;
         if (value.isPressed)
         {
+            if (t_DriveGauge.isBunOut || defenceCoroutine != null) return;
+            if (playerController != null && !playerController.TryStartAction(PlayerState.Defending)) return;
             isDefencing = true;
-            if (!isBunOut && defenceCoroutine == null)
-            {
-                Debug.Log("¹æ¾î ½ÃÀÛ");
-                defenceCoroutine = StartCoroutine(Defence());//defense ÄÚ·çÆ¾ ½ÃÀÛ
-            }
+            defenceCoroutine = StartCoroutine(Defence());
         }
-        else //¹æ¾îÅ°¸¦ ÀÔ·ÂÀ» ¾ÈÇÏ°í ÀÖÀ» ¶§
-        {
-            isDefencing = false;
-            if (defenceCoroutine != null)
-            {
-                StopCoroutine(defenceCoroutine);
-                defenceCoroutine = null;
-            }   
-            StartCoroutine(EndDefence()); //Á¾·á ÄÚ·çÆ¾ ½ÃÀÛ
-        }
+        else ForceStopDefense();
     }
-    private void ForceStopDefense() //°­Á¦ ¹æ¾î Á¾·á
+
+    IEnumerator Defence()
     {
+        yield return new WaitForSeconds(FrameToSeconds(d_startDelay));
+        if (!isDefencing) yield break;
+        isHoldingDefence = true;
+        playerMovement.SetDefending(true);
+        defenceCoroutine = null;
+    }
+
+    // ê¸°ì¡´ ì§ì ‘ í˜¸ì¶œì€ ìœ ì§€í•˜ë˜, ì‹¤ì œ í”¼ê²© ì§„ì…ì ì¸ PlayerHealthë¡œ ì „ë‹¬í•©ë‹ˆë‹¤.
+    public void ReceiveAttack(DamageInfo damageInfo)
+    {
+        playerHealth?.ReceiveAttack(damageInfo);
+    }
+
+    public bool TryDefend(DamageInfo damageInfo)
+    {
+        // ë°©ì–´ê°€ ì„±ë¦½í•˜ë©´ Healthê°€ HP í”¼í•´ë¥¼ ì ìš©í•˜ì§€ ì•Šë„ë¡ trueë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
+        if (!isHoldingDefence || damageInfo.damageType == DamageType.UnblockableAttack) return false;
+        GuardSuccess(damageInfo);
+        return true;
+    }
+
+    public void GuardSuccess(DamageInfo damageInfo)
+    {
+        if (damageInfo.driveDamage > 0f) t_DriveGauge.DecreaseDriveGauge(damageInfo.driveDamage);
+    }
+
+    public void GuardFail(DamageInfo damageInfo)
+    {
+        ForceStopDefense();
+        playerHealth.ReceiveAttack(damageInfo);
+    }
+
+    public void ForceStopDefense()
+    {
+        // ë²ˆì•„ì›ƒÂ·í”¼ê²© ì¤‘ë‹¨Â·ë²„íŠ¼ í•´ì œ ëª¨ë‘ íŒì •ê³¼ ì´ë™ ìƒíƒœë¥¼ í•¨ê»˜ ì •ë¦¬í•©ë‹ˆë‹¤.
         if (defenceCoroutine != null)
         {
-            StopCoroutine(defenceCoroutine); //ÇöÀç ÁøÇàÁßÀÎ ¹æ¾î¸¦ Á¾·á
-            defenceCoroutine = null; //ÄÚ·çÆ¾ º¯¼ö ºñ¿öÁÜ
-            StartCoroutine(EndDefence()); //¹æ¾î Á¾·á ÄÚ·çÆ¾ ½ÃÀÛ
+            StopCoroutine(defenceCoroutine);
+            defenceCoroutine = null;
         }
-    }
-    IEnumerator Defence() //¹æ¾î
-    {
-        yield return new WaitForSeconds(FrameToSeconds(d_startDelay));//¹æ¾î ½ÃÀÛ µô·¹ÀÌ
-        isHoldingDefence = true;
-        Debug.Log("¹æ¾î Áß");
-        if (playerMovement != null) playerMovement.SetDefending(true); //¹æ¾î true¾Ë¶÷
-    }
-    IEnumerator EndDefence() //¹æ¾î Á¾·á
-    {
-        yield return new WaitForSeconds(d_endDelay);//¹æ¾î ÇØÁ¦ µô·¹ÀÌ
-        if (playerMovement != null) playerMovement.SetDefending(false); //¹æ¾î false¾Ë¸²  
+        isDefencing = false;
         isHoldingDefence = false;
+        playerMovement?.SetDefending(false);
+        playerController?.EndAction(PlayerState.Defending);
     }
 
-     
-
-    //ÀÏÁ¤ ½Ã°£¸¶´Ù µå¶óÀÌºê °ÔÀÌÁö È¸º¹ 
-    IEnumerator RegenDriveGauge()
+    private void OnDisable()
     {
-        yield return new WaitForSeconds(dg_delay); //µå¶óÀÌºê È¸º¹ Àü Áö¿¬½Ã°£
-        while (driveGauge < dg_max) //ÃÖ´ë µå¶óÀÌºê °ÔÀÌÁö Àü±îÁö È¸º¹
+        if (playerController != null)
         {
-            driveGauge += dg_health * Time.deltaTime; //µå¶óÀÌºê °ÔÀÌÁö ÃÊ´ç È¸º¹
-            yield return null; //´ÙÀ½ ÇÁ·¹ÀÓ±îÁö ´ë±â
+            playerController.ActionsCancelled -= ForceStopDefense;
         }
-        if (driveGauge >= dg_max) //µå¶óÀÌºê °ÔÀÌÁö°¡ ÃÖ´ë µå¶óÀÌºê °ÔÀÌÁöº¸´Ù Å©°Å³ª °°À¸¸é
-        {
-            isBunOut = false; //isBunOutÀ» false·Î º¯°æ
-        }
-        regenCoroutine = null;
+        ForceStopDefense();
     }
 
-    //µå¶óÀÌºê °ÔÀÌÁö °¨¼Ò ÇÔ¼ö
-    public void DecreaseDriveGauge(float amount)
-    {
-        driveGauge = (driveGauge - amount) <= 0 ? 0 : (driveGauge - amount); //µå¶óÀÌºê°ÔÀÌÁö °¨¼Ò
-        if (regenCoroutine != null) //½ÇÇà ÁßÀÎ ÄÚ·çÆ¾ÀÌ ÀÖ´Ù¸é 
-        {
-            StopCoroutine(regenCoroutine); //¸ØÃß°Ô ÇÔ
-        }
-        regenCoroutine = StartCoroutine(RegenDriveGauge()); //ÄÚ·çÆ¾ ½ÃÀÛ
-    }
-
-    // ¾à°øÀÌ³ª °­°øÀ» ÀûÁß ½ÃÅ°¸é µå¶óÀÌºê°ÔÀÌÁö È¸º¹ 
-    public void HealthSomeOfDriveGauge(float amount)
-    {
-        
-        driveGauge = (driveGauge + amount) >= dg_max ? dg_max : (driveGauge + amount);
-        if (driveGauge >= dg_max)
-        {
-            isBunOut = false;
-        }
-    }
-
-    //Æ¯°ø
-    public bool GetIsbunout()
-    {
-        return isBunOut;
-    }
-
-    public float GetCurrentDriveGauge()
-    {
-        return driveGauge;
-    }
-
-    private float FrameToSeconds(float frame)
-    {
-        return frame / BASE_FPS;
-    }
-    //µå¶óÀÌºê °ÔÀÌÁö ÃÖ´ëÄ¡ = 1000
-    //µå¶óÀÌºê °ÔÀÌÁö ½ÃÀÛÄ¡ = 1000
-    //Å°¸¦ »ç¿ëÇÏ°í µå¶óÀÌºê°¡ È¸º¹µÇ´Â Áö¿¬ ½Ã°£Àº 3ÇÁ·¹ÀÓ
-    //µå¶óÀÌºê °ÔÀÌÁö ÃÊ´ç È¸º¹·®Àº 50
-    //ÀÏ¹İ ¹æ¾î¸¦ ÇÒ¶§¿¡´Â µå¶óÀÌºê °ÔÀÌÁö°¡ °¨¼Ò µÇÁö ¾Ê´Âµ¥ ¹æ¾î°¡ ¼º°øÀÌ µÈ´Ù¸é µå¶óÀÌºê °ÔÀÌÁö°¡ °¨¼Ò
-
-    //¹æ¾î¸¦ ½ÃÀÛ ÇÒ ¶§ µô·¹ÀÌ°¡ ÀÖ°í ¹æ¾î ÇØÁ¦ ÇÒ ¶§ µô·¹ÀÌ°¡ ÀÖ´Ù. 
-    //¹æ¾î Áß ÀÌµ¿ ¼Óµµ ¹èÀ²ÀÌ ÀÖ´Âµ¥ ÀÌµ¿ ¼Óµµ´Â PlayerMovement ½ºÅ©¸³Æ®¿¡¼­ ÁöÁ¤
-   
+    private float FrameToSeconds(float frame) => frame / BASE_FPS;
 
 }
