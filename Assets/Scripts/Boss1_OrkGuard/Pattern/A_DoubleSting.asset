@@ -16,8 +16,8 @@ MonoBehaviour:
   cooldown: 5
   baseWeight: 1
   minDistance: 0
-  maxDistance: 10
-  preferredDistance: 8
+  maxDistance: 8
+  preferredDistance: 4
   hpDamage: 10
   postureDamage: 10
   driveDamage: 0

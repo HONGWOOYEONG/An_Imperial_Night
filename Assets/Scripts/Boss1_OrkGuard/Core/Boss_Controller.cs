@@ -39,6 +39,10 @@ public class Boss_Controller : MonoBehaviour
     [Header("그로기")]
     [SerializeField, Min(0f)] private float groggyDuration = 3f;
 
+    [Header("현재 패턴")]
+    public int CurrentPatternId; 
+
+
     public Boss_FSM FSM { get; private set; }
     public Boss_Context Context { get; private set; }
     public Boss_AI AI { get; private set; }
@@ -96,6 +100,8 @@ public class Boss_Controller : MonoBehaviour
         health.Tick();
         FSM.Tick();
         AI.Tick();
+
+        CurrentPatternId = AI.CurrentPattern?.Id ?? -1;
     }
 
     // 이동과 돌진은 물리 스텝에서만 돈다. Update에서 rb를 밀면 벽 판정이

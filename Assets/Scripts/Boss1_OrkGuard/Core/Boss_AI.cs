@@ -16,7 +16,7 @@ public class Boss_AI
     private readonly Boss_Context context;
     private readonly List<Boss_PatternSO> patterns_R;
     private readonly List<Boss_PatternSO> patterns_L;
-    private bool isRightHand = true; // 처음엔 오른손
+    private bool handDir = true; // 처음엔 오른손
     private bool IsPatternRunning
     {
         get
@@ -27,7 +27,7 @@ public class Boss_AI
 
     // 딕셔너리로 왼,오른손 패턴을 묶을까 아니면 따로 할까.
     // {bool, List<Boss_PatternSO>}
-    private Boss_PatternSO currentPattern;
+    public Boss_PatternSO CurrentPattern {get; private set;} = null;
 
 
     // 판단 사이의 최소 간격. 0이면 공격이 끝나자마자 다음 공격이 붙어서 쉴 틈이 없어진다.
@@ -81,14 +81,24 @@ public class Boss_AI
         // 빈도상 결정 가능 상태에서 부르는게 효율적인걸 알지만 
         // 패턴 결정은 이곳에서 보유시키고 싶다.
 
+        // 현재 손 -> 패턴이 없으면 이동.
+        // 패턴 실행 후 바로 손바꾸기
+        // 이동
+       
+        // 손바꾸기는 패턴 후에 실행. 이곳에선 바꾼 손으로 패턴을 실행할지 플레이어에게 이동할지를 결정.
         // 혹시모르니 idle,move 조건으로 감싼다.
-        if (boss.FSM.Current == boss.FSM.Move && boss.FSM.Current == boss.FSM.Idle)
+        if (boss.FSM.Current == boss.FSM.Move || boss.FSM.Current == boss.FSM.Idle)
         {
             if (Pattern_Decide())
+            {
                 Pattern_Execution();
+                return;
+            }
             else
-                ChangeHandJustNow();
-
+            {
+                ChangeHandToPassableIfNeeded();
+            }
+            // idle -> move는 이미 idle.tick에서 처리한다.
         }
 
     }
@@ -112,23 +122,23 @@ public class Boss_AI
     {
         nextDecideTime = Time.time + decideInterval;
 
-        currentPattern = Select_Pattern(isRightHand);
-        return currentPattern;
+        CurrentPattern = Select_Pattern(handDir);
+        return CurrentPattern;
     }
 
     // 패턴 성공시에만 호출
     public void Pattern_Execution(){
         // 공격 클래스에 값을 넘김
-        boss.Attack.SetPatternToAttack(currentPattern);
+        boss.Attack.SetPatternToAttack(CurrentPattern);
 
         // 쿨다운 기록은 상태를 바꾸기 전에 남긴다. 뒤로 미루면 패턴이 진입 도중 되돌아왔을 때
         // 기록이 통째로 빠지고, 같은 패턴이 다음 판단에서 또 뽑혀 무한히 재진입한다.
-        context.Record_PatternUsed(currentPattern.Id);
-        context.SetPatternID(currentPattern.Id);
-        boss.Anim.SetInteger("patternId",currentPattern.Id);
+        context.Record_PatternUsed(CurrentPattern.Id);
+        context.SetPatternID(CurrentPattern.Id);
+        boss.Anim.SetInteger("patternId",CurrentPattern.Id);
 
         // 넘기는 것이 먼저다. ChangeState부터 하면 Enter가 직전 패턴을 한 번 더 재생한다.
-        boss.FSM.Pattern.Set_Pattern(currentPattern);
+        boss.FSM.Pattern.Set_Pattern(CurrentPattern);
         boss.FSM.ChangeState(boss.FSM.Pattern);
     }
 
@@ -140,7 +150,15 @@ public class Boss_AI
     // 패턴의 종료에 부르는 함수라기 보단 패턴을 종료시키는 것에 가까움.
     public void Pattern_End() 
     {
-        ChangeHandJustNow(); // 패턴이 끝난 후 손바꾸기
+         if (boss.FSM.Current == boss.FSM.ChangeHand)
+        {
+            boss.FSM.ChangeState(boss.FSM.Move);
+            return;
+        }
+        // 패턴이 끝나면 손을 바꾼다.
+        // 상태만 ChangeHand로 바꾸면 isRightHand가 그대로라 같은 손 리스트만 계속 뽑는다.
+        // 오른손에 까마귀 하나뿐일 때 쿨다운 동안 아무 패턴도 못 고르고 멈춘 원인이었다.
+        ChangeHandJustNow();
     }
 #endregion
 
@@ -209,7 +227,7 @@ public class Boss_AI
     /// 바꿀 손을 확인한다. 그 손에 전환가능한  패턴이 있으면 손을 바꾸고 없으면 대기한다.
     /// SetFloat("rightHand",value);으로 손위치 구분. 오른손=1,왼손=0;
     /// </summary>
-    public bool CanIChangeThisHand(bool handChack)
+    public bool HasActivatePatternTo(bool handChack)
     {
         return Select_Pattern(handChack) != null;
     }
@@ -219,9 +237,12 @@ public class Boss_AI
     // 2. 무조건 바꿈. 
     // 우선 원래 계획대로 방법 2를 적용한다.
 
-    public void ChangeHandToPassable()
+    public void ChangeHandToPassableIfNeeded()
     {
-        if (CanIChangeThisHand(!isRightHand))
+        if(HasActivatePatternTo(handDir))
+            return;
+
+        if (HasActivatePatternTo(!handDir))
         {
             ChangeHandJustNow();
         }
@@ -233,8 +254,8 @@ public class Boss_AI
 
     private void ChangeHandJustNow()
     {
-        isRightHand = !isRightHand;
-        float value = isRightHand ? 1f : 0f;
+        handDir = !handDir;
+        float value = handDir ? 1f : 0f;
         boss.Anim.SetFloat("rightHand", value);
         boss.FSM.ChangeState(boss.FSM.ChangeHand);
 

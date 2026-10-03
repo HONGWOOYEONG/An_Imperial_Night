@@ -19,7 +19,7 @@ public abstract class Boss_Statebase : IState
     protected string animName;
     private readonly int animHash;
     public float endIntervalTime = 0f;
-    private float timer = 0f;
+    protected float timer = 0f;
 
     public string Name => animName;
 
@@ -41,9 +41,7 @@ public abstract class Boss_Statebase : IState
     /// </summary>
     public virtual void Tick()
     {
-        bool isAnimOnecLoop = anim.GetCurrentAnimatorStateInfo(0).normalizedTime>=1f;
-        if (isAnimOnecLoop)
-            timer += Time.deltaTime;
+        timer += Time.deltaTime;
     }
     public virtual void Exit() 
     {

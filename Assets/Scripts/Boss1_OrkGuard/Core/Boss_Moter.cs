@@ -13,7 +13,13 @@ using UnityEngine;
 public class Boss_Moter : MonoBehaviour
 {
     [Header("이동")]
-    [SerializeField, Min(0f)] private const float moveSpeed = 4f;
+    [SerializeField, Min(0f)] private float moveSpeed = 4f;
+    // 이 거리 안이면 걷지 않는다. Idle→Move와 Move→Idle이 같은 값을 봐야 두 상태가 서로를 번갈아 부르지 않는다.
+    [SerializeField, Min(0f)] private float stopDistance = 3f;
+    public float StopDistance => stopDistance;
+    [Header("텔레포트")]
+    [SerializeField] private Transform greenRoomPoint;
+
 
     [Header("돌진")]
     [Tooltip("진행도(0~1)를 이동한 비율로 바꾸는 곡선. 초반이 가파르고 끝이 평평할수록 튀어나갔다가 목적지에서 미끄러지듯 멈춘다.")]
@@ -109,6 +115,13 @@ public class Boss_Moter : MonoBehaviour
         rb.linearVelocityX = velocityX;
     }
 
+
+    public void TeleportToGreenRoom()
+    {
+        if (greenRoomPoint == null) return;
+
+        Teleport(greenRoomPoint.position);
+    }
     public void Teleport(Vector3 point)
     {
         rb.position = point;

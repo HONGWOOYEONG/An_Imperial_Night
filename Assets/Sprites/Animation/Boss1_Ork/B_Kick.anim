@@ -21,15 +21,21 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -2429859523690096173, guid: f4cf82c3403ceea478da5670f44d6de7, type: 3}
-    - time: 0.6166667
-      value: {fileID: -2429859523690096173, guid: f4cf82c3403ceea478da5670f44d6de7, type: 3}
+      value: {fileID: -1295391892481469209, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - time: 0.25
+      value: {fileID: 9679077461245047, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - time: 0.5
+      value: {fileID: -7586022081090866341, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - time: 0.75
+      value: {fileID: 5240338928788921384, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - time: 1
+      value: {fileID: 4881835880884751415, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
     flags: 2
-  m_SampleRate: 60
+  m_SampleRate: 4
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -46,14 +52,17 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -2429859523690096173, guid: f4cf82c3403ceea478da5670f44d6de7, type: 3}
-    - {fileID: -2429859523690096173, guid: f4cf82c3403ceea478da5670f44d6de7, type: 3}
+    - {fileID: -1295391892481469209, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - {fileID: 9679077461245047, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - {fileID: -7586022081090866341, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - {fileID: 5240338928788921384, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
+    - {fileID: 4881835880884751415, guid: c0ca0d3b48573a5428b3e9d3fcae94e1, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.0333333
+    m_StopTime: 1.25
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -73,21 +82,21 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.26666668
+  - time: 0.75
     functionName: AE_AttackOn
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
     messageOptions: 0
-  - time: 0.6
+  - time: 1
     functionName: AE_AttackOff
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.0333333
+  - time: 1.25
     functionName: AE_Pattern_End
     data: 
     objectReferenceParameter: {fileID: 0}

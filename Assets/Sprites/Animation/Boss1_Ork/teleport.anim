@@ -21,29 +21,17 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -6719830459968020252, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.12
-      value: {fileID: 3781145121002196544, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.24
-      value: {fileID: 7228718975208837013, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.36
-      value: {fileID: 7721465480097628697, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.48
-      value: {fileID: -3543093996145695441, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.6
-      value: {fileID: 3563870740468810635, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.72
-      value: {fileID: -6264367787339525879, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.84
-      value: {fileID: -6502372058640953359, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - time: 0.95
-      value: {fileID: -6502372058640953359, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
+      value: {fileID: -8737333027638961372, guid: 508b93a72a649534497c8f167f5a7eab, type: 3}
+    - time: 1.5
+      value: {fileID: 3749937768599816034, guid: 508b93a72a649534497c8f167f5a7eab, type: 3}
+    - time: 1.7
+      value: {fileID: 3749937768599816034, guid: 508b93a72a649534497c8f167f5a7eab, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
     flags: 2
-  m_SampleRate: 100
+  m_SampleRate: 10
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -60,21 +48,15 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -6719830459968020252, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: 3781145121002196544, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: 7228718975208837013, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: 7721465480097628697, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: -3543093996145695441, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: 3563870740468810635, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: -6264367787339525879, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: -6502372058640953359, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
-    - {fileID: -6502372058640953359, guid: 954cb46b983014d468ba8e520ef73c2e, type: 3}
+    - {fileID: -8737333027638961372, guid: 508b93a72a649534497c8f167f5a7eab, type: 3}
+    - {fileID: 3749937768599816034, guid: 508b93a72a649534497c8f167f5a7eab, type: 3}
+    - {fileID: 3749937768599816034, guid: 508b93a72a649534497c8f167f5a7eab, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.96
+    m_StopTime: 1.8000001
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -94,8 +76,15 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.21
-    functionName: AE_Teleport
+  - time: 0.2
+    functionName: AE_TeleportToGreenRoom
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.5
+    functionName: AE_TeleportToTarget
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

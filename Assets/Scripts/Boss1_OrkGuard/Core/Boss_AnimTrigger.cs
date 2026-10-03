@@ -35,10 +35,15 @@ public class Boss_AnimTrigger : MonoBehaviour
     }
 
 
-    public void AE_Teleport()
+    public void AE_TeleportToTarget()
     {
         Vector2 tpPoint = boss.Context.TargetPosition + (Vector2.right * 5f);
         boss.Moter.Teleport(tpPoint);
+    }
+
+    public void AE_TeleportToGreenRoom()
+    {
+        boss.Moter.TeleportToGreenRoom();
     }
 
     public void AE_Pattern_End() => boss.AI.Pattern_End();

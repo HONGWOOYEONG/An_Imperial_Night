@@ -16,7 +16,7 @@ MonoBehaviour:
   cooldown: 15
   baseWeight: 1000
   minDistance: 0
-  maxDistance: 50
+  maxDistance: 20
   preferredDistance: 10
   hpDamage: 0
   postureDamage: 0
