@@ -980,7 +980,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 425567001}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -1020,6 +1020,8 @@ MonoBehaviour:
   dashCooldown: 0
   dashDuration: 0.075
   percent: 0
+  jumpSlowRatio: 2
+  defenceSlowRatio: 2
   isSlowMoving: 0
   isMoving: 0
   jumpPower: 6
@@ -1035,10 +1037,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1527113e31037814eaa8a920d61c50b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Defence
-  driveGauge: 0
-  dg_max: 1000
-  dg_health: 50
-  dg_delay: 3
   d_driveDecease: 0
   d_startDelay: 2
   d_endDelay: 2
@@ -1065,6 +1063,7 @@ MonoBehaviour:
   w_obj: {fileID: 4820941970653982987, guid: 1095f524798c29446a7c6708290e280d, type: 3}
   s_frontDelay: 5
   s_backDelay: 3
+  heavyAttackRecoilPower: 7
   s_obj: {fileID: 1170419706703306647, guid: 3e1dfc1d571f7cc4e8ae69f0e2702c35, type: 3}
   sp_drvieDecrease: 100
   sp_stayCount: 1
@@ -1105,6 +1104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHP: 1000
   playerType: 1
+  reviveTime: 2
 --- !u!1 &448892549
 GameObject:
   m_ObjectHideFlags: 0
@@ -3372,6 +3372,8 @@ MonoBehaviour:
   dashCooldown: 0
   dashDuration: 0.1
   percent: 0
+  jumpSlowRatio: 2
+  defenceSlowRatio: 2
   isSlowMoving: 0
   isMoving: 0
   jumpPower: 7
@@ -3382,7 +3384,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1351544766}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -3572,6 +3574,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHP: 1000
   playerType: 0
+  reviveTime: 2
 --- !u!114 &1351544775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3618,51 +3621,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::H_Attack
   lightAtkData:
-  - damage: 7.71
-    postureDamage: 5.49
-    knockbackPower: 4.8
-    stunTime: 3.3
+  - damageInfo:
+      damage: 0
+      damageDir: {x: 0, y: 0}
+      knockbackPower: 0
+      stunTime: 0
+      damageType: 0
+      postureDamage: 0
+      driveDamage: 0
     comboWaitTime: 1.08
     hitboxIndex: 0
-  - damage: 7.71
-    postureDamage: 5.49
-    knockbackPower: 4.8
-    stunTime: 3.3
+  - damageInfo:
+      damage: 0
+      damageDir: {x: 0, y: 0}
+      knockbackPower: 0
+      stunTime: 0
+      damageType: 0
+      postureDamage: 0
+      driveDamage: 0
     comboWaitTime: 1.08
     hitboxIndex: 1
-  - damage: 7.71
-    postureDamage: 5.49
-    knockbackPower: 4.8
-    stunTime: 3.3
+  - damageInfo:
+      damage: 0
+      damageDir: {x: 0, y: 0}
+      knockbackPower: 0
+      stunTime: 0
+      damageType: 0
+      postureDamage: 0
+      driveDamage: 0
     comboWaitTime: 1.08
     hitboxIndex: 2
-  - damage: 7.71
-    postureDamage: 5.49
-    knockbackPower: 4.8
-    stunTime: 3.3
+  - damageInfo:
+      damage: 0
+      damageDir: {x: 0, y: 0}
+      knockbackPower: 0
+      stunTime: 0
+      damageType: 0
+      postureDamage: 0
+      driveDamage: 0
     comboWaitTime: 1.08
     hitboxIndex: 3
-  heavyAtkData:
-  - damage: 0
-    postureDamage: 0
-    knockbackPower: 0
-    stunTime: 0
-    comboWaitTime: 0
-    hitboxIndex: 0
   lightAtkHitboxes:
   - {fileID: 2072111889}
   - {fileID: 1096258923}
   - {fileID: 606746739}
   - {fileID: 467024141}
-  heavyAtkHitboxes:
-  - {fileID: 0}
-  triggerTime: 65
-  triggerTimer: 0
-  lightAtkComboExpireTime: 2
   comboBufferAfterAttack: 0.5
   attackEndedParam: AttackEnded
-  isAttacking: 0
-  bufferdLightAtk: 0
 --- !u!114 &1351544778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4575,7 +4580,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!114 &2100000001
 MonoBehaviour:
@@ -4587,7 +4592,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

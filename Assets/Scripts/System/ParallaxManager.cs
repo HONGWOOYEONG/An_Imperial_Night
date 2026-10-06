@@ -1,39 +1,85 @@
+using System;
 using UnityEngine;
 
 [DefaultExecutionOrder(1000)]
 public class ParallaxManager : MonoBehaviour
 {
+    [Serializable]
+    private sealed class ParallaxLayerGroup
+    {
+        [SerializeField] private Transform[] layers = Array.Empty<Transform>();
+
+        [Tooltip("0 keeps the layer in world space. 1 makes it follow the camera completely.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float cameraFollow;
+
+        private Vector3[] initialPositions;
+
+        public ParallaxLayerGroup(float cameraFollow)
+        {
+            this.cameraFollow = cameraFollow;
+        }
+
+        public void CacheInitialPositions()
+        {
+            layers ??= Array.Empty<Transform>();
+            initialPositions = new Vector3[layers.Length];
+
+            for (int i = 0; i < layers.Length; i++)
+            {
+                if (layers[i] != null)
+                {
+                    initialPositions[i] = layers[i].position;
+                }
+            }
+        }
+
+        public void Apply(Vector3 cameraOffset, Vector2 movementAxes)
+        {
+            if (initialPositions == null || initialPositions.Length != layers.Length)
+            {
+                CacheInitialPositions();
+            }
+
+            Vector3 movement = new Vector3(
+                cameraOffset.x * movementAxes.x,
+                cameraOffset.y * movementAxes.y,
+                0f) * cameraFollow;
+
+            for (int i = 0; i < layers.Length; i++)
+            {
+                if (layers[i] != null)
+                {
+                    layers[i].position = initialPositions[i] + movement;
+                }
+            }
+        }
+    }
+
     [Header("References")]
     [SerializeField] private Transform targetCamera;
-    [SerializeField] private Transform[] layers;
 
-    [Header("Parallax")]
-    [Tooltip("Layers at or in front of this Z position stay fixed in world space.")]
-    [SerializeField] private float stationaryDepth = 10f;
+    [Header("Depth Groups")]
+    [Tooltip("Distant scenery. It normally follows the camera the most.")]
+    [SerializeField] private ParallaxLayerGroup farLayer = new ParallaxLayerGroup(0.8f);
 
-    [Tooltip("Layers at this Z position receive the maximum camera-follow amount.")]
-    [SerializeField] private float fullParallaxDepth = 30f;
+    [Tooltip("Scenery between the distant background and foreground.")]
+    [SerializeField] private ParallaxLayerGroup middleLayer = new ParallaxLayerGroup(0.45f);
 
-    [Tooltip("How much the farthest layer follows the camera. Keep this below 1.")]
-    [Range(0f, 0.95f)]
-    [SerializeField] private float maxCameraFollow = 0.8f;
+    [Tooltip("Nearby scenery. It normally stays close to its world position.")]
+    [SerializeField] private ParallaxLayerGroup nearLayer = new ParallaxLayerGroup(0.1f);
 
+    [Header("Movement")]
     [Tooltip("Set an axis to 0 if parallax should not be applied on that axis.")]
     [SerializeField] private Vector2 movementAxes = Vector2.one;
 
     private Vector3 initialCameraPosition;
-    private Vector3[] initialLayerPositions;
-    private float[] cameraFollowFactors;
 
     private void Awake()
     {
-        if (targetCamera == null)
+        if (targetCamera == null && Camera.main != null)
         {
-            Camera mainCamera = Camera.main;
-            if (mainCamera != null)
-            {
-                targetCamera = mainCamera.transform;
-            }
+            targetCamera = Camera.main.transform;
         }
 
         CacheInitialState();
@@ -41,67 +87,27 @@ public class ParallaxManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (targetCamera == null || initialLayerPositions == null)
+        if (targetCamera == null)
         {
             return;
         }
 
         Vector3 cameraOffset = targetCamera.position - initialCameraPosition;
-
-        for (int i = 0; i < layers.Length; i++)
-        {
-            Transform layer = layers[i];
-            if (layer == null)
-            {
-                continue;
-            }
-
-            Vector3 position = initialLayerPositions[i];
-            position.x += cameraOffset.x * movementAxes.x * cameraFollowFactors[i];
-            position.y += cameraOffset.y * movementAxes.y * cameraFollowFactors[i];
-            layer.position = position;
-        }
+        farLayer.Apply(cameraOffset, movementAxes);
+        middleLayer.Apply(cameraOffset, movementAxes);
+        nearLayer.Apply(cameraOffset, movementAxes);
     }
 
     private void CacheInitialState()
     {
         if (targetCamera == null)
         {
-            initialLayerPositions = null;
-            cameraFollowFactors = null;
             return;
         }
 
         initialCameraPosition = targetCamera.position;
-        layers ??= System.Array.Empty<Transform>();
-        initialLayerPositions = new Vector3[layers.Length];
-        cameraFollowFactors = new float[layers.Length];
-
-        for (int i = 0; i < layers.Length; i++)
-        {
-            Transform layer = layers[i];
-            if (layer == null)
-            {
-                continue;
-            }
-
-            Vector3 layerPosition = layer.position;
-            initialLayerPositions[i] = layerPosition;
-
-            float depthRatio = Mathf.InverseLerp(
-                stationaryDepth,
-                fullParallaxDepth,
-                layerPosition.z);
-
-            cameraFollowFactors[i] = depthRatio * maxCameraFollow;
-        }
-    }
-
-    private void OnValidate()
-    {
-        if (fullParallaxDepth <= stationaryDepth)
-        {
-            fullParallaxDepth = stationaryDepth + 0.01f;
-        }
+        farLayer.CacheInitialPositions();
+        middleLayer.CacheInitialPositions();
+        nearLayer.CacheInitialPositions();
     }
 }
