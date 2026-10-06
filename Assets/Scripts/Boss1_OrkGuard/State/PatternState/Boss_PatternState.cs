@@ -21,10 +21,10 @@ public class Boss_PatternState : Boss_Statebase
         switch (pattern.Id)
         {       
             case 1: animName = "A:Sting&TPSweep"; break;    // 완
-            case 2: animName = "B:SpartaKick"; break;       // 
+            case 2: animName = "B:Kick"; break;             // 완
             case 3: animName = "C:TPSweep"; break;          // 완
-            case 4: animName = "D:SummonCrow"; break;       // 진행
-            case 5: animName = "E:FireBreath"; break;       // 
+            case 4: animName = "D:SummonCrow"; break;       // 완
+            case 5: animName = "E:FireBreath"; break;       // -
             default:animName = "None"; break;
         }
     }
@@ -61,4 +61,8 @@ public class Boss_PatternState : Boss_Statebase
                 break;
         }
     }
+
+
+
+    //
 }
