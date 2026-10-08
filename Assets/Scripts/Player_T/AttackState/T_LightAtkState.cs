@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-
 public class RangeCombo
 {
     public float[] damage = { 100, 20, 20, 20 }; //임의
@@ -27,7 +26,7 @@ public class T_LightAtkState : I_TAttackState
     //-- 타겟 --
     private Collider2D nearTarget;
     private float shortest = float.MaxValue;
-    private Vector2 targetPos;
+    private Vector2 targetPos; //타겟 위치
 
     //-- 콤보 --
     private RangeCombo combo = new RangeCombo();
@@ -48,6 +47,8 @@ public class T_LightAtkState : I_TAttackState
         isAttacking = true;
         inputCount = 0;
         currentStep = AttackStep.First;
+
+        t_Attack.activeAttackCount++;
         t_Attack.StartCoroutine(FirstAttack(t_Attack));
     }
 
@@ -57,7 +58,7 @@ public class T_LightAtkState : I_TAttackState
         currentStep = AttackStep.First;
         inputCount = 0;
 
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.frontDelay[0]));
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[0]));
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -65,23 +66,26 @@ public class T_LightAtkState : I_TAttackState
         //--1타 공격 생성--
         Vector2 newPos = t_Attack.createPos.position;
         GameObject obj_lightatk = t_Attack.InstantiateObject(t_Attack.commonAttackObject, newPos);
-        OBJ_LightAttack dirstAtkInit = obj_lightatk.GetComponent<OBJ_LightAttack>();
-        if (dirstAtkInit != null)
+        OBJ_LightAttack firstAtkInit = obj_lightatk.GetComponent<OBJ_LightAttack>();
+        if (firstAtkInit != null)
         {
             Vector2 dir = (targetPos - newPos).normalized;
             damageInfo = new DamageInfo()
             {
                 damage = combo.damage[0],
                 damageDir = dir,
-                damageType = DamageType.LightAttack
+                knockbackPower = 0,
+                stunTime = 0,
+                damageType = DamageType.LightAttack,
+                driveDamage = 0
             };
-            dirstAtkInit.Initialize(damageInfo, t_Attack);
+            firstAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
 
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.backDelay[0]));
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[0]));
 
         //--예약한 공격횟수가 2보다 크면 다음콤보 공격이 나간다--
-        if(inputCount >= 2)
+        if (inputCount >= 2)
         {
             inputCount = 0; 
             yield return t_Attack.StartCoroutine(SecondThirdAttack(t_Attack));
@@ -89,7 +93,7 @@ public class T_LightAtkState : I_TAttackState
         //--콤보 종료--
         else
         {
-            EndCombo();
+            EndCombo(t_Attack);
         }
     }
 
@@ -98,7 +102,8 @@ public class T_LightAtkState : I_TAttackState
         Debug.Log("콤보공격 2,3 시작");
         currentStep = AttackStep.SecondThird;
         inputCount = 0;
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.frontDelay[1]));
+
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[1]));
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -114,14 +119,17 @@ public class T_LightAtkState : I_TAttackState
             {
                 damage = combo.damage[1],
                 damageDir = dir,
-                damageType = DamageType.LightAttack
+                knockbackPower = 0,
+                stunTime = 0,
+                damageType = DamageType.LightAttack,
+                driveDamage = 0
             };
-            secondAtkInit.Initialize(damageInfo,t_Attack);
+            secondAtkInit.Initialize(damageInfo,t_Attack, targetPos);
         }
 
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.backDelay[1])); 
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[1]));
 
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.frontDelay[2]));
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[2]));
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -137,12 +145,15 @@ public class T_LightAtkState : I_TAttackState
             {
                 damage = combo.damage[2],
                 damageDir = dir,
-                damageType = DamageType.LightAttack
+                knockbackPower = 0,
+                stunTime = 0,
+                damageType = DamageType.LightAttack,
+                driveDamage = 0
             };
-            thirdAtkInit.Initialize(damageInfo, t_Attack);
+            thirdAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
 
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.backDelay[2]));
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[2]));
 
         //--예약한 공격횟수가 1보다 크면 다음콤보 공격이 나간다--
         if (inputCount >= 1)
@@ -153,7 +164,7 @@ public class T_LightAtkState : I_TAttackState
         //--콤보 종료--
         else
         {
-            EndCombo();
+            EndCombo(t_Attack);
         }
     }
 
@@ -161,7 +172,8 @@ public class T_LightAtkState : I_TAttackState
     {
         Debug.Log("콤보공격 4 시작");
         currentStep = AttackStep.Final;
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.frontDelay[3]));
+
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[3]));
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -173,6 +185,13 @@ public class T_LightAtkState : I_TAttackState
         //--4타 공격 생성--
         GameObject obj_finalAtk = t_Attack.InstantiateObject(t_Attack.finalAttackObject, finalPos);
         OBJ_FinalAttack finalAtkInit = obj_finalAtk.GetComponent<OBJ_FinalAttack>();
+
+        if (t_Attack.movement != null)
+        {
+            t_Attack.movement.AddMovementLock(t_Attack); //이동제어
+            Debug.Log("이동제어 시작");
+        }
+
         if (finalAtkInit != null)
         {
             Vector2 dir = (targetPos - finalPos).normalized;
@@ -180,22 +199,27 @@ public class T_LightAtkState : I_TAttackState
             {
                 damage = combo.damage[3],
                 damageDir = dir,
-                damageType = DamageType.LightAttack
+                knockbackPower = 0,
+                stunTime = 0,
+                damageType = DamageType.Mark,
+                driveDamage = 0
             };
-            finalAtkInit.Initialize(damageInfo, t_Attack);
+            finalAtkInit.Initialize(damageInfo, t_Attack , targetPos);
         }
-        yield return new WaitForSeconds(t_Attack.SecondsToFrames(combo.backDelay[3]));
+        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[3]));
         //--콤보 종료--
-        EndCombo();
+        EndCombo(t_Attack);
     }
 
     //--콤보가 종료될때 초기화--
-    private void EndCombo()
+    private void EndCombo(T_Attack t_Attack)
     {
         inputCount = 0;
         isAttacking = false;
         currentStep = AttackStep.None;
         nearTarget = null;
+
+        t_Attack.FinishAttack();
     }
 
 
@@ -236,14 +260,26 @@ public class T_LightAtkState : I_TAttackState
         FindToNearTarget(t_Attack);
 
         //--가까운 적이 있다면 적의 위치를 targetPos로 지정--
-        if (nearTarget != null) 
+        if (nearTarget != null)
         {
+            ITargetable target =
+            nearTarget.GetComponent<ITargetable>();
+
+            if (target != null && target.TargetPoint != null)
+            {
+                return target.TargetPoint.position;
+            }
+
+            //--TargetPoint가 없는 적이면 기존 Pivot 사용(예외처리)--
             return nearTarget.transform.position;
         }
 
-        //--가까운 적이 없다면 (바라보는 방향 ) 위치를 targetPos 지정--
-        Vector2 lookDir = Vector2.right * t_Attack.movement.FacingDirection;
-        return (Vector2)t_Attack.createPos.position + lookDir * 10f;
+        //--적이 없으면 플레이어가 바라보는 방향으로 공격--
+        Vector2 lookDir =
+            Vector2.right * t_Attack.movement.FacingDirection;
+
+        return (Vector2)t_Attack.createPos.position
+            + lookDir * 10f;
     }
 
     //--Overlap안에 들어온 적 오브젝트 중 플레이어와 가장 거리가 짧은 적을 감지해 nearTarget을 지정--
@@ -277,8 +313,14 @@ public class T_LightAtkState : I_TAttackState
     }
 
 
-    public void Exit(T_Attack t_Attack)
+    public void Exit(T_Attack t_Attack) //--공격 도중 강제로 취소 됐을 때--
     {
+        inputCount = 0;
+        isAttacking = false;
+        currentStep = AttackStep.None;
+
+        nearTarget = null;
+        shortest = float.MaxValue;
     }
 
     public void Update(T_Attack t_Attack)

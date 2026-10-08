@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class E_PuppeteerController : MonoBehaviour
+public class E_PuppeteerController : MonoBehaviour,IDamageReceiver,ITargetable
 {
+    [SerializeField] private Transform targetPoint;
     [SerializeField] public float BASE_FPS = 60f;
     [SerializeField] public IPuppeteerState currentState;
     [SerializeField] public IPuppeteerState chooseState;
@@ -56,7 +57,6 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public int currentCount = 0;
 
     [Header("B")]
-
   //  public GameObject HitBox_LandB;
     [HideInInspector] public bool isAttaking_AirB = false;
     [HideInInspector] public bool isAttaking_B = false;
@@ -73,7 +73,7 @@ public class E_PuppeteerController : MonoBehaviour
     [HideInInspector] public Vector2 middlePoint = Vector2.zero;
 
     [Header("E")]
-    public GameObject HitBox_E;
+    //public GameObject HitBox_E;
     [HideInInspector] public bool isAttaking_E = false;
 
     [Header("F")]
@@ -91,6 +91,7 @@ public class E_PuppeteerController : MonoBehaviour
     public float minRange = 2f; //n1 이상 (임의)
     public float maxRange = 4f; //n2 이하 (임의)
 
+    public Transform TargetPoint => targetPoint;
 
     private void Awake()
     {
@@ -259,5 +260,15 @@ public class E_PuppeteerController : MonoBehaviour
     {
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(gameObject.transform.position, detectRange);
+    }
+
+    public void ReceiveAttack(DamageInfo damageInfo)
+    {
+        currentHelth -= damageInfo.damage;
+
+        Debug.Log("보스 피격");
+        Debug.Log("받은 데미지 : " + damageInfo.damage);
+        Debug.Log("현재 체력 : " + currentHelth);
+        Debug.Log("현재 받은 데미지 타입" + damageInfo.damageType);
     }
 }
