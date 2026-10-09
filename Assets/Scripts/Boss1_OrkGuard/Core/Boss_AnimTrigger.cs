@@ -8,48 +8,42 @@ using UnityEngine;
 /// </summary>
 public class Boss_AnimTrigger : MonoBehaviour
 {
-    [Tooltip("부모의 Boss_Controller. GetComponentInParent로 찾지 않고 직접 물린다. 프리팹 구조가 바뀌어도 조용히 null이 되지 않는다.")]
     [SerializeField] private Boss_Controller boss;
-
-    [Tooltip("Col_Attack. 애니메이션 클립에서 enabled 커브로 켜고 끌 수 있으면 그쪽이 우선이고, 여기는 클립으로 처리 못 하는 경우에만 쓴다.")]
-    [SerializeField] private Collider2D attackCollider;
-
+    [SerializeField] private Boss_AttackManager attackManager;
     private Coroutine Summon_Crow;
 
-    private void Awake()
+    void Start()
     {
-        if (boss == null)
-        {
-            Debug.LogWarning($"{name} : boss가 비어 있다. 부모의 Boss_Controller를 인스펙터에 물려야 애니메이션 이벤트가 전달된다.", this);
-        }
-
-        // 공격 판정은 항상 꺼진 채로 시작한다. 클립이 끄는 프레임을 지나기 전에
-        // 다른 상태로 전환되면 판정이 켜진 채로 남아 보스가 스쳐도 맞는다.
-        if (attackCollider != null)
-        {
-            attackCollider.enabled = false;
-        }
+        if(boss == null)
+            Debug.LogWarning($"{name} : boss가 비어 있다.", this);
+        if(attackManager == null)
+            attackManager = boss.Attack;
     }
-
-    public void AE_AttackOn()
+    public void AE_AttackOn(int index)
     {
-        if (attackCollider == null) return;
+        if (attackManager == null) return;
 
-        attackCollider.enabled = true;
+        Debug.Log($"{name} : 공격 {index}.");
+
+        attackManager.Attack(index);
     }
 
     public void AE_AttackOff()
     {
-        if (attackCollider == null) return;
-
-        attackCollider.enabled = false;
+        if (attackManager == null) return;
+        attackManager.AttackEnd();
     }
 
 
-    public void AE_Teleport()
+    public void AE_TeleportToTarget()
     {
         Vector2 tpPoint = boss.Context.TargetPosition + (Vector2.right * 5f);
         boss.Moter.Teleport(tpPoint);
+    }
+
+    public void AE_TeleportToGreenRoom()
+    {
+        boss.Moter.TeleportToGreenRoom();
     }
 
     public void AE_Pattern_End() => boss.AI.Pattern_End();

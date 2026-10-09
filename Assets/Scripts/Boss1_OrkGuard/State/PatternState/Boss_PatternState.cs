@@ -9,7 +9,7 @@ public class Boss_PatternState : Boss_Statebase
 {
     private Boss_PatternSO pattern;
 
-    public Boss_PatternState(Boss_Controller boss) : base(boss, string.Empty)
+    public Boss_PatternState(Boss_Controller boss, String animName) : base(boss, animName)
     {
         
     }
@@ -21,11 +21,10 @@ public class Boss_PatternState : Boss_Statebase
         switch (pattern.Id)
         {       
             case 1: animName = "A:Sting&TPSweep"; break;    // 완
-            case 2: animName = "B:SpartaKick"; break;       // 
+            case 2: animName = "B:Kick"; break;             // 완
             case 3: animName = "C:TPSweep"; break;          // 완
-            case 4: animName = "D:SummonCrow"; break;       // 진행
-            case 5: animName = "E:FireBreath"; break;       // 
-            // case 6: animName = "F:Sting&Sweep"; break;
+            case 4: animName = "D:SummonCrow"; break;       // 완
+            case 5: animName = "E:FireBreath"; break;       // -
             default:animName = "None"; break;
         }
     }
@@ -39,14 +38,15 @@ public class Boss_PatternState : Boss_Statebase
             return;
         }
         
-        boss.AI.Pattern_Start();
+        base.Enter();
         boss.Moter.HandleFlip();
+        boss.AI.Pattern_Start();
     }
     // 각 패턴의 종료는 애니메이션 이벤트로 받는다. changeState
     public override void Exit()
     {
         base.Exit();
-
+        
         boss.AI.Delay_NextDecide();
     }
     
@@ -61,4 +61,8 @@ public class Boss_PatternState : Boss_Statebase
                 break;
         }
     }
+
+
+
+    //
 }
