@@ -981,7 +981,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 425567001}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -1055,11 +1055,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Attack
   BASE_FPS: 60
-  isRight: 1
   rb: {fileID: 0}
   movement: {fileID: 0}
   t_DriveGauge: {fileID: 0}
   jump: {fileID: 0}
+  playerController: {fileID: 0}
   createPos: {fileID: 1023323938}
   triggerTime: 65
   triggerTimer: 0
@@ -1068,6 +1068,7 @@ MonoBehaviour:
   h_Obj: {fileID: 1170419706703306647, guid: 3e1dfc1d571f7cc4e8ae69f0e2702c35, type: 3}
   sp_drvieDecrease: 100
   sp_isAttaking: 0
+  activeAttackCount: 0
 --- !u!114 &425567011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1590,7 +1591,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -57.455013, y: 7, z: -1}
+  m_LocalPosition: {x: -57.454998, y: 1.625, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3461,7 +3462,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1351544766}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -3698,44 +3699,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::H_Attack
   lightAtkData:
-  - damageInfo:
-      damage: 0
-      damageDir: {x: 0, y: 0}
-      knockbackPower: 0
-      stunTime: 0
-      damageType: 0
-      postureDamage: 0
-      driveDamage: 0
+  - damage: 7.71
+    postureDamage: 5.49
+    knockbackPower: 4.8
+    stunTime: 3.3
     comboWaitTime: 1.08
     hitboxIndex: 0
-  - damageInfo:
-      damage: 0
-      damageDir: {x: 0, y: 0}
-      knockbackPower: 0
-      stunTime: 0
-      damageType: 0
-      postureDamage: 0
-      driveDamage: 0
+  - damage: 7.71
+    postureDamage: 5.49
+    knockbackPower: 4.8
+    stunTime: 3.3
     comboWaitTime: 1.08
     hitboxIndex: 1
-  - damageInfo:
-      damage: 0
-      damageDir: {x: 0, y: 0}
-      knockbackPower: 0
-      stunTime: 0
-      damageType: 0
-      postureDamage: 0
-      driveDamage: 0
+  - damage: 7.71
+    postureDamage: 5.49
+    knockbackPower: 4.8
+    stunTime: 3.3
     comboWaitTime: 1.08
     hitboxIndex: 2
-  - damageInfo:
-      damage: 0
-      damageDir: {x: 0, y: 0}
-      knockbackPower: 0
-      stunTime: 0
-      damageType: 0
-      postureDamage: 0
-      driveDamage: 0
+  - damage: 7.71
+    postureDamage: 5.49
+    knockbackPower: 4.8
+    stunTime: 3.3
     comboWaitTime: 1.08
     hitboxIndex: 3
   lightAtkHitboxes:
@@ -3743,6 +3728,16 @@ MonoBehaviour:
   - {fileID: 1096258923}
   - {fileID: 606746739}
   - {fileID: 467024141}
+  heavyAtkData:
+  - damage: 0
+    postureDamage: 0
+    knockbackPower: 0
+    stunTime: 0
+    comboWaitTime: 0
+    hitboxIndex: 0
+  heavyAtkHitboxes:
+  - {fileID: 0}
+  triggerTime: 65
   comboBufferAfterAttack: 0.5
   attackEndedParam: AttackEnded
 --- !u!114 &1351544778
