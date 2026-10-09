@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class H_Posture : MonoBehaviour
@@ -24,6 +25,10 @@ public class H_Posture : MonoBehaviour
     [SerializeField] private float parryOnDrive = 70.0f;
     private T_DriveGauge tDriveGauge;
 
+    public float MaxPosture => maxPosture;
+    public float CurrentPosture => currentPosture;
+    public event Action<float, float> OnPostureChanged;
+
     private void Awake()
     {
         playerHealth = GetComponent<PlayerHealth>();
@@ -46,8 +51,7 @@ public class H_Posture : MonoBehaviour
     {
         if (playerMovement.IsDashing) return true;
         // damageDir은 공격자에서 피격자로 향하므로 반대 방향이 공격자가 있는 쪽입니다.
-        bool fromFront = Vector2.Dot(
-            new Vector2(playerMovement.FacingDirection, 0), -damageInfo.damageDir) > 0;
+        bool fromFront = Vector2.Dot(new Vector2(playerMovement.FacingDirection, 0), -damageInfo.damageDir) > 0;
         if (!fromFront) return false;
 
         if (hDef.IsParrying)
@@ -69,6 +73,7 @@ public class H_Posture : MonoBehaviour
         // 방어 중 받은 피해와 일반 피격 모두 같은 자세/그로기 규칙을 사용합니다.
         if (isGroggy || amount <= 0f) return;
         currentPosture = Mathf.Min(maxPosture, currentPosture + amount);
+        OnPostureChanged?.Invoke(currentPosture, maxPosture);
         if (currentPosture >= maxPosture)
         {
             if (RegenPosture != null)
@@ -95,6 +100,7 @@ public class H_Posture : MonoBehaviour
         {
             currentPosture = Mathf.Max(0f,
                 currentPosture - postureRegenPercent * postureRegenAmount * Time.fixedDeltaTime);
+            OnPostureChanged?.Invoke(currentPosture, maxPosture);
             yield return new WaitForFixedUpdate();
         }
         RegenPosture = null;
@@ -107,6 +113,7 @@ public class H_Posture : MonoBehaviour
         playerController?.BeginGroggy();
         yield return new WaitForSeconds(FrameToSeconds(postureGroggy));
         currentPosture = 0f;
+        OnPostureChanged?.Invoke(currentPosture, maxPosture);
         isGroggy = false;
         playerController?.EndGroggy();
     }
@@ -116,6 +123,7 @@ public class H_Posture : MonoBehaviour
         StopAllCoroutines();
         RegenPosture = null;
         currentPosture = 0f;
+        OnPostureChanged?.Invoke(currentPosture, maxPosture);
         isGroggy = false;
         playerController?.EndGroggy();
     }
