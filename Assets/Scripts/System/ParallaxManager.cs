@@ -60,17 +60,16 @@ public class ParallaxManager : MonoBehaviour
     [SerializeField] private Transform targetCamera;
 
     [Header("Depth Groups")]
-    [Tooltip("Distant scenery. It normally follows the camera the most.")]
-    [SerializeField] private ParallaxLayerGroup farLayer = new ParallaxLayerGroup(0.8f);
+    [SerializeField] private ParallaxLayerGroup backgroundLayer = new ParallaxLayerGroup(0.8f);
 
-    [Tooltip("Scenery between the distant background and foreground.")]
-    [SerializeField] private ParallaxLayerGroup middleLayer = new ParallaxLayerGroup(0.45f);
 
-    [Tooltip("Nearby scenery. It normally stays close to its world position.")]
+    [SerializeField] private ParallaxLayerGroup farLayer = new ParallaxLayerGroup(0.6f);
+
+    [SerializeField] private ParallaxLayerGroup middleLayer = new ParallaxLayerGroup(0.3f);
+
     [SerializeField] private ParallaxLayerGroup nearLayer = new ParallaxLayerGroup(0.1f);
 
     [Header("Movement")]
-    [Tooltip("Set an axis to 0 if parallax should not be applied on that axis.")]
     [SerializeField] private Vector2 movementAxes = Vector2.one;
 
     private Vector3 initialCameraPosition;
@@ -93,6 +92,7 @@ public class ParallaxManager : MonoBehaviour
         }
 
         Vector3 cameraOffset = targetCamera.position - initialCameraPosition;
+        backgroundLayer.Apply(cameraOffset, movementAxes);
         farLayer.Apply(cameraOffset, movementAxes);
         middleLayer.Apply(cameraOffset, movementAxes);
         nearLayer.Apply(cameraOffset, movementAxes);
@@ -106,6 +106,7 @@ public class ParallaxManager : MonoBehaviour
         }
 
         initialCameraPosition = targetCamera.position;
+        backgroundLayer.CacheInitialPositions();
         farLayer.CacheInitialPositions();
         middleLayer.CacheInitialPositions();
         nearLayer.CacheInitialPositions();

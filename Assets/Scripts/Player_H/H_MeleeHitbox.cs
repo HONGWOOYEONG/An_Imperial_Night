@@ -31,8 +31,6 @@ public sealed class H_MeleeHitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) => TryHit(other);
     private void OnTriggerStay2D(Collider2D other) => TryHit(other);
-    private void OnCollisionEnter2D(Collision2D collision) => TryHit(collision.collider);
-    private void OnCollisionStay2D(Collision2D collision) => TryHit(collision.collider);
 
     private void TryHit(Collider2D other)
     {
@@ -40,20 +38,20 @@ public sealed class H_MeleeHitbox : MonoBehaviour
         if (other.transform.IsChildOf(attackOwner)) return;
 
         // 플레이어끼리는 공격 대상으로 취급하지 않는다.
-        if (other.GetComponentInParent<PlayerHealth>() != null) return;
+        if (other.CompareTag("RangedDealer")) return;
 
-        IDamageReceiver receiver = other.GetComponentInParent<IDamageReceiver>();
-        if (!(receiver is Component receiverComponent)) return;
+        IDamageReceiver damageReceiver = other.GetComponent<IDamageReceiver>();
+        if(damageReceiver == null) damageReceiver = other.GetComponentInParent<IDamageReceiver>();
 
-        Object target = other.attachedRigidbody != null
-            ? (Object)other.attachedRigidbody
-            : receiverComponent;
-        if (!hitTargets.Add(target)) return;
+        Object target = damageReceiver as Component;
+
+        if (target == null || !hitTargets.Add(target))
+            return;
 
         DamageInfo hitDamage = damageInfo;
         hitDamage.damageDir = ((Vector2)other.bounds.center - (Vector2)attackOwner.position).normalized;
         if (hitDamage.damageDir == Vector2.zero) hitDamage.damageDir = attackOwner.right;
 
-        receiver.ReceiveAttack(hitDamage);
+        damageReceiver.ReceiveAttack(hitDamage);
     }
 }
