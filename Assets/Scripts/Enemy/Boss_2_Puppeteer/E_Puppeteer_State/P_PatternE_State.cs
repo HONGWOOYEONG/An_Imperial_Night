@@ -28,7 +28,6 @@ public class P_PatternE_State : IPuppeteerState
     {
         isAttack = false;
         controller.isAttaking_E = false;
-        controller.HitBox_E.SetActive(false);
         Debug.Log("PatternE 상태 종료");
     }
 
