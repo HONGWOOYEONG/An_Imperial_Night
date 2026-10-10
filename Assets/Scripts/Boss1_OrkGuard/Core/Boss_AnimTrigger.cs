@@ -37,7 +37,9 @@ public class Boss_AnimTrigger : MonoBehaviour
 
     public void AE_TeleportToTarget()
     {
-        Vector2 tpPoint = boss.Context.TargetPosition + (Vector2.right * 5f);
+        int back = -boss.Context.CurrentTarget.FacingDirection;
+        Vector2 targetPos = boss.Context.TargetPosition;
+        Vector2 tpPoint = targetPos + (Vector2.right * 3f * back);
         boss.Moter.Teleport(tpPoint);
     }
 

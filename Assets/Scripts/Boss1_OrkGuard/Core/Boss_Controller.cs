@@ -180,8 +180,8 @@ public class Boss_Controller : MonoBehaviour
 
 #region 스킬
     // 
-[ContextMenu("test crow")]
-public void Test_Spawn_CrowCo() => StartCoroutine( Spawn_CrowCo());
+    [ContextMenu("test crow")]
+    public void Test_Spawn_CrowCo() => StartCoroutine( Spawn_CrowCo());
     public IEnumerator Spawn_CrowCo()
     {
         foreach (var point in spawnPoints)
