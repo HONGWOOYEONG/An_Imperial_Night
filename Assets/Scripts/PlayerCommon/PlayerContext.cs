@@ -8,6 +8,9 @@ public class PlayerContext : MonoBehaviour
     private bool doTransPosition;
     private Coroutine markCoroutine;
     public bool IsMarked { get; private set; }
+    private PlayerMovement playerMovement;
+
+    public int FacingDirection => playerMovement != null ? playerMovement.FacingDirection : 1;
 
     public void ApplyMark(float duration)
     {
@@ -34,7 +37,8 @@ public class PlayerContext : MonoBehaviour
 
     private void Awake()
     {
-        trans = GetComponent<Transform>();
+        trans = transform;
+        playerMovement = GetComponent<PlayerMovement>();
         currentPosition = trans.position;
     }
 
