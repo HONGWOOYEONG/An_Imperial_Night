@@ -45,7 +45,10 @@ public class T_LightAtkState : I_TAttackState
     private void StartCombo(T_Attack t_Attack)
     {
         isAttacking = true;
+        t_Attack.movement.AddMovementLock(t_Attack); //이동제어
         inputCount = 0;
+
+        // 1타 단계로 변경
         currentStep = AttackStep.First;
 
         // 콤보 파라미터 초기화
@@ -55,16 +58,11 @@ public class T_LightAtkState : I_TAttackState
         t_Attack.animation.PlayLightAttack();
 
         t_Attack.activeAttackCount++;
-        t_Attack.StartCoroutine(FirstAttack(t_Attack));
     }
 
-    private IEnumerator FirstAttack(T_Attack t_Attack)
+    public void FirstAttack(T_Attack t_Attack)
     {
-        Debug.Log("콤보공격 1 시작");
-        currentStep = AttackStep.First;
-        inputCount = 0;
-
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[0]));
+        if (!isAttacking || currentStep != AttackStep.First)  return;
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -72,6 +70,9 @@ public class T_LightAtkState : I_TAttackState
         //--1타 공격 생성--
         Vector2 newPos = t_Attack.createPos.position;
         GameObject obj_lightatk = t_Attack.InstantiateObject(t_Attack.commonAttackObject, newPos);
+
+        if (obj_lightatk == null) return;
+
         OBJ_LightAttack firstAtkInit = obj_lightatk.GetComponent<OBJ_LightAttack>();
         if (firstAtkInit != null)
         {
@@ -87,31 +88,31 @@ public class T_LightAtkState : I_TAttackState
             };
             firstAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
+    }
+    // 1타 애니메이션의 콤보 판정 프레임
+    public void CheckFirstCombo(T_Attack t_Attack)
+    {
+        if (!isAttacking || currentStep != AttackStep.First) return;
 
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[0]));
-
-        //--예약한 공격횟수가 2보다 크면 다음콤보 공격이 나간다--
         if (inputCount >= 2)
         {
             inputCount = 0;
+
+            // 2, 3타 단계로 변경
+            currentStep = AttackStep.SecondThird;
             t_Attack.animation.PlaySecondThirdAttack();
-            yield return t_Attack.StartCoroutine(SecondThirdAttack(t_Attack));
         }
-        //--콤보 종료--
         else
         {
-            t_Attack.animation.animator.SetBool("isSecondThirdAtk", false);
             EndCombo(t_Attack);
         }
     }
 
-    private IEnumerator SecondThirdAttack(T_Attack t_Attack)
+    public void SecondAttack(T_Attack t_Attack)
     {
-        Debug.Log("콤보공격 2,3 시작");
-        currentStep = AttackStep.SecondThird;
-        inputCount = 0;
+        if (!isAttacking || currentStep != AttackStep.SecondThird) return;
 
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[1]));
+        Debug.Log("콤보공격 2시작");
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -132,12 +133,13 @@ public class T_LightAtkState : I_TAttackState
                 damageType = DamageType.LightAttack,
                 driveDamage = 0
             };
-            secondAtkInit.Initialize(damageInfo,t_Attack, targetPos);
+            secondAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
+    }
 
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[1]));
-
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[2]));
+    public void ThirdAttack(T_Attack t_Attack)
+    { 
+        if (!isAttacking || currentStep != AttackStep.SecondThird) return;
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
@@ -160,47 +162,52 @@ public class T_LightAtkState : I_TAttackState
             };
             thirdAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
+        CheckSecondThirdCombo(t_Attack);
+    }
 
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[2]));
+    public void CheckSecondThirdCombo(T_Attack t_Attack)
+    {
+        if (!isAttacking ||
+            currentStep != AttackStep.SecondThird)
+            return;
 
         //--예약한 공격횟수가 1보다 크면 다음콤보 공격이 나간다--
         if (inputCount >= 1)
         {
             inputCount = 0;
+            currentStep = AttackStep.Final;
+
             t_Attack.animation.PlayFinalAttack();
-            yield return t_Attack.StartCoroutine(FinalAttack(t_Attack));
         }
         //--콤보 종료--
         else
         {
-            t_Attack.animation.animator.SetBool("isFinalAtk", false);
             EndCombo(t_Attack);
         }
     }
 
-    private IEnumerator FinalAttack(T_Attack t_Attack)
+    public void FinalAttack(T_Attack t_Attack)
     {
-        Debug.Log("콤보공격 4 시작");
-        currentStep = AttackStep.Final;
-
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.frontDelay[3]));
+        if (!isAttacking || currentStep != AttackStep.Final) return;
 
         //--타겟 갱신--
         targetPos = GetAttackTargetPos(t_Attack);
         Vector2 finalPos = t_Attack.createPos.position;
         //--넉백-- 
         Vector2 knockbackDir = -((targetPos - finalPos).normalized);
-        t_Attack.movement.KnockBack(knockbackDir, knockbackPower);
-
-        //--4타 공격 생성--
-        GameObject obj_finalAtk = t_Attack.InstantiateObject(t_Attack.finalAttackObject, finalPos);
-        OBJ_FinalAttack finalAtkInit = obj_finalAtk.GetComponent<OBJ_FinalAttack>();
-
         if (t_Attack.movement != null)
         {
+            t_Attack.movement.KnockBack(knockbackDir, knockbackPower);
             t_Attack.movement.AddMovementLock(t_Attack); //이동제어
             Debug.Log("이동제어 시작");
         }
+
+        //--4타 공격 생성--
+        GameObject obj_finalAtk = t_Attack.InstantiateObject(t_Attack.finalAttackObject, finalPos);
+
+        if (obj_finalAtk == null) return;
+
+        OBJ_FinalAttack finalAtkInit = obj_finalAtk.GetComponent<OBJ_FinalAttack>();
 
         if (finalAtkInit != null)
         {
@@ -214,13 +221,12 @@ public class T_LightAtkState : I_TAttackState
                 damageType = DamageType.Mark,
                 driveDamage = 0
             };
-            finalAtkInit.Initialize(damageInfo, t_Attack , targetPos);
+            finalAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
-        yield return new WaitForSeconds(t_Attack.FramesToSeconds(combo.backDelay[3]));
-        //--콤보 종료--
         EndCombo(t_Attack);
     }
 
+   
     //--콤보가 종료될때 초기화--
     private void EndCombo(T_Attack t_Attack)
     {
@@ -229,10 +235,18 @@ public class T_LightAtkState : I_TAttackState
         currentStep = AttackStep.None;
         nearTarget = null;
 
+        //--4타가 끝난 뒤에도 이동이 잠긴 상태로 남을 가능성이 있어서 작성--
+        if (t_Attack.movement != null)
+        {
+            t_Attack.movement.ReleaseMovementLock(t_Attack);
+        }
         t_Attack.FinishAttack();
-        t_Attack.animation.ResetLightAttack();
-    }
 
+        //--애니메이션 초기화--
+        t_Attack.animation.ResetLightAttack();
+        // 콤보가 종료됐으므로 Exit 허용
+        t_Attack.animation.EndLightAttackAnimation();
+    }
 
     //--입력을 받아 다음 콤보로 이어갈지 결정--
     public void AddInput(T_Attack t_Attack)
@@ -255,17 +269,14 @@ public class T_LightAtkState : I_TAttackState
         {
             case AttackStep.First:
                 inputCount++;
-                Debug.Log("first " + inputCount +" 현재 currentStep "+ currentStep);
                 break;
 
             case AttackStep.SecondThird:
                 inputCount++;
-                Debug.Log("SecondThird " + inputCount + " 현재 currentStep " + currentStep);
                 break;
 
             case AttackStep.Final:
                 //--4타 이후에는 콤보가 없으므로 추가 입력 무시--
-                Debug.Log("fianl " + inputCount + " 현재 currentStep " + currentStep);
                 break;
         }
     }

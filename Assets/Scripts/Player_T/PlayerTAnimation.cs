@@ -30,6 +30,15 @@ public class PlayerTAnimation : MonoBehaviour
     {
         animator.SetBool("isGrounded", movement.IsGrounded);
         animator.SetBool("hasMoveInput", movement.HasMoveInput);
+
+        // 현재 Animator가 재생 중인 State 확인
+        AnimatorStateInfo stateInfo =
+            animator.GetCurrentAnimatorStateInfo(0);
+
+        if (stateInfo.IsName("SecondThirdAttack"))
+        {
+            Debug.Log("현재 2,3타 애니메이션 실행 중!");
+        }
         //--이 코드를 작성한 이유는 HasMoveInput 이 부분이 왼쪽으로 걷다가 오른쪽으로(그 반대의 경우도 같음) 걸으면
         //0이 되는 경우가 나와서 idle 처리가 되어서 딜레이를 약간 주게 했음--
         if (controller.CurrentState == PlayerState.Move)
@@ -139,6 +148,7 @@ public class PlayerTAnimation : MonoBehaviour
     {
         if (isDead) return;
 
+        animator.SetBool("isComboEnd", false);
         animator.SetBool("isRun", false);
         animator.SetTrigger("LightAttack");
     }
@@ -146,7 +156,8 @@ public class PlayerTAnimation : MonoBehaviour
     public void PlaySecondThirdAttack()
     {
         if (isDead) return;
-        animator.SetBool("isSecondThirdAtk", true);
+
+        animator.SetBool("isSecondThirdAtk", true); 
     }
     //--4타--
     public void PlayFinalAttack()
@@ -159,8 +170,13 @@ public class PlayerTAnimation : MonoBehaviour
     {
         animator.SetBool("isSecondThirdAtk", false);
         animator.SetBool("isFinalAtk", false);
-
         animator.ResetTrigger("LightAttack");
+    }
+
+    // 콤보 종료를 Animator에 알리는 함수
+    public void EndLightAttackAnimation()
+    {
+        animator.SetBool("isComboEnd", true);
     }
     #endregion
 
