@@ -46,7 +46,10 @@ public class Boss_AnimTrigger : MonoBehaviour
         boss.Moter.TeleportToGreenRoom();
     }
 
-    public void AE_Pattern_End() => boss.AI.Pattern_End();
+    public void AE_Pattern_End()
+    {
+        boss.AI.Pattern_End();
+    } 
 
 // D_까마귀 소환
     public void AE_SummonCrow()

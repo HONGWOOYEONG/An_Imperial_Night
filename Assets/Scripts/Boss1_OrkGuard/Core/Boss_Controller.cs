@@ -121,13 +121,22 @@ public class Boss_Controller : MonoBehaviour
 
 
 
+    // Animator 창에서 grogy를 직접 켜면 FSM을 안 거쳐서 상태가 Pattern에 남는다. 테스트는 이 경로로 한다.
+    [ContextMenu("test groggy")]
+    public void Test_Groggy() => health.TakeDamage(0f, health.CurrentBalance);
+
     // 후에 있을 연출을 위해 캡슐화해놓는다.
-    private void Handle_Groggy()
+    private void Groggy_Event()
     {
-        FSM.ChangeState(FSM.Groggy);
+        FSM.ChangeState(FSM.Grogy);
     }
 
-    private void Handle_Dead()
+    private void GrogyKill_Event()
+    {
+        FSM.ChangeState(FSM.GrogyKill);
+    }
+
+    private void Dead_Event()
     {
         FSM.ChangeState(FSM.Dead);
     }
@@ -142,13 +151,15 @@ public class Boss_Controller : MonoBehaviour
 
     private void Connect_HealthEvent()
     {
-        health.OnGroggy += Handle_Groggy;
-        health.OnDead += Handle_Dead;
+        health.OnGrogy += Groggy_Event;
+        health.OnGrogyKill += GrogyKill_Event;
+        health.OnDead += Dead_Event;
     }
     private void Cancel_HealthEvent()
     {
-        health.OnGroggy -= Handle_Groggy;
-        health.OnDead -= Handle_Dead;
+        health.OnGrogy -= Groggy_Event;
+        health.OnGrogyKill -= GrogyKill_Event;
+        health.OnDead -= Dead_Event;
     }
 
     // 델리게이트에는 괄호 없는 메서드 이름만 넘긴다. Handle_StateText() 처럼 괄호를 붙이면

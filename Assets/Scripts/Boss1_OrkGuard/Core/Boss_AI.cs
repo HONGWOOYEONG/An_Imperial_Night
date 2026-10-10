@@ -35,21 +35,21 @@ public class Boss_AI
     private float nextDecideTime = 1f;
 
     // 그로기가 유지되는 시간. 값은 여기서 들고, 끝났는지 판단도 Decide에서 한다.
-    private readonly float groggyDuration;
-    private float groggyEndTime;
+    private readonly float grogyDuration;
+    public float GrogyEndTime{get; private set;} = 0f;
 
     // 룰렛을 돌릴 때마다 배열을 새로 잡지 않도록 점수 버퍼를 재사용한다.
     private readonly float[] scores;
 
 
-    public Boss_AI(Boss_Controller boss, Boss_Context context, List<Boss_PatternSO> patterns_R, List<Boss_PatternSO> patterns_L, float decideInterval, float groggyDuration)
+    public Boss_AI(Boss_Controller boss, Boss_Context context, List<Boss_PatternSO> patterns_R, List<Boss_PatternSO> patterns_L, float decideInterval, float grogyDuration)
     {
         this.boss = boss;
         this.context = context;
         this.patterns_R = patterns_R;
         this.patterns_L = patterns_L;
         this.decideInterval = decideInterval;
-        this.groggyDuration = groggyDuration;
+        this.grogyDuration = grogyDuration;
 
         int countR = patterns_R == null ? 0 : patterns_R.Count;
         int countL = patterns_L == null ? 0 : patterns_L.Count;
@@ -58,7 +58,12 @@ public class Boss_AI
 
     public void Begin_Groggy()
     {
-        groggyEndTime = Time.time + groggyDuration;
+        boss.Moter.Stop_Horizontal();
+        GrogyEndTime = Time.time + grogyDuration;
+    }
+    public void End_Groggy()
+    {
+        GrogyEndTime = Time.time;
     }
 
     // 그로기, 사망 시엔 중지. 
@@ -66,9 +71,8 @@ public class Boss_AI
     // 사망은 controller에서 체크
     public void Tick()
     {
-        if (Time.time < groggyEndTime) return;
-        if (boss.FSM.Current == boss.FSM.Groggy)
-            boss.FSM.ChangeState(boss.FSM.Idle);
+        if (boss.FSM.Current == boss.FSM.Dead) return; 
+        if (Time.time < GrogyEndTime) return;
 
         if (!context.HasTarget) {
             boss.FSM.ChangeState(boss.FSM.Idle);
@@ -148,9 +152,18 @@ public class Boss_AI
     {
     }
     // 패턴의 종료에 부르는 함수라기 보단 패턴을 종료시키는 것에 가까움.
-    public void Pattern_End() 
+    public void Pattern_End()
     {
-         if (boss.FSM.Current == boss.FSM.ChangeHand)
+        // 그로기·사망 중에 끊긴 패턴 클립의 이벤트가 늦게 도착하면 상태를 ChangeHand로 덮어써 그로기가 즉시 풀린다.
+        if (boss.FSM.Current == boss.FSM.Grogy || boss.FSM.Current == boss.FSM.Dead)
+            return;
+
+        else if (boss.FSM.Current == boss.FSM.GrogyKill)
+        {
+            boss.FSM.ChangeState(boss.FSM.Idle);
+            return;
+        }
+        else if (boss.FSM.Current == boss.FSM.ChangeHand)
         {
             boss.FSM.ChangeState(boss.FSM.Move);
             return;
@@ -158,7 +171,8 @@ public class Boss_AI
         // 패턴이 끝나면 손을 바꾼다.
         // 상태만 ChangeHand로 바꾸면 isRightHand가 그대로라 같은 손 리스트만 계속 뽑는다.
         // 오른손에 까마귀 하나뿐일 때 쿨다운 동안 아무 패턴도 못 고르고 멈춘 원인이었다.
-        ChangeHandJustNow();
+        else
+            ChangeHandJustNow();
     }
 #endregion
 

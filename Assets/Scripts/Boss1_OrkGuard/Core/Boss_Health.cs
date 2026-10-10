@@ -16,8 +16,6 @@ public class Boss_Health : MonoBehaviour
     [Header("라이프포인트")]
     [SerializeField, Min(0)] private int maxLifePoint = 1;
 
-    // 라이프를 쓰고 되살아날 때 회복할 체력 비율이다.
-    [SerializeField, Range(0f, 1f)] private float reviveHpRatio = 1f;
 
     [Header("밸런스")]
     [SerializeField, Min(1f)] private float maxBalance = 100f;
@@ -34,20 +32,25 @@ public class Boss_Health : MonoBehaviour
     public float MaxBalance => maxBalance;
     public int MaxLifePoint => maxLifePoint;
 
+    public bool IsDead {get; private set;} = false;
     // 파생값은 필드에 캐싱하지 않고 매번 계산한다. 두 곳이 어긋날 여지를 없앤다.
-    // 라이프가 0인 상태로 체력이 0이어야 사망이다.
-    public bool IsDead => CurrentHp <= 0f && CurrentLifePoint <= 0;
-    public bool IsBroken => CurrentBalance <= 0f;
-
+    // 체간이 0이거나 체력이 0이면 그로기 상태이다. 체력회복으로 자동 탈출한다.
+    public bool IsGrogy => CurrentBalance <= 0f || CurrentHp <= 0f;
+    private bool wasGrogy; // 그로기 상태가 되기 직전의 상태를 캐싱. 그로기 상태가 되면 true, 아니면 false.
+    // ui갱신용 이벤트
     public event Action<float, float> OnHpChanged;
     public event Action<float, float> OnBalanceChanged;
     public event Action<int, int> OnLifePointChanged;
-    public event Action OnGroggy;
-    public event Action OnLifeLost;
+
+    // 상태 변경 이벤트, fsm에서 호출하면 될것 같은데 이건 굳이 구현해야하나? 
+    public event Action OnGrogy;
+    public event Action OnGrogyKill;
     public event Action OnDead;
 
     // 비교형 타이머. 히트스탑이 걸려도 체감 시간이 밀리지 않도록 게임플레이 시계(Time.time)를 쓴다.
     private float nextBalanceRegenTime;
+
+    private bool hasGrogyKill = false;
 
     private void Awake()
     {
@@ -56,17 +59,13 @@ public class Boss_Health : MonoBehaviour
         CurrentLifePoint = maxLifePoint;
     }
 
-    public void TakeDamage(float hpDamage, float balanceDamage)
+    void OnEnable()
     {
-        if (IsDead) return;
+        OnGrogy += () => sendHealthInfo();
 
-        if (balanceDamage > 0f)
-        {
-            nextBalanceRegenTime = Time.time + balanceRegenDelay;
-        }
+        OnGrogyKill += () => sendHealthInfo();
 
-        Apply_Hp(-hpDamage);
-        Apply_Balance(-balanceDamage);
+        OnDead += () => sendHealthInfo();
     }
 
     // 체간의 자연 회복 규칙이다.
@@ -74,7 +73,7 @@ public class Boss_Health : MonoBehaviour
     {
         if (IsDead) return;
 
-        if (IsBroken) return;
+        if (IsGrogy) return;
 
         if (Time.time < nextBalanceRegenTime) return;
         if (CurrentBalance >= maxBalance) return;
@@ -82,15 +81,32 @@ public class Boss_Health : MonoBehaviour
         Apply_Balance(balanceRegenPerSecond * Time.deltaTime);
     }
 
-    // 한 번에 체간을 회복시킬 때.
-    public void Init_Balance()
+#region 데미지 로직
+
+    [ContextMenu("피격테스트")]
+    public void TakeDamageTest()=>TakeDamage(10,10);
+    public void TakeDamage(float hpDamage, float balanceDamage)
     {
         if (IsDead) return;
+        if (IsGrogy && !hasGrogyKill)
+        { // 그로기 상태에서 데미지를 받으면 라이프 소모와 애니메이션 출력. 
+            GrogyKill();
+            return;
+        }
 
-        CurrentBalance = maxBalance;
-        nextBalanceRegenTime = Time.time;
-        OnBalanceChanged?.Invoke(CurrentBalance, maxBalance);
+        if (balanceDamage > 0f) // 데미지 직후 일정시간 밸런스 회복 금지.
+            nextBalanceRegenTime = Time.time + balanceRegenDelay;
+
+        // 그로기를 한번만 호출하는 조건.IsBroken는 체력과 체간 기반으로 자동계산.
+        wasGrogy = IsGrogy;
+
+            Apply_Hp(-hpDamage);
+            Apply_Balance(-balanceDamage);
+
+        if (!wasGrogy && IsGrogy)
+            OnGrogy?.Invoke();
     }
+
 
     private void Apply_Hp(float delta)
     {
@@ -98,46 +114,75 @@ public class Boss_Health : MonoBehaviour
 
         CurrentHp = Mathf.Clamp(CurrentHp + delta, 0f, maxHp);
         OnHpChanged?.Invoke(CurrentHp, maxHp);
-
-        if (CurrentHp > 0f) return;
-
-        // 라이프가 남아 있으면 죽지 않는다.
-        if (CurrentLifePoint > 0)
-        {
-            Consume_Life();
-            return;
-        }
-
-        OnDead?.Invoke();
+        sendHealthInfo();
     }
-
-    // 라이프를 1 쓰고 체력과 체간을 되돌린다.
-    private void Consume_Life()
-    {
-        CurrentLifePoint--;
-        OnLifePointChanged?.Invoke(CurrentLifePoint, maxLifePoint);
-
-        // 회복량이 0이면 되살아난 그 프레임에 다시 0이 되어 라이프가 한꺼번에 날아간다.
-        CurrentHp = Mathf.Max(1f, maxHp * reviveHpRatio);
-        OnHpChanged?.Invoke(CurrentHp, maxHp);
-
-        Init_Balance();
-
-        OnLifeLost?.Invoke();
-    }
-
+    
     private void Apply_Balance(float delta)
     {
         if (delta == 0f) return;
 
-        bool wasBroken = IsBroken;
-
         CurrentBalance = Mathf.Clamp(CurrentBalance + delta, 0f, maxBalance);
         OnBalanceChanged?.Invoke(CurrentBalance, maxBalance);
+        sendHealthInfo();
+    }
 
-        if (!wasBroken && IsBroken)
+    // 라이프를 1소모. OnGrogyKill 이벤트에 등록되어있다. 애니메이션 전환은 controller에서 처리한다.
+    private void GrogyKill()
+    {
+        hasGrogyKill = true; // 그로기 킬로 진입했으니 더이상 그로기 킬 이벤트를 호출하지 않는다.
+        wasGrogy = true;
+        if (CurrentLifePoint == 0)
         {
-            OnGroggy?.Invoke();
+            IsDead = true;
+            OnDead?.Invoke();
         }
+        else if (CurrentLifePoint > 0)
+        {
+            CurrentLifePoint--;
+            OnGrogyKill?.Invoke();
+            OnLifePointChanged?.Invoke(CurrentLifePoint, maxLifePoint);
+        }
+    }
+
+#endregion
+
+
+
+    // 그로기 기간동안 체력이나체간을 회복하지 않는다.
+    // 그로기 Exit()에서 호출할 회복 로직이다.
+    public void Init_BalanceAndHp()
+    {
+        if (IsDead) return;
+
+        Init_Balance();
+
+        if (hasGrogyKill) // 그로기 킬을 하면 체력까지 회복한다.
+            Init_Health();
+        if (CurrentHp <= 0) // 그로기 킬이 아니면 체력은 조금만 회복
+            Apply_Hp(maxHp * 0.1f);
+        hasGrogyKill = false; // 그로기 킬 이벤트를 다시 호출할 수 있도록 허용한다.
+    }
+    // 한 번에 체간을 회복시킬 때.
+    private void Init_Balance()
+    {
+        if (IsDead) return;
+
+        CurrentBalance = maxBalance;
+        nextBalanceRegenTime = Time.time;
+        OnBalanceChanged?.Invoke(CurrentBalance, maxBalance);
+    }
+    private void Init_Health()
+    {
+        if (IsDead) return;
+
+        CurrentHp = maxHp;
+        OnHpChanged?.Invoke(CurrentHp, maxHp);
+    }
+
+
+    // 디버깅용 함수
+    private void sendHealthInfo()
+    {
+        Debug.Log($"남은 밸런스:{CurrentBalance}\n남은 체력:{CurrentHp}\n남은 라이프:{CurrentLifePoint}\n"); 
     }
 }
