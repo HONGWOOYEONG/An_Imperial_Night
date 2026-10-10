@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public enum PlayerType
@@ -37,6 +38,8 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
     public float MaxHP => maxHP;
     public bool IsBound => playerController != null && playerController.IsBound; // 현재 플레이어가 묶여있는지 확인
     public bool IsMarked => playerContext != null && playerContext.IsMarked; // 현재 플레이어가 낙인 상태인지 확인
+
+    public event Action<float, float> OnHealthChanged;
 
     private void Awake()
     {
@@ -81,6 +84,7 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
         if (isDead) return;
 
         currentHP = Mathf.Max(0f, currentHP - Mathf.Max(0f, damageInfo.damage));
+        OnHealthChanged?.Invoke(currentHP, maxHP);
         if (currentHP <= 0f)
         {
             if (gameSessionManager == null)
@@ -116,6 +120,7 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
     {
         if (reviveCoroutine != null) StopCoroutine(reviveCoroutine);
         currentHP = maxHP;
+        OnHealthChanged?.Invoke(currentHP, maxHP);
         isDead = false;
         playerContext?.ClearMark();
         IsRevive = reviveTime > 0f;
@@ -138,4 +143,5 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
         IsRevive = false;
         playerContext?.ClearMark();
     }
+
 }

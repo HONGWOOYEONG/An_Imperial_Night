@@ -1,19 +1,25 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class T_DriveGauge : MonoBehaviour
 {
     private T_Defence t_Defence = null;
 
-    [Header("µå¶óÀÌºê °ÔÀÌÁö")]
+    [Header("ë“œë¼ì´ë¸Œ ê²Œì´ì§€")]
     public float driveGauge = 1000f;
-    public float dg_max = 1000f; //µå¶óÀÌºê °ÔÀÌÁö ÃÖ´ëÄ¡
-    [SerializeField] private const float dg_health = 50f; //µå¶óÀÌºê ÃÊ´ç È¸º¹·®
-    [SerializeField] float dg_delay = 3f; //µå¶óÀÌºê È¸º¹ ½ÃÀÛ Áö¿¬½Ã°£
+    public float dg_max = 1000f; //ë“œë¼ì´ë¸Œ ê²Œì´ì§€ ìµœëŒ€ì¹˜
+    [SerializeField] private const float dg_health = 50f; //ë“œë¼ì´ë¸Œ ì´ˆë‹¹ íšŒë³µëŸ‰
+    [SerializeField] float dg_delay = 3f; //ë“œë¼ì´ë¸Œ íšŒë³µ ì‹œì‘ ì§€ì—°ì‹œê°„
     private Coroutine regenCoroutine = null;
 
-    [Header("¹ø¾Æ¿ô")]
-    public bool isBunOut = false; //¹ø¾Æ¿ôÀÎ°¡?
+    [Header("ë²ˆì•„ì›ƒ")]
+    public bool isBunOut = false; //ë²ˆì•„ì›ƒì¸ê°€?
+
+
+    public float DriveGauge => driveGauge;
+    public float MaxDriveGauge => dg_max;
+    public event Action<float, float> OnDriveGaugeChanged;
 
     private void Awake()
     {
@@ -33,29 +39,31 @@ public class T_DriveGauge : MonoBehaviour
     }
    
 
-    //ÀÏÁ¤ ½Ã°£¸¶´Ù µå¶óÀÌºê °ÔÀÌÁö È¸º¹ 
+    //ì¼ì • ì‹œê°„ë§ˆë‹¤ ë“œë¼ì´ë¸Œ ê²Œì´ì§€ íšŒë³µ 
     IEnumerator RegenDriveGauge()
     {
         yield return new WaitForSeconds(dg_delay);
 
         while (driveGauge < dg_max) 
         {
-            driveGauge += dg_health * Time.deltaTime; //µå¶óÀÌºê °ÔÀÌÁö ÃÊ´ç È¸º¹
-            Debug.Log("µå¶óÀÌºê °ÔÀÌÁö ÃÊ´ç È¸º¹ : "+ driveGauge);
+            driveGauge = Mathf.Min(dg_max, driveGauge + dg_health * Time.deltaTime); //ë“œë¼ì´ë¸Œ ê²Œì´ì§€ ì´ˆë‹¹ íšŒë³µ
+            OnDriveGaugeChanged?.Invoke(driveGauge, dg_max);
+            Debug.Log("ë“œë¼ì´ë¸Œ ê²Œì´ì§€ ì´ˆë‹¹ íšŒë³µ : "+ driveGauge);
             yield return null;
         }
         CheckBurnOutFalse();
         regenCoroutine = null;
     }
 
-    //µå¶óÀÌºê °ÔÀÌÁö °¨¼Ò ÇÔ¼ö
+    //ë“œë¼ì´ë¸Œ ê²Œì´ì§€ ê°ì†Œ í•¨ìˆ˜
     public void DecreaseDriveGauge(float amount)
     {
         driveGauge = Mathf.Clamp(driveGauge - amount,0, dg_max);
-        Debug.Log("µå¶óÀÌºê°ÔÀÌÁö °¨¼Ò : " + driveGauge);
+        OnDriveGaugeChanged?.Invoke(driveGauge, dg_max);
+        Debug.Log("ë“œë¼ì´ë¸Œê²Œì´ì§€ ê°ì†Œ : " + driveGauge);
         CheckBurnOutTrue();
 
-        //--°ÔÀÌÁö°¡ °¨¼ÒÇÒ¶§ Àá±ñ ¸ØÃß°Ô ÇÏ±â À§ÇÔ
+        //--ê²Œì´ì§€ê°€ ê°ì†Œí• ë•Œ ì ê¹ ë©ˆì¶”ê²Œ í•˜ê¸° ìœ„í•¨
         if (regenCoroutine != null) 
         {
             StopCoroutine(regenCoroutine); 
@@ -63,26 +71,27 @@ public class T_DriveGauge : MonoBehaviour
         regenCoroutine = StartCoroutine(RegenDriveGauge()); 
     }
 
-    // ¾à°øÀÌ³ª °­°øÀ» ÀûÁß ½ÃÅ°¸é µå¶óÀÌºê°ÔÀÌÁö È¸º¹ 
+    // ì•½ê³µì´ë‚˜ ê°•ê³µì„ ì ì¤‘ ì‹œí‚¤ë©´ ë“œë¼ì´ë¸Œê²Œì´ì§€ íšŒë³µ 
     public void HealthSomeOfDriveGauge(float amount)
     {
         driveGauge = Mathf.Clamp(driveGauge + amount , 0, dg_max);
+        OnDriveGaugeChanged?.Invoke(driveGauge, dg_max);
         CheckBurnOutFalse();
     }
     private void CheckBurnOutTrue()
     {
-        //¹ø¾Æ¿ô true ÀüÈ¯ (ÁøÀÔ)
+        //ë²ˆì•„ì›ƒ true ì „í™˜ (ì§„ì…)
         if (driveGauge <= 0 && isBunOut == false)
         {
             isBunOut = true;
-            t_Defence.ForceStopDefense();//¹ø¾Æ¿ô ½Ã °­Á¦·Î ¹æ¾î ÇìÁ¦
+            t_Defence.ForceStopDefense();//ë²ˆì•„ì›ƒ ì‹œ ê°•ì œë¡œ ë°©ì–´ í—¤ì œ
         }
     }
     private void CheckBurnOutFalse()
     {
-        if (driveGauge >= dg_max && isBunOut == true) //ÇÑ ¹ø ¹ø¾Æ¿ôÀÌ µÇ°í µå¶óÀÌºê°ÔÀÌÁö°¡ 1000ÀÌ µÆ´Ù¸é ¹ø¾Æ¿ô ÇØÁ¦
+        if (driveGauge >= dg_max && isBunOut == true) //í•œ ë²ˆ ë²ˆì•„ì›ƒì´ ë˜ê³  ë“œë¼ì´ë¸Œê²Œì´ì§€ê°€ 1000ì´ ëë‹¤ë©´ ë²ˆì•„ì›ƒ í•´ì œ
         {
-            isBunOut = false; //¹ø¾Æ¿ô ÇØÁ¦
+            isBunOut = false; //ë²ˆì•„ì›ƒ í•´ì œ
         }
     }
 

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: D_SummonCrow
   m_EditorClassIdentifier: Assembly-CSharp::Boss_PatternSO
   id: 4
-  cooldown: 5
+  cooldown: 15
   baseWeight: 1000
   minDistance: 0
-  maxDistance: 50
+  maxDistance: 20
   preferredDistance: 10
   hpDamage: 0
   postureDamage: 0

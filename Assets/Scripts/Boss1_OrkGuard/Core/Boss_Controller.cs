@@ -27,7 +27,8 @@ public class Boss_Controller : MonoBehaviour
     [SerializeField] private PlayerContext secondPlayer;
 
     [Header("패턴")]
-    [SerializeField] private List<Boss_PatternSO> patterns;
+    [SerializeField] private List<Boss_PatternSO> patterns_R;
+    [SerializeField] private List<Boss_PatternSO> patterns_L;
     [SerializeField] private GameObject crow_obj;
     [SerializeField] private List<Transform> spawnPoints;
 
@@ -38,21 +39,31 @@ public class Boss_Controller : MonoBehaviour
     [Header("그로기")]
     [SerializeField, Min(0f)] private float groggyDuration = 3f;
 
+    [Header("현재 패턴")]
+    public int CurrentPatternId; 
+
+
     public Boss_FSM FSM { get; private set; }
     public Boss_Context Context { get; private set; }
     public Boss_AI AI { get; private set; }
 
+
     public Animator Anim        => anim;
     public Boss_Health Health   => health;
     public Boss_Moter Moter     => moter;
+    public Boss_AttackManager Attack   => attack;
+
 
     private Boss_Health health;
     private Boss_Moter moter;
+    private Boss_AttackManager attack;
+
 
     private void Awake()
     {
-        health      = GetComponent<Boss_Health>();
-        moter       = GetComponent<Boss_Moter>();
+        health  = GetComponent<Boss_Health>();
+        moter   = GetComponent<Boss_Moter>();
+        attack  = GetComponentInChildren<Boss_AttackManager>();
 
         if (anim == null)
         {
@@ -60,7 +71,7 @@ public class Boss_Controller : MonoBehaviour
         }
 
         Context = new Boss_Context(transform);
-        AI      = new Boss_AI(this, Context, patterns, decideInterval, groggyDuration);
+        AI      = new Boss_AI(this, Context, patterns_R,patterns_L, decideInterval, groggyDuration);
         FSM     = new Boss_FSM(this);
     }
 
@@ -89,6 +100,8 @@ public class Boss_Controller : MonoBehaviour
         health.Tick();
         FSM.Tick();
         AI.Tick();
+
+        CurrentPatternId = AI.CurrentPattern?.Id ?? -1;
     }
 
     // 이동과 돌진은 물리 스텝에서만 돈다. Update에서 rb를 밀면 벽 판정이
