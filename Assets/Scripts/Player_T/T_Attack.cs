@@ -11,7 +11,7 @@ public class T_Attack : MonoBehaviour
 
     public float BASE_FPS = 60f;
 
-    private Animator animator;
+    public PlayerTAnimation animation;
     public Rigidbody2D rb = null;
     public PlayerMovement movement = null;
     public T_DriveGauge t_DriveGauge = null;
@@ -43,12 +43,13 @@ public class T_Attack : MonoBehaviour
             { "specialAttack",new T_SpecialAtkState() }
         };
 
-        animator = GetComponentInChildren<Animator>();
+        
         movement = GetComponent<PlayerMovement>();
         t_DriveGauge = GetComponent<T_DriveGauge>();
         jump = GetComponent<T_Jump>();
         rb = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
+        animation = GetComponent<PlayerTAnimation>();
 
         triggerTime /= BASE_FPS;
     }

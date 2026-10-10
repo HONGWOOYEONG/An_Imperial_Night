@@ -827,6 +827,8 @@ GameObject:
   - component: {fileID: 425567011}
   - component: {fileID: 425567012}
   - component: {fileID: 2100000000}
+  - component: {fileID: 2100000002}
+  - component: {fileID: 2100000003}
   m_Layer: 0
   m_Name: Player_T
   m_TagString: RangedDealer
@@ -883,7 +885,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 4
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  m_Sprite: {fileID: 5616798960797241741, guid: 6ccce71cec8b9d842bff9eab8a6f771d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -902,7 +904,7 @@ Transform:
   m_GameObject: {fileID: 425567001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -59.9, y: 2.7, z: 0}
+  m_LocalPosition: {x: -59.9, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -971,8 +973,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 2}
+  m_Offset: {x: -0.091249466, y: 0.87448287}
+  m_Size: {x: 0.81750107, y: 1.9239578}
   m_Direction: 0
 --- !u!114 &425567007
 MonoBehaviour:
@@ -1021,6 +1023,8 @@ MonoBehaviour:
   dashCooldown: 0
   dashDuration: 0.075
   percent: 0
+  jumpSlowRatio: 2
+  defenceSlowRatio: 2
   isSlowMoving: 0
   isMoving: 0
   jumpPower: 6
@@ -1053,11 +1057,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T_Attack
   BASE_FPS: 60
-  isRight: 1
   rb: {fileID: 0}
   movement: {fileID: 0}
   t_DriveGauge: {fileID: 0}
   jump: {fileID: 0}
+  playerController: {fileID: 0}
   createPos: {fileID: 1023323938}
   triggerTime: 65
   triggerTimer: 0
@@ -1066,6 +1070,7 @@ MonoBehaviour:
   h_Obj: {fileID: 1170419706703306647, guid: 3e1dfc1d571f7cc4e8ae69f0e2702c35, type: 3}
   sp_drvieDecrease: 100
   sp_isAttaking: 0
+  activeAttackCount: 0
 --- !u!114 &425567011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1098,6 +1103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHP: 1000
   playerType: 1
+  reviveTime: 2
 --- !u!1 &448892549
 GameObject:
   m_ObjectHideFlags: 0
@@ -2629,7 +2635,7 @@ Transform:
   m_GameObject: {fileID: 1023323937}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.51, y: 0, z: 0}
+  m_LocalPosition: {x: 0.37, y: 0.88, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3446,6 +3452,8 @@ MonoBehaviour:
   dashCooldown: 0
   dashDuration: 0.1
   percent: 0
+  jumpSlowRatio: 2
+  defenceSlowRatio: 2
   isSlowMoving: 0
   isMoving: 0
   jumpPower: 7
@@ -3646,6 +3654,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHP: 1000
   playerType: 0
+  reviveTime: 2
 --- !u!114 &1351544775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3716,6 +3725,11 @@ MonoBehaviour:
     stunTime: 3.3
     comboWaitTime: 1.08
     hitboxIndex: 3
+  lightAtkHitboxes:
+  - {fileID: 2072111889}
+  - {fileID: 1096258923}
+  - {fileID: 606746739}
+  - {fileID: 467024141}
   heavyAtkData:
   - damage: 0
     postureDamage: 0
@@ -3723,20 +3737,11 @@ MonoBehaviour:
     stunTime: 0
     comboWaitTime: 0
     hitboxIndex: 0
-  lightAtkHitboxes:
-  - {fileID: 2072111889}
-  - {fileID: 1096258923}
-  - {fileID: 606746739}
-  - {fileID: 467024141}
   heavyAtkHitboxes:
   - {fileID: 0}
   triggerTime: 65
-  triggerTimer: 0
-  lightAtkComboExpireTime: 2
   comboBufferAfterAttack: 0.5
   attackEndedParam: AttackEnded
-  isAttacking: 0
-  bufferdLightAtk: 0
 --- !u!114 &1351544778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4232,7 +4237,7 @@ Transform:
   m_GameObject: {fileID: 1511753468}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -57.840538, y: 1.7945108, z: 0}
+  m_LocalPosition: {x: -57.87009, y: 0.5792443, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4649,7 +4654,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!114 &2100000001
 MonoBehaviour:
@@ -4661,8 +4666,42 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+--- !u!95 &2100000002
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425567001}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a86c722695cd11c438934ff18a08bc0e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2100000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425567001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc4f4a9d2e5f56b42aa0d3f4624a1bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTAnimation
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

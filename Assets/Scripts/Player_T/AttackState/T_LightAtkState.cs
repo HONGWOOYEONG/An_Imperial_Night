@@ -48,6 +48,12 @@ public class T_LightAtkState : I_TAttackState
         inputCount = 0;
         currentStep = AttackStep.First;
 
+        // 콤보 파라미터 초기화
+        t_Attack.animation.ResetLightAttack();
+
+        // 첫 번째 공격 애니메이션 실행
+        t_Attack.animation.PlayLightAttack();
+
         t_Attack.activeAttackCount++;
         t_Attack.StartCoroutine(FirstAttack(t_Attack));
     }
@@ -87,12 +93,14 @@ public class T_LightAtkState : I_TAttackState
         //--예약한 공격횟수가 2보다 크면 다음콤보 공격이 나간다--
         if (inputCount >= 2)
         {
-            inputCount = 0; 
+            inputCount = 0;
+            t_Attack.animation.PlaySecondThirdAttack();
             yield return t_Attack.StartCoroutine(SecondThirdAttack(t_Attack));
         }
         //--콤보 종료--
         else
         {
+            t_Attack.animation.animator.SetBool("isSecondThirdAtk", false);
             EndCombo(t_Attack);
         }
     }
@@ -159,11 +167,13 @@ public class T_LightAtkState : I_TAttackState
         if (inputCount >= 1)
         {
             inputCount = 0;
+            t_Attack.animation.PlayFinalAttack();
             yield return t_Attack.StartCoroutine(FinalAttack(t_Attack));
         }
         //--콤보 종료--
         else
         {
+            t_Attack.animation.animator.SetBool("isFinalAtk", false);
             EndCombo(t_Attack);
         }
     }
@@ -220,6 +230,7 @@ public class T_LightAtkState : I_TAttackState
         nearTarget = null;
 
         t_Attack.FinishAttack();
+        t_Attack.animation.ResetLightAttack();
     }
 
 
@@ -231,6 +242,9 @@ public class T_LightAtkState : I_TAttackState
         {
             if (t_Attack != null)
             {
+                if (t_Attack.playerController != null && !t_Attack.playerController.TryStartAction(PlayerState.Attacking))
+                    return;
+
                 StartCombo(t_Attack);
             }
             return;
