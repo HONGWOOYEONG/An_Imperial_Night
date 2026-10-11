@@ -19,7 +19,8 @@ public class Boss_FSM
     public Boss_IdleState Idle { get; private set; }
     public Boss_MoveState Move { get; private set; }
     public Boss_DeadState Dead { get; private set; }
-    public Boss_GroggyState Groggy { get; private set; }
+    public Boss_GrogyState Grogy { get; private set; }
+    public Boss_GrogyKillState GrogyKill { get; private set; }
     public Boss_ChangeHandState ChangeHand { get; private set; }
 
     public Boss_PatternState Pattern { get; private set; }
@@ -29,7 +30,8 @@ public class Boss_FSM
         Idle = new Boss_IdleState(boss, "idle");
         Move = new Boss_MoveState(boss, "move");
         Dead = new Boss_DeadState(boss, "dead");
-        Groggy = new Boss_GroggyState(boss, "grogy");
+        Grogy = new Boss_GrogyState(boss, "grogy");
+        GrogyKill = new Boss_GrogyKillState(boss, "grogyKill");
         ChangeHand = new Boss_ChangeHandState(boss, "changeHand");
 
         Pattern = new Boss_PatternState(boss,"onPattern");

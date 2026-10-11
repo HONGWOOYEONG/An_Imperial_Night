@@ -772,8 +772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss_Health
   maxHp: 1000
-  maxLifePoint: 1
-  reviveHpRatio: 1
+  maxLifePoint: 0
   maxBalance: 100
   balanceRegenDelay: 3
   balanceRegenPerSecond: 20

@@ -37,7 +37,9 @@ public class Boss_AnimTrigger : MonoBehaviour
 
     public void AE_TeleportToTarget()
     {
-        Vector2 tpPoint = boss.Context.TargetPosition + (Vector2.right * 5f);
+        int back = -boss.Context.CurrentTarget.FacingDirection;
+        Vector2 targetPos = boss.Context.TargetPosition;
+        Vector2 tpPoint = targetPos + (Vector2.right * 3f * back);
         boss.Moter.Teleport(tpPoint);
     }
 
@@ -46,7 +48,10 @@ public class Boss_AnimTrigger : MonoBehaviour
         boss.Moter.TeleportToGreenRoom();
     }
 
-    public void AE_Pattern_End() => boss.AI.Pattern_End();
+    public void AE_Pattern_End()
+    {
+        boss.AI.Pattern_End();
+    } 
 
 // D_까마귀 소환
     public void AE_SummonCrow()
