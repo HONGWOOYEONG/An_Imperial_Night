@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,15 +11,14 @@ public class H_Abillity : MonoBehaviour
 
     [Header("PositionSwap")]
     [SerializeField] private float avillityCooldown = 2f;
-    [SerializeField] private int avillityStartupTime = 8;
     [SerializeField] private int avillityParryingTime = 10;
     [SerializeField] private int avillityDefenceTime = 20;
+
+    private const float BaseFps = 60f;
 
     private float nextAvillityTime;
 
     [SerializeField] private Rigidbody2D target;
-
-    public const float BASE_FPS = 60;
 
     private bool isAbilityInvincible = false;
     private bool isUsingAbility = false;
@@ -27,10 +26,7 @@ public class H_Abillity : MonoBehaviour
     public bool IsAbilityInvincible => isAbilityInvincible;
     public bool IsUsingAbility => isUsingAbility;
 
-    private float FrameToSeconds(int frame)
-    {
-        return frame / BASE_FPS;
-    }
+    private static float FramesToSeconds(int frames) => frames / BaseFps;
 
     private void Start()
     {
@@ -54,60 +50,80 @@ public class H_Abillity : MonoBehaviour
         if (Time.time < nextAvillityTime) return;
         if (isUsingAbility) return;
         if (target == null) return;
-        if (target.GetComponent<PlayerMovement>() == null) return;
         if (playerController != null && !playerController.TryStartAction(PlayerState.Ability)) return;
 
-        StartCoroutine(StartAvillity());
+        isUsingAbility = true;
+        isAbilityInvincible = true;
+        nextAvillityTime = Time.time + avillityCooldown;
     }
 
-    IEnumerator StartAvillity()
+    // pulse ì• ë‹ˆë©”ì´ì…˜ì˜ ë§ˆì§€ë§‰ í”„ë ˆì„ì—ì„œ í˜¸ì¶œí•©ë‹ˆë‹¤.
+    public void CompleteAbilitySwap()
     {
-        isUsingAbility = true;
-        nextAvillityTime = Time.time + avillityCooldown;
+        if (!OwnsAbility()) return;
 
-        // À§Ä¡ ±³È¯ Àü ½ÃÀü ±¸°£
-        // ÀÌ ½Ã°£ µ¿¾È¿¡´Â °ø°İÀ» ¿ÏÀüÈ÷ ¹«½Ã
-        isAbilityInvincible = true;
+        SwapPosition();
+        isAbilityInvincible = false;
+        StartCoroutine(PostSwapDefence());
+    }
 
-        yield return new WaitForSeconds(
-            FrameToSeconds(avillityStartupTime)
-        );
+    private void SwapPosition()
+    {
 
         PlayerMovement targetMovement = target.GetComponent<PlayerMovement>();
         Vector2 myPosition = rb.position;
         Vector2 targetPosition = target.position;
 
-        // À§Ä¡ ±³È¯µµ °¢ ÇÃ·¹ÀÌ¾îÀÇ ÀÌµ¿ ÄÄÆ÷³ÍÆ®¸¦ ÅëÇØ Rigidbody¿¡ ¹İ¿µÇÑ´Ù.
+        // í”Œë ˆì´ì–´ë¿ ì•„ë‹ˆë¼ í…ŒìŠ¤íŠ¸ìš© Rigidbody2D íƒ€ê¹ƒê³¼ë„ ìœ„ì¹˜ë¥¼ êµí™˜í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
         playerMovement.Teleport(targetPosition);
-        targetMovement.Teleport(myPosition);
-        // ¼ø°£ÀÌµ¿ Á÷ÈÄ ÄÁÅØ½ºÆ®ÀÇ À§Ä¡ Á¤º¸µµ »õ À§Ä¡·Î ¸ÂÃá´Ù.
+        if (targetMovement != null)
+            targetMovement.Teleport(myPosition);
+        else
+            target.position = myPosition;
+        // ìˆœê°„ì´ë™ ì§í›„ ì»¨í…ìŠ¤íŠ¸ì˜ ìœ„ì¹˜ ì •ë³´ë„ ìƒˆ ìœ„ì¹˜ë¡œ ë§ì¶˜ë‹¤.
         GetComponent<PlayerContext>()?.setTransPosition();
         target.GetComponent<PlayerContext>()?.setTransPosition();
 
         float tempRotation = playerMovement.Rotation;
 
-        playerMovement.SetRotation(targetMovement.Rotation);
-        targetMovement.SetRotation(tempRotation);
+        playerMovement.SetRotation(targetMovement != null ? targetMovement.Rotation : target.rotation);
+        if (targetMovement != null)
+            targetMovement.SetRotation(tempRotation);
+        else
+            target.rotation = tempRotation;
 
         playerMovement.SetVelocity(Vector2.zero);
-        targetMovement.SetVelocity(Vector2.zero);
+        if (targetMovement != null)
+            targetMovement.SetVelocity(Vector2.zero);
+        else
+            target.linearVelocity = Vector2.zero;
 
-        isAbilityInvincible = false;
+    }
 
-        hDef.StartAbilityParry();
+    private IEnumerator PostSwapDefence()
+    {
+        hDef?.StartAbilityParry();
 
-        yield return new WaitForSeconds(FrameToSeconds(avillityParryingTime));
+        yield return new WaitForSeconds(FramesToSeconds(avillityParryingTime));
 
-        hDef.EndAbilityParry();
+        if (!OwnsAbility()) yield break;
+        hDef?.EndAbilityParry();
+        hDef?.StartAbilityDefence();
 
-        hDef.StartAbilityDefence();
+        yield return new WaitForSeconds(FramesToSeconds(avillityDefenceTime));
 
-        yield return new WaitForSeconds(FrameToSeconds(avillityDefenceTime));
+        if (!OwnsAbility()) yield break;
 
-        hDef.EndAbilityDefence();
-
+        hDef?.EndAbilityParry();
+        hDef?.EndAbilityDefence();
         isUsingAbility = false;
         playerController?.EndAction(PlayerState.Ability);
+    }
+
+    private bool OwnsAbility()
+    {
+        return isUsingAbility && playerController != null &&
+            playerController.FSM.ActionState == PlayerState.Ability;
     }
 
     private void OnDisable()

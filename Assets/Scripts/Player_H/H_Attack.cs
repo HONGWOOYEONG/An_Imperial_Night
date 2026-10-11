@@ -23,7 +23,7 @@ public class H_Attack : MonoBehaviour
     private PlayerMovement movement;
     private PlayerController controller;
     private Animator animator;
-    private int attackEndedHash;
+    private int attackEnded;
     private bool isAttacking;
     private bool bufferedLightAttack;
     private bool inComboGraceWindow;
@@ -43,7 +43,7 @@ public class H_Attack : MonoBehaviour
         controller = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
-        attackEndedHash = Animator.StringToHash(attackEndedParam);
+        attackEnded = Animator.StringToHash(attackEndedParam);
         ConfigureHitboxes(lightAtkHitboxes);
         CloseHitboxes();
     }
@@ -94,11 +94,18 @@ public class H_Attack : MonoBehaviour
             return false;
         }
         if (controller == null || !controller.TryStartAction(PlayerState.Attacking)) return false;
+
+        if (movement != null)
+        {
+            movement.AddMovementLock(this);
+            movement.SetVelocity(new Vector2(0f, movement.Velocity.y));
+        }
+
         CloseHitboxes();
         isAttacking = true;
         bufferedLightAttack = false;
         inComboGraceWindow = false;
-        animator.SetBool(attackEndedHash, false);
+        animator.SetBool(attackEnded, false);
         return true;
     }
 
@@ -108,7 +115,7 @@ public class H_Attack : MonoBehaviour
         if (!TryBeginAttack(GetData(lightAtkData, index))) return;
         currentAttackIndex = index;
         animator.SetInteger("ComboIndex", index);
-        animator.SetTrigger(combo ? "Combo" : "LightAttack");
+        animator.SetTrigger(combo ? "Combo" : "LightAtk");
     }
 
     public void EnableLightHitbox()
@@ -146,14 +153,15 @@ public class H_Attack : MonoBehaviour
         isAttacking = false;
         bufferedLightAttack = false;
         inComboGraceWindow = false;
-        if (animator != null) animator.SetBool(attackEndedHash, true);
+        movement?.ReleaseMovementLock(this);
+        if (animator != null) animator.SetBool(attackEnded, true);
         controller?.EndAction(PlayerState.Attacking);
     }
     public void CancelAttack()
     {
         if (animator != null)
         {
-            animator.ResetTrigger("LightAttack");
+            animator.ResetTrigger("LightAtk");
             animator.ResetTrigger("Combo");
         }
         FinishSequence();
