@@ -14,7 +14,7 @@ public class Boss_IdleState : Boss_Statebase
         if (timer > 0.2f && 
             boss.Context.DistanceToTarget > boss.Moter.StopDistance)
         {
-            boss.Moter.HandleFlip();
+            boss.Moter.FlipToTarget();
             boss.FSM.ChangeState(boss.FSM.Move);
         }
     }

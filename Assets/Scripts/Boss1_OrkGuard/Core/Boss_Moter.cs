@@ -122,15 +122,17 @@ public class Boss_Moter : MonoBehaviour
 
         Teleport(greenRoomPoint.position);
     }
+    // rb.position만 바꾸면 transform은 다음 물리 스텝까지 옛 위치에 남는다.transform까지 바꾼다.
     public void Teleport(Vector3 point)
     {
         rb.position = point;
+        transform.position = point;
     }
     [ContextMenu("텔포")]
     public void Test_Teleport()=> Teleport(Vector3.zero);
 
 
-    public void HandleFlip()
+    public void FlipToTarget()
     {
         if( (boss.Context.BossPosition.x - boss.Context.TargetPosition.x) * facing > 0 )
             Flip();

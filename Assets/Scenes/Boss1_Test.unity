@@ -358,7 +358,7 @@ Transform:
   m_GameObject: {fileID: 167685264}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.9, y: -8.49, z: 0}
+  m_LocalPosition: {x: -3.13, y: -7.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -791,7 +791,7 @@ Transform:
   m_GameObject: {fileID: 997355080}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.69, y: -6.18, z: 0}
+  m_LocalPosition: {x: -28.95, y: -7.49, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1610,10 +1610,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4433219128866144595, guid: 5740824d2b52f15439e4e15ff667f58a, type: 3}
-      propertyPath: tpEffectPrefab
-      value: 
-      objectReference: {fileID: -2253911629886400664, guid: dfd62e76e5bf1ac4abb6ff8f42c2673c, type: 3}
     - target: {fileID: 4877528306554813435, guid: 5740824d2b52f15439e4e15ff667f58a, type: 3}
       propertyPath: greenRoomPoint
       value: 
