@@ -122,9 +122,12 @@ public class Boss_Moter : MonoBehaviour
 
         Teleport(greenRoomPoint.position);
     }
+    // rb.position만 바꾸면 transform은 다음 물리 스텝까지 옛 위치에 남는다.
+    // 같은 프레임에 FlipToTarget이 Context.BossPosition(transform)을 읽으면 텔포 전 위치 기준으로 판단해 등을 돌린다.
     public void Teleport(Vector3 point)
     {
         rb.position = point;
+        transform.position = point;
     }
     [ContextMenu("텔포")]
     public void Test_Teleport()=> Teleport(Vector3.zero);
