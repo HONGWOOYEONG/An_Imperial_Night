@@ -7,10 +7,10 @@ public class T_Jump : MonoBehaviour
     private PlayerMovement movement;
     private PlayerMovement playerMovement;
     private PlayerController playerController;
+    private PlayerTAnimation animation;
     public bool isJumping = false;
-    [Header("ChargeJump")]
 
-    private float currentTime = 0f;
+    [Header("ChargeJump")]
     private float nextTime = 0.25f;
     [SerializeField]private float maxTime = 1.25f;
     [SerializeField]private float currentCharge = 0f;
@@ -18,7 +18,6 @@ public class T_Jump : MonoBehaviour
     private float addCharge = 50f;
     private float startTime = 0f;
     private float duration = 0f;
-    private float normalGravity;
     [SerializeField]private float fallGravity = 7f;
 
     [Header("Jump")]
@@ -32,7 +31,7 @@ public class T_Jump : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         attack = GetComponent<T_Attack>();
         movement = GetComponent<PlayerMovement>();
-        //normalGravity = rb.gravityScale;
+        animation = GetComponent<PlayerTAnimation>();
     }
 
     private void Update()
@@ -89,7 +88,7 @@ public class T_Jump : MonoBehaviour
           //  Debug.Log("현재 시간 - 시작 시간 = " + duration);
             if(duration < 0.5f) //기본 점프
             {
-                Debug.Log("기본 점프");
+                Debug.Log("기본 점프"); animation.PlayNormalJump();
                 BasicJump();
             }
             else //차지 점프
@@ -109,14 +108,18 @@ public class T_Jump : MonoBehaviour
 
     private void BasicJump()
     {
-        //기본 애니메이션
         isJumping = true;
+        //--일반 점프 애니메이션 실행--
+        animation.PlayNormalJump();
+        //--점프 실행--
         playerMovement.Jump(jumpPower);
     }
 
     private void ChargingJump()
     {
-      
+       //--차지 점프 애니메이션 실행--
+       animation.PlayChargeJump();
+       //--차지점프 실행--
        while(duration > 0f)
         {
             duration -= nextTime;

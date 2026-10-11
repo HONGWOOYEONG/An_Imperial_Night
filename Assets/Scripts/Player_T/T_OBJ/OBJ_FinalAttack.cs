@@ -3,7 +3,6 @@ using UnityEngine.EventSystems;
 
 public class OBJ_FinalAttack : MonoBehaviour
 {
-    Vector2 targetPos;
     private float speed = 32f;
     private float healthDG = 15f;
     private T_Attack ownerAttack;
@@ -33,7 +32,7 @@ public class OBJ_FinalAttack : MonoBehaviour
     {
         if (finalDamageInfo.damageDir == Vector2.zero)
             return;
-        Debug.Log("FinalSpeed :" + speed);
+        //Debug.Log("FinalSpeed :" + speed);
         transform.position += (Vector3)(finalDamageInfo.damageDir * speed * Time.deltaTime);
 
     }

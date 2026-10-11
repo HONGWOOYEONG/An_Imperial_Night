@@ -23,7 +23,7 @@ public class OBJ_LightAttack : MonoBehaviour
         if (lightDamageInfo.damageDir == Vector2.zero)
             return;
 
-        Debug.Log("LightSpeed :" + speed);
+        //Debug.Log("LightSpeed :" + speed);
         transform.position += (Vector3)(lightDamageInfo.damageDir * speed * Time.deltaTime);
        
     }
