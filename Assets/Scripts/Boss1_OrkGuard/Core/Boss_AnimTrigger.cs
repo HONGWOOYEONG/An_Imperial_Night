@@ -1,4 +1,7 @@
 /// 작성자 : 유희일
+using System.Collections;
+using TMPro.Examples;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -10,6 +13,9 @@ public class Boss_AnimTrigger : MonoBehaviour
 {
     [SerializeField] private Boss_Controller boss;
     [SerializeField] private Boss_AttackManager attackManager;
+    [SerializeField] private GameObject tpEffectPrefab;
+    private GameObject[] tpObjects = new GameObject[2]; // 재사용할 이펙트
+
     private Coroutine Summon_Crow;
 
     void Start()
@@ -18,6 +24,8 @@ public class Boss_AnimTrigger : MonoBehaviour
             Debug.LogWarning($"{name} : boss가 비어 있다.", this);
         if(attackManager == null)
             attackManager = boss.Attack;
+        
+        Create_TeleportEffect();
     }
     public void AE_AttackOn(int index)
     {
@@ -41,10 +49,14 @@ public class Boss_AnimTrigger : MonoBehaviour
         Vector2 targetPos = boss.Context.TargetPosition;
         Vector2 tpPoint = targetPos + (Vector2.right * 3f * back);
         boss.Moter.Teleport(tpPoint);
+        //tp후,효과
+        Show_TeleportEffect(tpPoint);
     }
 
     public void AE_TeleportToGreenRoom()
     {
+        //tp전,효과
+        Show_TeleportEffect(transform.position);
         boss.Moter.TeleportToGreenRoom();
     }
 
@@ -71,5 +83,46 @@ public class Boss_AnimTrigger : MonoBehaviour
     public void AE_Vfx(string key)
     {
         // TODO : Boss_vfx 추가 시 boss.Vfx.Play(key, transform.position) 으로 연결한다.
+    }
+
+    private void Create_TeleportEffect()
+    {
+        if(tpEffectPrefab == null) return;
+
+        for (int i = 0; i < tpObjects.Length; i++)
+        {
+            tpObjects[i] = Instantiate(tpEffectPrefab, transform.position, quaternion.identity);
+            tpObjects[i].SetActive(false);
+        }
+        
+    }
+
+
+    Coroutine tpEffectCoroutine=null;
+    
+    private void Show_TeleportEffect(Vector3 location)
+    {
+        if(tpObjects == null) return;
+
+        Debug.Log($"tpEffect pos : {location}");
+        for (int i = 0; i < tpObjects.Length; i++)
+        {
+            GameObject tp = tpObjects[i];
+            if (tp.activeSelf==false)
+            {
+                tp.transform.position = location;
+                StartCoroutine(StartEffect(tp));
+                break;
+            }
+        }
+    }
+
+    private IEnumerator StartEffect(GameObject effect)
+    {
+
+        effect.SetActive(true);
+        yield return new WaitForSeconds(.3f);
+        effect.SetActive(false);
+        yield return null;
     }
 }
