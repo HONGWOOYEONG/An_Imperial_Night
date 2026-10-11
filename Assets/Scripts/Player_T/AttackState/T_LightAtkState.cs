@@ -34,6 +34,7 @@ public class T_LightAtkState : I_TAttackState
     public int inputCount = 0;
     //isAttaking을 사용해서 콤보를 실행할지 처음부터 실행될지 여부를 판단
     private bool isAttacking = false; //현재 콤보 진행 여부
+    public bool IsAttacking => isAttacking;
 
     private float knockbackPower = 2f;
     public void Enter(T_Attack t_Attack)
@@ -52,10 +53,10 @@ public class T_LightAtkState : I_TAttackState
         currentStep = AttackStep.First;
 
         // 콤보 파라미터 초기화
-        t_Attack.animation.ResetLightAttack();
+        t_Attack.playerTAnimation.ResetLightAttack();
 
         // 첫 번째 공격 애니메이션 실행
-        t_Attack.animation.PlayLightAttack();
+        t_Attack.playerTAnimation.PlayLightAttack();
 
         t_Attack.activeAttackCount++;
     }
@@ -100,7 +101,7 @@ public class T_LightAtkState : I_TAttackState
 
             // 2, 3타 단계로 변경
             currentStep = AttackStep.SecondThird;
-            t_Attack.animation.PlaySecondThirdAttack();
+            t_Attack.playerTAnimation.PlaySecondThirdAttack();
         }
         else
         {
@@ -177,7 +178,7 @@ public class T_LightAtkState : I_TAttackState
             inputCount = 0;
             currentStep = AttackStep.Final;
 
-            t_Attack.animation.PlayFinalAttack();
+            t_Attack.playerTAnimation.PlayFinalAttack();
         }
         //--콤보 종료--
         else
@@ -242,10 +243,12 @@ public class T_LightAtkState : I_TAttackState
         }
         t_Attack.FinishAttack();
 
+
         //--애니메이션 초기화--
-        t_Attack.animation.ResetLightAttack();
+        t_Attack.playerTAnimation.ResetLightAttack();
+        t_Attack.playerTAnimation.EndLightAttackAnimation();//임시
         // 콤보가 종료됐으므로 Exit 허용
-        t_Attack.animation.EndLightAttackAnimation();
+        t_Attack.playerTAnimation.EndLightAttackAnimation();     
     }
 
     //--입력을 받아 다음 콤보로 이어갈지 결정--
@@ -351,4 +354,14 @@ public class T_LightAtkState : I_TAttackState
     public void Update(T_Attack t_Attack)
     {
     }
+
+    //--1타 공격 애니메이션 종료--
+    public void CompleteFirstAttack(T_Attack t_Attack)
+    {
+        if (!isAttacking || currentStep != AttackStep.First)
+            return;
+        EndCombo(t_Attack);
+    }
+
+
 }

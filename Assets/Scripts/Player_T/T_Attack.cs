@@ -12,7 +12,7 @@ public class T_Attack : MonoBehaviour
 
     public float BASE_FPS = 60f;
 
-    public PlayerTAnimation animation;
+    public PlayerTAnimation playerTAnimation;
     public Rigidbody2D rb = null;
     public PlayerMovement movement = null;
     public T_DriveGauge t_DriveGauge = null;
@@ -51,7 +51,7 @@ public class T_Attack : MonoBehaviour
         jump = GetComponent<T_Jump>();
         rb = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
-        animation = GetComponent<PlayerTAnimation>();
+        playerTAnimation = GetComponent<PlayerTAnimation>();
 
         triggerTime /= BASE_FPS;
     }
@@ -94,27 +94,32 @@ public class T_Attack : MonoBehaviour
             //--입력 시간에 따라서 약공, 강공 상태 변환--
             if (triggerTimer <= triggerTime)
             {
-                //--상태를 바꾸지 않고 입력만 전달--
-                if (currentState == states["lightAttack"])
-                {
-                    //--형 변환 T_LightAtkState타입으로 변환을 시도해서 성공하면 해당 객체를 넣고 실패하면 null을 넣음--
-                    T_LightAtkState lightState = states["lightAttack"] as T_LightAtkState;
+                ////--상태를 바꾸지 않고 입력만 전달--
+                //if (currentState == states["lightAttack"])
+                //{
+                //    //--형 변환 T_LightAtkState타입으로 변환을 시도해서 성공하면 해당 객체를 넣고 실패하면 null을 넣음--
+                //    T_LightAtkState lightState = states["lightAttack"] as T_LightAtkState;
 
-                    lightState?.AddInput(this); //입력 전달
-                }
-                else
+                //    lightState?.AddInput(this); //입력 전달
+                //}
+                
                 {
+                    T_LightAtkState lightState = states["lightAttack"] as T_LightAtkState;//임시
+                                                                                         
+                    if (lightState != null && lightState.IsAttacking) return; // 현재 1타 공격 중이라면 추가 공격 입력 무시 ..임시
+
                     if (playerController != null && !playerController.TryStartAction(PlayerState.Attacking)) return;
+
 
                     ChangteState(states["lightAttack"]); //짧게 누르면 약공
                 }
             }
-            else
-            {
-                if (playerController != null && !playerController.TryStartAction(PlayerState.Attacking)) return;
+            //else
+            //{
+            //    if (playerController != null && !playerController.TryStartAction(PlayerState.Attacking)) return;
 
-                ChangteState(states["heavyAttack"]);//길게누르면 강공
-            }
+            //    ChangteState(states["heavyAttack"]);//길게누르면 강공
+            //}
         }
     }
 
@@ -135,7 +140,6 @@ public class T_Attack : MonoBehaviour
     {
         if (currentState != null)
         {
-            rb.gravityScale = 0f;
             currentState.Exit(this);
         }
         currentState = state;
@@ -203,6 +207,14 @@ public class T_Attack : MonoBehaviour
         Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
         Gizmos.DrawWireSphere(transform.position, 20f);
     }
+    public void Event_EndLightAttack() //임시
+    { 
+
+        if (currentState is T_LightAtkState lightState)
+        {
+            lightState.CompleteFirstAttack(this);
+        }
+    }
 
     //--1타 애니메이션 이벤트--
     public void Event_FirstAttack()
@@ -216,17 +228,9 @@ public class T_Attack : MonoBehaviour
     //--2타 애니메이션 이벤트--
     public void Event_SecondAttack()
     {
-        Debug.Log("2타 애니메이션 이벤트 호출!");
-
         if (currentState is T_LightAtkState lightState)
         {
-            Debug.Log("2타 상태 확인 성공!");
-
             lightState.SecondAttack(this);
-        }
-        else
-        {
-            Debug.LogWarning("현재 상태가 약공 상태가 아님!");
         }
     }
 
@@ -253,10 +257,6 @@ public class T_Attack : MonoBehaviour
       
         if (currentState is T_LightAtkState lightState)
         {
-            Debug.Log(
-        $"[콤보 판정] 시간: {Time.time:F3}, " +
-        $"inputCount: {lightState.inputCount}"
-    );
             lightState.CheckFirstCombo(this);
         }
     }

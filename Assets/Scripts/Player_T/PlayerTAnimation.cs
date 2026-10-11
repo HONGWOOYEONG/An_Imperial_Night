@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerTAnimation : MonoBehaviour
 {
-    public Animator animator;
+    [HideInInspector]public Animator animator;
     private PlayerController controller;
     private PlayerMovement movement;
 
@@ -91,6 +91,7 @@ public class PlayerTAnimation : MonoBehaviour
 
             case PlayerState.Move:
                 // 이동 애니메이션 실행
+
                 lastMoveTime = Time.time;
                 animator.SetBool("isRun", true);
                 break;
@@ -129,6 +130,10 @@ public class PlayerTAnimation : MonoBehaviour
                 break;
         }
     }
+
+  
+
+    #region 점프 애니메이션
     // 일반 점프 애니메이션
     public void PlayNormalJump()
     {
@@ -142,6 +147,7 @@ public class PlayerTAnimation : MonoBehaviour
         if (isDead) return;
         animator.SetTrigger("ChargeJump");
     }
+    #endregion
     #region  약 공격 애니메이션
     //--1타--
     public void PlayLightAttack()
@@ -188,5 +194,15 @@ public class PlayerTAnimation : MonoBehaviour
         animator.SetBool("isRun", false);
         animator.SetBool("isDead", true);
     }
+    public void EndLightAttack() //임시
+    {
+        // 공격 종료
+        animator.SetBool("isComboEnd", true);
 
+        // 이동 입력이 없다면 Run 비활성화
+        if (!movement.HasMoveInput)
+        {
+            animator.SetBool("isRun", false);
+        }
+    }
 }
