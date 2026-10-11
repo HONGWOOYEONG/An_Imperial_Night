@@ -6,6 +6,7 @@ public class AugmentManager : MonoBehaviour
 {
     public static AugmentManager Instance { get; private set; }
     [SerializeField] private GameObject augmentPanel;
+    [SerializeField] private GameObject playerHud;
 
     private List<Dictionary<string, object>> data;
     float remainingN;
@@ -59,6 +60,8 @@ public class AugmentManager : MonoBehaviour
         }
 
         augmentPanel.SetActive(true);
+        playerHud.SetActive(false);
+
     }
     public void ApplyAugment(Dictionary<string, object> augmentData)
     {
@@ -66,17 +69,10 @@ public class AugmentManager : MonoBehaviour
 
         // 선택 완료 후 증강체 선택창 숨김
         augmentPanel.SetActive(false);
+        playerHud.SetActive(true);
 
         //남아있으면 반복
         ShowNextAugment();
     }
-
-    public void OnCrouch(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            Debug.Log("앉기 입력");
-            RandomAugment();
-        }
-    }
+    
 }
