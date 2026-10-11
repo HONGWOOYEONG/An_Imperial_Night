@@ -16,6 +16,8 @@ public class Crow : MonoBehaviour
     [SerializeField] private Transform centerPoint;
     [SerializeField] private float idleTime = 3f;
 
+
+    private Animator anim;
     private float timer = 0;
 
     // public Transform testTarget;
@@ -32,6 +34,7 @@ public class Crow : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
     void Update()
     {
@@ -67,11 +70,15 @@ public class Crow : MonoBehaviour
 
     void ChaseMove_Tick()
     {
+        if (anim!=null && anim.GetBool("dive")==false) 
+            anim.SetBool("dive",true);
+
         chaseTime += Time.deltaTime;
         moveSpeed = Mathf.Lerp(startSpeed, finalSpeed, speedCurve.Evaluate(chaseTime * accelPower));
         rb.linearVelocity = targetDir * moveSpeed;
-    
     }
+    
+
     private float infTime = 0f;
     private float infSpeed = 2f;
     private Vector2 infSize = new (2,1);
