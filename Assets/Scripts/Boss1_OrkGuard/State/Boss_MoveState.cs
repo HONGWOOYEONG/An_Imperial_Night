@@ -7,7 +7,7 @@ public class Boss_MoveState : Boss_Statebase
     public override void Enter()
     {
         base.Enter();
-        boss.Moter.HandleFlip();
+        boss.Moter.FlipToTarget();
     }
 
     // 바라보는 방향으로만 걷는다. 멈추는 것은 Boss_Statebase의 기본 FixedTick이 맡으므로

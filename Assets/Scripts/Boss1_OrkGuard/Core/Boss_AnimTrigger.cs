@@ -49,6 +49,7 @@ public class Boss_AnimTrigger : MonoBehaviour
         Vector2 targetPos = boss.Context.TargetPosition;
         Vector2 tpPoint = targetPos + (Vector2.right * 3f * back);
         boss.Moter.Teleport(tpPoint);
+        boss.Moter.FlipToTarget();
         //tp후,효과
         Show_TeleportEffect(tpPoint);
     }

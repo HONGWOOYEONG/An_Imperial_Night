@@ -132,6 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boss_AnimTrigger
   boss: {fileID: 3343154398355608718}
   attackManager: {fileID: 4403099271273409077}
+  tpEffectPrefab: {fileID: -2253911629886400664, guid: dfd62e76e5bf1ac4abb6ff8f42c2673c, type: 3}
 --- !u!1 &2360415337832631223
 GameObject:
   m_ObjectHideFlags: 0
@@ -752,7 +753,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9c82d0b80dd0f514ebf9b2a9d598c9f9, type: 2}
   - {fileID: 11400000, guid: 29456f121cb44ae4ea3e4f6153e29824, type: 2}
   - {fileID: 11400000, guid: b561f748897ce6d4e9db03337b847677, type: 2}
-  crow_obj: {fileID: 9104101907752902516, guid: 68008af25c9d7c942b5b21630db8a278, type: 3}
+  crow_obj: {fileID: 9104101907752902516, guid: 60a25e44cb84aaa44b876514466abfe1, type: 3}
   spawnPoints:
   - {fileID: 9004861421503174496}
   - {fileID: 7925241940580838534}

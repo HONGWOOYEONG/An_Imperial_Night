@@ -130,7 +130,7 @@ public class Boss_Moter : MonoBehaviour
     public void Test_Teleport()=> Teleport(Vector3.zero);
 
 
-    public void HandleFlip()
+    public void FlipToTarget()
     {
         if( (boss.Context.BossPosition.x - boss.Context.TargetPosition.x) * facing > 0 )
             Flip();

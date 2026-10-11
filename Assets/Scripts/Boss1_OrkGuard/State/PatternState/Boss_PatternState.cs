@@ -39,7 +39,7 @@ public class Boss_PatternState : Boss_Statebase
         }
         
         base.Enter();
-        boss.Moter.HandleFlip();
+        boss.Moter.FlipToTarget();
         boss.AI.Pattern_Start();
     }
     // 각 패턴의 종료는 애니메이션 이벤트로 받는다. changeState
