@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditorInternal.VersionControl.ListControl;
-
 
 public class T_Attack : MonoBehaviour
 {

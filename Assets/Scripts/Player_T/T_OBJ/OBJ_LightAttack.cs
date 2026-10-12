@@ -1,4 +1,3 @@
-using UnityEditor.U2D.Sprites;
 using UnityEngine;
 
 public class OBJ_LightAttack : MonoBehaviour
@@ -42,7 +41,10 @@ public class OBJ_LightAttack : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
+            // * 피격 컴포넌트가 자식 Collider와 같은 오브젝트에 없을 때 부모까지 확인합니다.
             IDamageReceiver receiver = collision.GetComponent<IDamageReceiver>();
+            if (receiver == null)
+                receiver = collision.GetComponentInParent<IDamageReceiver>();
 
             if (receiver != null)
             {

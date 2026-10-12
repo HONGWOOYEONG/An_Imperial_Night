@@ -20,7 +20,7 @@ MonoBehaviour:
   preferredDistance: 18
   hpDamage: 10
   postureDamage: 10
-  driveDamage: 0
-  knockbackPower: 0
-  stunTime: 0
+  driveDamage: 10
+  knockbackPower: 3
+  stunTime: 0.1
   damageType: 0

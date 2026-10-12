@@ -16,7 +16,6 @@ public class H_Posture : MonoBehaviour
     [Header("MeleeORIGINAL")]
     [SerializeField] private float maxPosture = 1000f;
     [SerializeField] private float currentPosture = 0;
-    [SerializeField] private int postureGroggy;
     [SerializeField] private int postureRegenTime = 50;
     [SerializeField] private float postureRegenAmount = 100;
     private float postureRegenPercent;
@@ -81,7 +80,8 @@ public class H_Posture : MonoBehaviour
                 StopCoroutine(RegenPosture);
                 RegenPosture = null;
             }
-            StartCoroutine(StartGroggy());
+            // 1차 빌드에서는 그로기 상태에서 체력 0으로 즉시 사망 처리합니다. 향후 그로기 상태에서 회복 가능하도록 변경
+            playerHealth?.Death();
         }
         else RestartRegenPosture();
     }
@@ -104,18 +104,6 @@ public class H_Posture : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         RegenPosture = null;
-    }
-
-    private IEnumerator StartGroggy()
-    {
-        // 입력 제한은 컨트롤러에 맡기고, 자세 수치와 지속 시간만 여기서 관리합니다.
-        isGroggy = true;
-        playerController?.BeginGroggy();
-        yield return new WaitForSeconds(FrameToSeconds(postureGroggy));
-        currentPosture = 0f;
-        OnPostureChanged?.Invoke(currentPosture, maxPosture);
-        isGroggy = false;
-        playerController?.EndGroggy();
     }
 
     public void ResetPosture()

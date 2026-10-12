@@ -26,6 +26,8 @@ GameObject:
   - component: {fileID: 2505130251507128466}
   - component: {fileID: 4832218092974586054}
   - component: {fileID: 6783670541132352884}
+  - component: {fileID: 7472463514357144874}
+  - component: {fileID: 8163500697552889108}
   m_Layer: 26
   m_Name: PlayerH_Test
   m_TagString: MeleeDealer
@@ -41,7 +43,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5004425951414691801}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.0027404518, w: 0.99999624}
+  m_LocalRotation: {x: 0, y: 0, z: 0.002740171, w: 0.99999624}
   m_LocalPosition: {x: -4.81, y: -4.37, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -409,6 +411,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assets.Scripts.Player_H.H_Animation
   directionChangeGraceTime: 0.15
+--- !u!114 &7472463514357144874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5004425951414691801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 595987ee8c5fc6540832e6fe1def67b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthUI
+  playerHealth: {fileID: 0}
+  healthSlider: {fileID: 0}
+--- !u!114 &8163500697552889108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5004425951414691801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bdfc958040eb44eb64ecb25f1d0903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPostureUI
+  hPosture: {fileID: 0}
+  postureSliderL: {fileID: 0}
+  postureSliderR: {fileID: 0}
 --- !u!1 &6172277191003104796
 GameObject:
   m_ObjectHideFlags: 0

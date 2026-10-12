@@ -43,6 +43,7 @@ namespace Assets.Scripts.Player_H
 
             // Dead 상태를 벗어나 다시 상태 변경이 오면 부활한 것으로 처리합니다.
             isDead = false;
+            animator.SetBool("IsDead", false);
 
             animator.SetBool("Defence", state == PlayerState.Defending);
 
@@ -59,6 +60,9 @@ namespace Assets.Scripts.Player_H
                     break;
                 case PlayerState.Stunned:
                     animator.SetTrigger("Hit");
+                    break;
+                case PlayerState.Groggy:
+                    animator.SetTrigger("Groggy");
                     break;
             }
         }
@@ -94,6 +98,7 @@ namespace Assets.Scripts.Player_H
             if (isDead) return;
             isDead = true;
             animator.SetBool("Defence", false);
+            animator.SetBool("IsDead", true);
             animator.SetTrigger("Death");
         }
     }

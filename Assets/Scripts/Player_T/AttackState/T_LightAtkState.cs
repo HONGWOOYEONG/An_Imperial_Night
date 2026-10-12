@@ -4,7 +4,7 @@ using System;
 
 public class RangeCombo
 {
-    public float[] damage = { 100, 20, 20, 20 }; //ÀÓÀÇ
+    public float[] damage = { 100, 20, 20, 20 }; //ì„ì˜
     public float[] frontDelay = { 13, 13, 10, 90 };
     public float[] backDelay = { 22, 5, 15, 20 };
 }
@@ -18,44 +18,44 @@ public class T_LightAtkState : I_TAttackState
         Final           
     }
 
-    //-- °ø°İ ¼³Á¤ --
-    [SerializeField] float attackrange = 20f; //°ø°İ °Å¸®
-    [SerializeField] float viewAngle = 85f; //½Ã¾ß°¢
+    //-- ê³µê²© ì„¤ì • --
+    [SerializeField] float attackrange = 20f; //ê³µê²© ê±°ë¦¬
+    [SerializeField] float viewAngle = 85f; //ì‹œì•¼ê°
     private DamageInfo damageInfo;
 
-    //-- Å¸°Ù --
+    //-- íƒ€ê²Ÿ --
     private Collider2D nearTarget;
     private float shortest = float.MaxValue;
-    private Vector2 targetPos; //Å¸°Ù À§Ä¡
+    private Vector2 targetPos; //íƒ€ê²Ÿ ìœ„ì¹˜
 
-    //-- ÄŞº¸ --
+    //-- ì½¤ë³´ --
     private RangeCombo combo = new RangeCombo();
-    private AttackStep currentStep = AttackStep.None; //ÇöÀç °ø°İ ´Ü°è
+    private AttackStep currentStep = AttackStep.None; //í˜„ì¬ ê³µê²© ë‹¨ê³„
     public int inputCount = 0;
-    //isAttakingÀ» »ç¿ëÇØ¼­ ÄŞº¸¸¦ ½ÇÇàÇÒÁö Ã³À½ºÎÅÍ ½ÇÇàµÉÁö ¿©ºÎ¸¦ ÆÇ´Ü
-    private bool isAttacking = false; //ÇöÀç ÄŞº¸ ÁøÇà ¿©ºÎ
+    //isAttakingì„ ì‚¬ìš©í•´ì„œ ì½¤ë³´ë¥¼ ì‹¤í–‰í• ì§€ ì²˜ìŒë¶€í„° ì‹¤í–‰ë ì§€ ì—¬ë¶€ë¥¼ íŒë‹¨
+    private bool isAttacking = false; //í˜„ì¬ ì½¤ë³´ ì§„í–‰ ì—¬ë¶€
     public bool IsAttacking => isAttacking;
 
     private float knockbackPower = 2f;
     public void Enter(T_Attack t_Attack)
     {
-        if (isAttacking) return; //ÇöÀç ÄŞº¸ °ø°İÀÌ¶ó¸é ´Ù½Ã ½ÃÀÛÇÏÁö ¾ÊÀ½
+        if (isAttacking) return; //í˜„ì¬ ì½¤ë³´ ê³µê²©ì´ë¼ë©´ ë‹¤ì‹œ ì‹œì‘í•˜ì§€ ì•ŠìŒ
         StartCombo(t_Attack);
     }
 
     private void StartCombo(T_Attack t_Attack)
     {
         isAttacking = true;
-        t_Attack.movement.AddMovementLock(t_Attack); //ÀÌµ¿Á¦¾î
+        t_Attack.movement.AddMovementLock(t_Attack); //ì´ë™ì œì–´
         inputCount = 0;
 
-        // 1Å¸ ´Ü°è·Î º¯°æ
+        // 1íƒ€ ë‹¨ê³„ë¡œ ë³€ê²½
         currentStep = AttackStep.First;
 
-        // ÄŞº¸ ÆÄ¶ó¹ÌÅÍ ÃÊ±âÈ­
+        // ì½¤ë³´ íŒŒë¼ë¯¸í„° ì´ˆê¸°í™”
         t_Attack.playerTAnimation.ResetLightAttack();
 
-        // Ã¹ ¹øÂ° °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà
+        // ì²« ë²ˆì§¸ ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰
         t_Attack.playerTAnimation.PlayLightAttack();
 
         t_Attack.activeAttackCount++;
@@ -65,10 +65,10 @@ public class T_LightAtkState : I_TAttackState
     {
         if (!isAttacking || currentStep != AttackStep.First)  return;
 
-        //--Å¸°Ù °»½Å--
+        //--íƒ€ê²Ÿ ê°±ì‹ --
         targetPos = GetAttackTargetPos(t_Attack);
 
-        //--1Å¸ °ø°İ »ı¼º--
+        //--1íƒ€ ê³µê²© ìƒì„±--
         Vector2 newPos = t_Attack.createPos.position;
         GameObject obj_lightatk = t_Attack.InstantiateObject(t_Attack.commonAttackObject, newPos);
 
@@ -90,7 +90,7 @@ public class T_LightAtkState : I_TAttackState
             firstAtkInit.Initialize(damageInfo, t_Attack, targetPos);
         }
     }
-    // 1Å¸ ¾Ö´Ï¸ŞÀÌ¼ÇÀÇ ÄŞº¸ ÆÇÁ¤ ÇÁ·¹ÀÓ
+    // 1íƒ€ ì• ë‹ˆë©”ì´ì…˜ì˜ ì½¤ë³´ íŒì • í”„ë ˆì„
     public void CheckFirstCombo(T_Attack t_Attack)
     {
         if (!isAttacking || currentStep != AttackStep.First) return;
@@ -99,7 +99,7 @@ public class T_LightAtkState : I_TAttackState
         {
             inputCount = 0;
 
-            // 2, 3Å¸ ´Ü°è·Î º¯°æ
+            // 2, 3íƒ€ ë‹¨ê³„ë¡œ ë³€ê²½
             currentStep = AttackStep.SecondThird;
             t_Attack.playerTAnimation.PlaySecondThirdAttack();
         }
@@ -113,12 +113,12 @@ public class T_LightAtkState : I_TAttackState
     {
         if (!isAttacking || currentStep != AttackStep.SecondThird) return;
 
-        Debug.Log("ÄŞº¸°ø°İ 2½ÃÀÛ");
+        Debug.Log("ì½¤ë³´ê³µê²© 2ì‹œì‘");
 
-        //--Å¸°Ù °»½Å--
+        //--íƒ€ê²Ÿ ê°±ì‹ --
         targetPos = GetAttackTargetPos(t_Attack);
 
-        //--2Å¸ °ø°İ »ı¼º--
+        //--2íƒ€ ê³µê²© ìƒì„±--
         Vector2 secondPos = t_Attack.createPos.position;
         GameObject obj_secondAtk = t_Attack.InstantiateObject(t_Attack.commonAttackObject, secondPos);
         OBJ_LightAttack secondAtkInit = obj_secondAtk.GetComponent<OBJ_LightAttack>();
@@ -142,10 +142,10 @@ public class T_LightAtkState : I_TAttackState
     { 
         if (!isAttacking || currentStep != AttackStep.SecondThird) return;
 
-        //--Å¸°Ù °»½Å--
+        //--íƒ€ê²Ÿ ê°±ì‹ --
         targetPos = GetAttackTargetPos(t_Attack);
 
-        //--3Å¸ °ø°İ »ı¼º--
+        //--3íƒ€ ê³µê²© ìƒì„±--
         Vector2 thirdPos = t_Attack.createPos.position;
         GameObject obj_thirdAtk = t_Attack.InstantiateObject(t_Attack.commonAttackObject, thirdPos);
         OBJ_LightAttack thirdAtkInit = obj_thirdAtk.GetComponent<OBJ_LightAttack>();
@@ -172,7 +172,7 @@ public class T_LightAtkState : I_TAttackState
             currentStep != AttackStep.SecondThird)
             return;
 
-        //--¿¹¾àÇÑ °ø°İÈ½¼ö°¡ 1º¸´Ù Å©¸é ´ÙÀ½ÄŞº¸ °ø°İÀÌ ³ª°£´Ù--
+        //--ì˜ˆì•½í•œ ê³µê²©íšŸìˆ˜ê°€ 1ë³´ë‹¤ í¬ë©´ ë‹¤ìŒì½¤ë³´ ê³µê²©ì´ ë‚˜ê°„ë‹¤--
         if (inputCount >= 1)
         {
             inputCount = 0;
@@ -180,7 +180,7 @@ public class T_LightAtkState : I_TAttackState
 
             t_Attack.playerTAnimation.PlayFinalAttack();
         }
-        //--ÄŞº¸ Á¾·á--
+        //--ì½¤ë³´ ì¢…ë£Œ--
         else
         {
             EndCombo(t_Attack);
@@ -191,19 +191,19 @@ public class T_LightAtkState : I_TAttackState
     {
         if (!isAttacking || currentStep != AttackStep.Final) return;
 
-        //--Å¸°Ù °»½Å--
+        //--íƒ€ê²Ÿ ê°±ì‹ --
         targetPos = GetAttackTargetPos(t_Attack);
         Vector2 finalPos = t_Attack.createPos.position;
-        //--³Ë¹é-- 
+        //--ë„‰ë°±-- 
         Vector2 knockbackDir = -((targetPos - finalPos).normalized);
         if (t_Attack.movement != null)
         {
             t_Attack.movement.KnockBack(knockbackDir, knockbackPower);
-            t_Attack.movement.AddMovementLock(t_Attack); //ÀÌµ¿Á¦¾î
-            Debug.Log("ÀÌµ¿Á¦¾î ½ÃÀÛ");
+            t_Attack.movement.AddMovementLock(t_Attack); //ì´ë™ì œì–´
+            Debug.Log("ì´ë™ì œì–´ ì‹œì‘");
         }
 
-        //--4Å¸ °ø°İ »ı¼º--
+        //--4íƒ€ ê³µê²© ìƒì„±--
         GameObject obj_finalAtk = t_Attack.InstantiateObject(t_Attack.finalAttackObject, finalPos);
 
         if (obj_finalAtk == null) return;
@@ -228,7 +228,7 @@ public class T_LightAtkState : I_TAttackState
     }
 
    
-    //--ÄŞº¸°¡ Á¾·áµÉ¶§ ÃÊ±âÈ­--
+    //--ì½¤ë³´ê°€ ì¢…ë£Œë ë•Œ ì´ˆê¸°í™”--
     private void EndCombo(T_Attack t_Attack)
     {
         inputCount = 0;
@@ -236,7 +236,7 @@ public class T_LightAtkState : I_TAttackState
         currentStep = AttackStep.None;
         nearTarget = null;
 
-        //--4Å¸°¡ ³¡³­ µÚ¿¡µµ ÀÌµ¿ÀÌ Àá±ä »óÅÂ·Î ³²À» °¡´É¼ºÀÌ ÀÖ¾î¼­ ÀÛ¼º--
+        //--4íƒ€ê°€ ëë‚œ ë’¤ì—ë„ ì´ë™ì´ ì ê¸´ ìƒíƒœë¡œ ë‚¨ì„ ê°€ëŠ¥ì„±ì´ ìˆì–´ì„œ ì‘ì„±--
         if (t_Attack.movement != null)
         {
             t_Attack.movement.ReleaseMovementLock(t_Attack);
@@ -244,17 +244,17 @@ public class T_LightAtkState : I_TAttackState
         t_Attack.FinishAttack();
 
 
-        //--¾Ö´Ï¸ŞÀÌ¼Ç ÃÊ±âÈ­--
+        //--ì• ë‹ˆë©”ì´ì…˜ ì´ˆê¸°í™”--
         t_Attack.playerTAnimation.ResetLightAttack();
-        t_Attack.playerTAnimation.EndLightAttackAnimation();//ÀÓ½Ã
-        // ÄŞº¸°¡ Á¾·áµÆÀ¸¹Ç·Î Exit Çã¿ë
+        t_Attack.playerTAnimation.EndLightAttackAnimation();//ì„ì‹œ
+        // ì½¤ë³´ê°€ ì¢…ë£Œëìœ¼ë¯€ë¡œ Exit í—ˆìš©
         t_Attack.playerTAnimation.EndLightAttackAnimation();     
     }
 
-    //--ÀÔ·ÂÀ» ¹Ş¾Æ ´ÙÀ½ ÄŞº¸·Î ÀÌ¾î°¥Áö °áÁ¤--
+    //--ì…ë ¥ì„ ë°›ì•„ ë‹¤ìŒ ì½¤ë³´ë¡œ ì´ì–´ê°ˆì§€ ê²°ì •--
     public void AddInput(T_Attack t_Attack)
     {
-        //--ÄŞº¸°¡ ³¡³­ »óÅÂ¿¡¼­ »õ·Î¿î 1Å¸¸¦ ½ÇÇà ÇÏ±â À§ÇÔ--
+        //--ì½¤ë³´ê°€ ëë‚œ ìƒíƒœì—ì„œ ìƒˆë¡œìš´ 1íƒ€ë¥¼ ì‹¤í–‰ í•˜ê¸° ìœ„í•¨--
         if (!isAttacking)
         {
             if (t_Attack != null)
@@ -267,7 +267,7 @@ public class T_LightAtkState : I_TAttackState
             return;
         }
 
-        //--ÇöÀç °ø°İ ´Ü°è¿¡ µû¶ó ÀÔ·Â ÀúÀå--
+        //--í˜„ì¬ ê³µê²© ë‹¨ê³„ì— ë”°ë¼ ì…ë ¥ ì €ì¥--
         switch (currentStep)
         {
             case AttackStep.First:
@@ -279,7 +279,7 @@ public class T_LightAtkState : I_TAttackState
                 break;
 
             case AttackStep.Final:
-                //--4Å¸ ÀÌÈÄ¿¡´Â ÄŞº¸°¡ ¾øÀ¸¹Ç·Î Ãß°¡ ÀÔ·Â ¹«½Ã--
+                //--4íƒ€ ì´í›„ì—ëŠ” ì½¤ë³´ê°€ ì—†ìœ¼ë¯€ë¡œ ì¶”ê°€ ì…ë ¥ ë¬´ì‹œ--
                 break;
         }
     }
@@ -287,7 +287,7 @@ public class T_LightAtkState : I_TAttackState
     {
         FindToNearTarget(t_Attack);
 
-        //--°¡±î¿î ÀûÀÌ ÀÖ´Ù¸é ÀûÀÇ À§Ä¡¸¦ targetPos·Î ÁöÁ¤--
+        //--ê°€ê¹Œìš´ ì ì´ ìˆë‹¤ë©´ ì ì˜ ìœ„ì¹˜ë¥¼ targetPosë¡œ ì§€ì •--
         if (nearTarget != null)
         {
             ITargetable target =
@@ -298,11 +298,11 @@ public class T_LightAtkState : I_TAttackState
                 return target.TargetPoint.position;
             }
 
-            //--TargetPoint°¡ ¾ø´Â ÀûÀÌ¸é ±âÁ¸ Pivot »ç¿ë(¿¹¿ÜÃ³¸®)--
+            //--TargetPointê°€ ì—†ëŠ” ì ì´ë©´ ê¸°ì¡´ Pivot ì‚¬ìš©(ì˜ˆì™¸ì²˜ë¦¬)--
             return nearTarget.transform.position;
         }
 
-        //--ÀûÀÌ ¾øÀ¸¸é ÇÃ·¹ÀÌ¾î°¡ ¹Ù¶óº¸´Â ¹æÇâÀ¸·Î °ø°İ--
+        //--ì ì´ ì—†ìœ¼ë©´ í”Œë ˆì´ì–´ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥ìœ¼ë¡œ ê³µê²©--
         Vector2 lookDir =
             Vector2.right * t_Attack.movement.FacingDirection;
 
@@ -310,7 +310,7 @@ public class T_LightAtkState : I_TAttackState
             + lookDir * 10f;
     }
 
-    //--Overlap¾È¿¡ µé¾î¿Â Àû ¿ÀºêÁ§Æ® Áß ÇÃ·¹ÀÌ¾î¿Í °¡Àå °Å¸®°¡ ÂªÀº ÀûÀ» °¨ÁöÇØ nearTargetÀ» ÁöÁ¤--
+    //--Overlapì•ˆì— ë“¤ì–´ì˜¨ ì  ì˜¤ë¸Œì íŠ¸ ì¤‘ í”Œë ˆì´ì–´ì™€ ê°€ì¥ ê±°ë¦¬ê°€ ì§§ì€ ì ì„ ê°ì§€í•´ nearTargetì„ ì§€ì •--
     private void FindToNearTarget(T_Attack t_Attack)
     {
         shortest = float.MaxValue;
@@ -321,12 +321,19 @@ public class T_LightAtkState : I_TAttackState
         {
             if (target.CompareTag("Enemy"))
             {
+                // * ì‹¤ì œ í”¼ê²© ì»´í¬ë„ŒíŠ¸ê°€ ì—†ëŠ” Enemy(ê¹Œë§ˆê·€ ë“±)ëŠ” ì¼ë°˜ê³µê²© ìë™ ì¡°ì¤€ì—ì„œ ì œì™¸í•©ë‹ˆë‹¤.
+                IDamageReceiver receiver = target.GetComponent<IDamageReceiver>();
+                if (receiver == null)
+                    receiver = target.GetComponentInParent<IDamageReceiver>();
+                if (receiver == null)
+                    continue;
+
                 Vector2 targetPos = target.transform.position;
                 Vector2 playerPos = t_Attack.transform.position;
 
                 Vector2 dir = (targetPos - playerPos).normalized;
                 Vector2 myForward = Vector2.right * t_Attack.movement.FacingDirection; ;
-                float angle = Vector2.Angle(myForward, dir); //¹Ù¶óº¸´Â ½Ã¾ß°¢µµ
+                float angle = Vector2.Angle(myForward, dir); //ë°”ë¼ë³´ëŠ” ì‹œì•¼ê°ë„
                 if (angle <= viewAngle)
                 {
                     float distance = Vector2.Distance(playerPos, targetPos);
@@ -341,7 +348,7 @@ public class T_LightAtkState : I_TAttackState
     }
 
 
-    public void Exit(T_Attack t_Attack) //--°ø°İ µµÁß °­Á¦·Î Ãë¼Ò µÆÀ» ¶§--
+    public void Exit(T_Attack t_Attack) //--ê³µê²© ë„ì¤‘ ê°•ì œë¡œ ì·¨ì†Œ ëì„ ë•Œ--
     {
         inputCount = 0;
         isAttacking = false;
@@ -355,7 +362,7 @@ public class T_LightAtkState : I_TAttackState
     {
     }
 
-    //--1Å¸ °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á--
+    //--1íƒ€ ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ--
     public void CompleteFirstAttack(T_Attack t_Attack)
     {
         if (!isAttacking || currentStep != AttackStep.First)

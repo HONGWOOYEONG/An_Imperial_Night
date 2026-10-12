@@ -28,8 +28,15 @@ public class AugmentCard : MonoBehaviour
         this.augmentData = augmentData;
         this.onSelected = onSelected;
 
+        // * 비활성 패널에서 다시 표시될 때 TMP 내용이 누락되지 않도록 직접 활성화합니다.
+        nameText.gameObject.SetActive(true);
+        descriptionText.gameObject.SetActive(true);
+        nameText.enabled = true;
+        descriptionText.enabled = true;
         nameText.text = augmentData["Name"].ToString();
         descriptionText.text = augmentData["Description"].ToString();
+        nameText.ForceMeshUpdate();
+        descriptionText.ForceMeshUpdate();
         //targetText.text = ConvertTarget(augmentData["Target"].ToString());
     }
 
@@ -38,14 +45,14 @@ public class AugmentCard : MonoBehaviour
     //    switch (target)
     //    {
     //        case "H":
-    //            return "ȸ�� ����";
+    //            return "회월 스님";
 
     //        case "T":
-    //            return "���� ����";
+    //            return "태자 전하";
 
     //        case "Global":
     //        case "H|T":
-    //            return "���� ����";
+    //            return "공용 증강";
 
     //        default:
     //            return target;

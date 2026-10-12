@@ -193,13 +193,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crow
   damage:
-    damage: 0
+    damage: 10
     damageDir: {x: 0, y: 0}
-    knockbackPower: 0
-    stunTime: 0
+    knockbackPower: 3
+    stunTime: 0.1
     damageType: 0
-    postureDamage: 0
-    driveDamage: 0
+    postureDamage: 10
+    driveDamage: 10
   startSpeed: 0
   finalSpeed: 100
   accelPower: 0.7

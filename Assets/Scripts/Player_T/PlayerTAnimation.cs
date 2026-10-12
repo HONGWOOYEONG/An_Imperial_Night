@@ -7,7 +7,7 @@ public class PlayerTAnimation : MonoBehaviour
     private PlayerController controller;
     private PlayerMovement movement;
 
-    [Header("idle ÀüÈ¯")]
+    [Header("idle ì „í™˜")]
     [SerializeField] private float idleDelay = 0.1f;
     private float lastMoveTime;
 
@@ -31,44 +31,44 @@ public class PlayerTAnimation : MonoBehaviour
         animator.SetBool("isGrounded", movement.IsGrounded);
         animator.SetBool("hasMoveInput", movement.HasMoveInput);
 
-        // ÇöÀç Animator°¡ Àç»ı ÁßÀÎ State È®ÀÎ
+        // í˜„ì¬ Animatorê°€ ì¬ìƒ ì¤‘ì¸ State í™•ì¸
         AnimatorStateInfo stateInfo =
             animator.GetCurrentAnimatorStateInfo(0);
 
         if (stateInfo.IsName("SecondThirdAttack"))
         {
-            Debug.Log("ÇöÀç 2,3Å¸ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà Áß!");
+            Debug.Log("í˜„ì¬ 2,3íƒ€ ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰ ì¤‘!");
         }
-        //--ÀÌ ÄÚµå¸¦ ÀÛ¼ºÇÑ ÀÌÀ¯´Â HasMoveInput ÀÌ ºÎºĞÀÌ ¿ŞÂÊÀ¸·Î °È´Ù°¡ ¿À¸¥ÂÊÀ¸·Î(±× ¹İ´ëÀÇ °æ¿ìµµ °°À½) °ÉÀ¸¸é
-        //0ÀÌ µÇ´Â °æ¿ì°¡ ³ª¿Í¼­ idle Ã³¸®°¡ µÇ¾î¼­ µô·¹ÀÌ¸¦ ¾à°£ ÁÖ°Ô ÇßÀ½--
+        //--ì´ ì½”ë“œë¥¼ ì‘ì„±í•œ ì´ìœ ëŠ” HasMoveInput ì´ ë¶€ë¶„ì´ ì™¼ìª½ìœ¼ë¡œ ê±·ë‹¤ê°€ ì˜¤ë¥¸ìª½ìœ¼ë¡œ(ê·¸ ë°˜ëŒ€ì˜ ê²½ìš°ë„ ê°™ìŒ) ê±¸ìœ¼ë©´
+        //0ì´ ë˜ëŠ” ê²½ìš°ê°€ ë‚˜ì™€ì„œ idle ì²˜ë¦¬ê°€ ë˜ì–´ì„œ ë”œë ˆì´ë¥¼ ì•½ê°„ ì£¼ê²Œ í–ˆìŒ--
         if (controller.CurrentState == PlayerState.Move)
         {
             lastMoveTime = Time.time;
         }
         else if (controller.CurrentState == PlayerState.Idle)
         {
-            // ¸¶Áö¸· ÀÌµ¿ ÀÌÈÄ 0.1ÃÊ ÀÌ»ó Áö³µ´Ù¸é
+            // ë§ˆì§€ë§‰ ì´ë™ ì´í›„ 0.1ì´ˆ ì´ìƒ ì§€ë‚¬ë‹¤ë©´
             if (Time.time - lastMoveTime >= idleDelay)
             {
                 animator.SetBool("isRun", false);
             }
         }
     }
-    //ÄÄÆ÷³ÍÆ®°¡ È°¼ºÈ­ µÉ ¶§
+    //ì»´í¬ë„ŒíŠ¸ê°€ í™œì„±í™” ë  ë•Œ
     private void OnEnable()
     {
         if (controller != null)
         {
-            controller.OnStateChanged += UpdateAnimation; //ÀÌº¥Æ®¿¡¼­ ÇÔ¼ö Ãß°¡
+            controller.OnStateChanged += UpdateAnimation; //ì´ë²¤íŠ¸ì—ì„œ í•¨ìˆ˜ ì¶”ê°€
         }
     }
 
-    //ÄÄÆ÷³ÍÆ®°¡ ºñÈ°¼ºÈ­ µÉ ¶§
+    //ì»´í¬ë„ŒíŠ¸ê°€ ë¹„í™œì„±í™” ë  ë•Œ
     private void OnDisable()
     {
         if (controller != null)
         {
-            controller.OnStateChanged -= UpdateAnimation; //ÀÌº¥Æ®¿¡¼­ ÇÔ¼ö Á¦°Å
+            controller.OnStateChanged -= UpdateAnimation; //ì´ë²¤íŠ¸ì—ì„œ í•¨ìˆ˜ ì œê±°
         }
     }
 
@@ -76,21 +76,25 @@ public class PlayerTAnimation : MonoBehaviour
     {
         if(state == PlayerState.Dead)
         {
-            //--Á×´Â ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà--
+            //--ì£½ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰--
             PlayDeath();
             return;
         }
 
-        if (isDead) return;
+        if (isDead)
+        {
+            isDead = false;
+            animator.SetBool("isDead", false);
+        }
 
         switch (state)
         {
             case PlayerState.Idle:
-                // Idle ÀüÈ¯Àº Update¿¡¼­ Ã³¸®
+                // Idle ì „í™˜ì€ Updateì—ì„œ ì²˜ë¦¬
                 break;
 
             case PlayerState.Move:
-                // ÀÌµ¿ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà
+                // ì´ë™ ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰
 
                 lastMoveTime = Time.time;
                 animator.SetBool("isRun", true);
@@ -133,23 +137,23 @@ public class PlayerTAnimation : MonoBehaviour
 
   
 
-    #region Á¡ÇÁ ¾Ö´Ï¸ŞÀÌ¼Ç
-    // ÀÏ¹İ Á¡ÇÁ ¾Ö´Ï¸ŞÀÌ¼Ç
+    #region ì í”„ ì• ë‹ˆë©”ì´ì…˜
+    // ì¼ë°˜ ì í”„ ì• ë‹ˆë©”ì´ì…˜
     public void PlayNormalJump()
     {
         if (isDead) return;
         animator.SetTrigger("NormalJump");
     }
 
-    //--Â÷Áö Á¡ÇÁ ¾Ö´Ï¸ŞÀÌ¼Ç--
+    //--ì°¨ì§€ ì í”„ ì• ë‹ˆë©”ì´ì…˜--
     public void PlayChargeJump()
     {
         if (isDead) return;
         animator.SetTrigger("ChargeJump");
     }
     #endregion
-    #region  ¾à °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç
-    //--1Å¸--
+    #region  ì•½ ê³µê²© ì• ë‹ˆë©”ì´ì…˜
+    //--1íƒ€--
     public void PlayLightAttack()
     {
         if (isDead) return;
@@ -158,20 +162,20 @@ public class PlayerTAnimation : MonoBehaviour
         animator.SetBool("isRun", false);
         animator.SetTrigger("LightAttack");
     }
-    //--2,3Å¸--
+    //--2,3íƒ€--
     public void PlaySecondThirdAttack()
     {
         if (isDead) return;
 
         animator.SetBool("isSecondThirdAtk", true); 
     }
-    //--4Å¸--
+    //--4íƒ€--
     public void PlayFinalAttack()
     {
         if (isDead) return;
         animator.SetBool("isFinalAtk", true);
     }
-    //--ÄŞº¸ ¾Ö´Ï¸ŞÀÌ¼Ç ÆÄ¶ó¹ÌÅÍ ÃÊ±âÈ­--
+    //--ì½¤ë³´ ì• ë‹ˆë©”ì´ì…˜ íŒŒë¼ë¯¸í„° ì´ˆê¸°í™”--
     public void ResetLightAttack()
     {
         animator.SetBool("isSecondThirdAtk", false);
@@ -179,14 +183,14 @@ public class PlayerTAnimation : MonoBehaviour
         animator.ResetTrigger("LightAttack");
     }
 
-    // ÄŞº¸ Á¾·á¸¦ Animator¿¡ ¾Ë¸®´Â ÇÔ¼ö
+    // ì½¤ë³´ ì¢…ë£Œë¥¼ Animatorì— ì•Œë¦¬ëŠ” í•¨ìˆ˜
     public void EndLightAttackAnimation()
     {
         animator.SetBool("isComboEnd", true);
     }
     #endregion
 
-    //--»ç¸Á ¾Ö´Ï¸ŞÀÌ¼Ç--
+    //--ì‚¬ë§ ì• ë‹ˆë©”ì´ì…˜--
     private void PlayDeath()
     {
         if (isDead) return;
@@ -194,12 +198,12 @@ public class PlayerTAnimation : MonoBehaviour
         animator.SetBool("isRun", false);
         animator.SetBool("isDead", true);
     }
-    public void EndLightAttack() //ÀÓ½Ã
+    public void EndLightAttack() //ì„ì‹œ
     {
-        // °ø°İ Á¾·á
+        // ê³µê²© ì¢…ë£Œ
         animator.SetBool("isComboEnd", true);
 
-        // ÀÌµ¿ ÀÔ·ÂÀÌ ¾ø´Ù¸é Run ºñÈ°¼ºÈ­
+        // ì´ë™ ì…ë ¥ì´ ì—†ë‹¤ë©´ Run ë¹„í™œì„±í™”
         if (!movement.HasMoveInput)
         {
             animator.SetBool("isRun", false);

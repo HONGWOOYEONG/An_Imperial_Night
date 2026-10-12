@@ -51,11 +51,11 @@ GameObject:
   - component: {fileID: 2549539715462378476}
   - component: {fileID: 7863137435899868213}
   - component: {fileID: 8928721739387080799}
-  - component: {fileID: 53650188030661681}
-  - component: {fileID: 9070519045563971976}
   - component: {fileID: 6007772274182599051}
   - component: {fileID: 8983138258742099842}
   - component: {fileID: 8993933731693804907}
+  - component: {fileID: 8887189213094016115}
+  - component: {fileID: 4498534409255161373}
   m_Layer: 26
   m_Name: Player_T
   m_TagString: RangedDealer
@@ -329,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d0548c389e6e2146992a029d0550c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHP: 1000
+  maxHP: 100
   playerType: 1
   reviveTime: 2
 --- !u!114 &7863137435899868213
@@ -357,35 +357,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de740abf1c64fb19ea91d7d72918871, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
---- !u!114 &53650188030661681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6311509823986722355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 595987ee8c5fc6540832e6fe1def67b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthUI
-  playerHealth: {fileID: 2549539715462378476}
-  healthSlider: {fileID: 0}
---- !u!114 &9070519045563971976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6311509823986722355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa336ae85ade6642a42c1c940392f02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDriveUI
-  tDriveGauge: {fileID: 6007772274182599051}
-  driveSliderL: {fileID: 0}
-  driveSliderR: {fileID: 0}
 --- !u!114 &6007772274182599051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -438,6 +409,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTAnimation
   animator: {fileID: 0}
   idleDelay: 0.1
+--- !u!114 &8887189213094016115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6311509823986722355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 595987ee8c5fc6540832e6fe1def67b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthUI
+  playerHealth: {fileID: 2549539715462378476}
+  healthSlider: {fileID: 0}
+--- !u!114 &4498534409255161373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6311509823986722355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aa336ae85ade6642a42c1c940392f02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDriveUI
+  tDriveGauge: {fileID: 6007772274182599051}
+  driveSliderL: {fileID: 0}
+  driveSliderR: {fileID: 0}
 --- !u!1 &8204814532767484664
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
 
@@ -22,7 +23,7 @@ public class CameraManager : MonoBehaviour
         }
         Instance = this;
 
-        // ¾À ½ÃÀÛ ½Ã ±âº»Àº ÇÊµå Ä«¸Þ¶ó
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½âº»ï¿½ï¿½ ï¿½Êµï¿½ Ä«ï¿½Þ¶ï¿½
         SetFieldCamera();
     }
 
@@ -34,7 +35,29 @@ public class CameraManager : MonoBehaviour
 
     public void SetBossCamera()
     {
-        Debug.Log($"º¯°æ ÈÄ - field:{fieldVCam.Priority.Value}, boss:{bossVCam.Priority.Value}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ - field:{fieldVCam.Priority.Value}, boss:{bossVCam.Priority.Value}");
+        bossVCam.Priority.Value = activePriority;
+        fieldVCam.Priority.Value = inactivePriority;
+    }
+
+    public IEnumerator PlayBossIntro(Transform bossTarget, float duration, float zoomSize)
+    {
+        if (bossTarget == null || bossVCam == null)
+            yield break;
+
+        Transform previousTarget = bossVCam.Target.TrackingTarget;
+        float previousSize = bossVCam.Lens.OrthographicSize;
+
+        bossVCam.Target.TrackingTarget = bossTarget;
+        bossVCam.Lens.OrthographicSize = Mathf.Max(0.1f, zoomSize);
+        SetBossCamera();
+
+        yield return new WaitForSeconds(Mathf.Max(0f, duration));
+
+        bossVCam.Target.TrackingTarget = previousTarget;
+        bossVCam.Lens.OrthographicSize = previousSize;
+
+        // CM_Cam2 remains the active Map 2 gameplay camera after the intro.
         bossVCam.Priority.Value = activePriority;
         fieldVCam.Priority.Value = inactivePriority;
     }

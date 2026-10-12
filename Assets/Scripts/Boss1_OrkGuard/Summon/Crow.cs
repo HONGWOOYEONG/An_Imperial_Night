@@ -2,7 +2,7 @@
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Crow : MonoBehaviour
-{   
+{
     [Header("Attack")]
     [SerializeField] private DamageInfo damage = new DamageInfo();
 
@@ -37,7 +37,7 @@ public class Crow : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if(timer > idleTime && !onChase)
+        if (timer > idleTime && !onChase)
             onChase = true;
 
         if (!onChase)
@@ -49,7 +49,7 @@ public class Crow : MonoBehaviour
         {
             rb.linearVelocity = targetDir;
             return;
-        } 
+        }
 
         if (onChase)
         {
@@ -65,7 +65,7 @@ public class Crow : MonoBehaviour
     // 까마귀를 생성할 때 호출할 세팅
     // [ContextMenu("test setCrow")]
     // public void Test_SetCrow() => SetCrow(testTarget,testCenter);
-    public void SetCrow(Transform target,Transform centerPoint)
+    public void SetCrow(Transform target, Transform centerPoint)
     {
         this.target = target;
         this.centerPoint = centerPoint;
@@ -96,8 +96,8 @@ public class Crow : MonoBehaviour
 
     void ChaseMove_Tick()
     {
-        if (anim!=null && anim.GetBool("dive")==false) 
-            anim.SetBool("dive",true);
+        if (anim != null && anim.GetBool("dive") == false)
+            anim.SetBool("dive", true);
 
         chaseTime += Time.deltaTime;
         moveSpeed = Mathf.Lerp(startSpeed, finalSpeed, speedCurve.Evaluate(chaseTime * accelPower));
@@ -106,11 +106,11 @@ public class Crow : MonoBehaviour
         if (chaseTime > 5f)
             Destroy(gameObject);
     }
-    
+
 
     private float infTime = 0f;
     private float infSpeed = 2f;
-    private Vector2 infSize = new (2,1);
+    private Vector2 infSize = new(2, 1);
 
     void IdleMove_Tick()
     {
@@ -119,9 +119,9 @@ public class Crow : MonoBehaviour
     }
 
     bool onDead = false;
-    private void OnTriggerEnter2D(Collider2D other) 
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Enemy")) return;
+        if (other.CompareTag("Enemy") || other.CompareTag("Untagged")) return; // 카메라 영역과 충돌해서 죽는 경우를 방지하려고 추가
         onDead = true;
         Debug.Log($"충돌대상 : {other.name}");
 

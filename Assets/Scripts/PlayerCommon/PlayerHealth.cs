@@ -85,6 +85,18 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
 
         currentHP = Mathf.Max(0f, currentHP - Mathf.Max(0f, damageInfo.damage));
         OnHealthChanged?.Invoke(currentHP, maxHP);
+
+        if (playerType == PlayerType.T && currentHP <= 1f)
+        {
+            // * 태자도 HP 1에서 먼저 사망한 뒤, 불꽃이 남아 있으면 공통 2초 부활 절차를 사용합니다.
+            if (gameSessionManager == null)
+                gameSessionManager = GameSessionManager.Instance;
+
+            if (gameSessionManager != null) gameSessionManager.flameRevive(this);
+            else Death();
+            return;
+        }
+
         if (currentHP <= 0f)
         {
             if (gameSessionManager == null)
@@ -127,7 +139,23 @@ public class PlayerHealth : MonoBehaviour, IDamageReceiver
         reviveCoroutine = IsRevive ? StartCoroutine(EndReviveProtection()) : null;
         hPosture?.ResetPosture();
         playerController?.OnPlayerRevive();
+        ResetDeathAnimatorParameter();
     } // 부활 상태로 전환하고, 남은 체간/그로기를 정리. 부활 보호 시간 동안 무적 상태를 유지
+
+    private void ResetDeathAnimatorParameter()
+    {
+        Animator animator = GetComponentInChildren<Animator>();
+        if (animator == null) return;
+
+        foreach (AnimatorControllerParameter parameter in animator.parameters)
+        {
+            if (parameter.type == AnimatorControllerParameterType.Bool && parameter.name == "isDead")
+            {
+                animator.SetBool("isDead", false);
+                break;
+            }
+        }
+    }
 
     private IEnumerator EndReviveProtection()
     {
